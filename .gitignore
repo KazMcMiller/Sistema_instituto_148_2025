@@ -10,3 +10,6 @@ __pycache__/
 
 # Archivos de dependencias
 *.log
+
+#flask_session
+flask_session/
