@@ -1,1 +1,12 @@
-venv
+# Ignorar el entorno virtual
+venv/
+
+# Archivos de configuración del entorno
+.env
+
+# Archivos compilados de Python
+__pycache__/
+*.py[cod]
+
+# Archivos de dependencias
+*.log
