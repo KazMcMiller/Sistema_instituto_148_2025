@@ -1,6 +1,14 @@
 
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_session import Session
+import os
+from dotenv import load_dotenv
+import mysql.connector
+from mysql.connector import Error
+
+from utils.db_utils import ejecutar_sql
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -20,6 +28,10 @@ def home():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+
+    resultado = ejecutar_sql("SELECT * FROM test ORDER BY test DESC LIMIT 1")
+    print("Resultado de la consulta:", resultado)
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -29,6 +41,7 @@ def login():
             return redirect(url_for('home'))
         else:
             return "Nombre de usuario o contraseña incorrectos"
+        
     return render_template('login.html')
 
 @app.route('/logout')
