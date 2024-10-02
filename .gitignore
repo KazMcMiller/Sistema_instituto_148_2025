@@ -11,5 +11,5 @@ __pycache__/
 # Archivos de dependencias
 *.log
 
-#flash_session
-flash_session/
+#flask_session
+flask_session/
