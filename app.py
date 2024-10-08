@@ -12,7 +12,6 @@ app.config['SECRET_KEY'] = 'tu_clave_secreta'
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 
-# Datos de usuario para autenticación (normalmente se guardarían en una base de datos)
 @app.route('/')
 def home():
     if 'nombre' in session:
