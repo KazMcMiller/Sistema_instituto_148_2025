@@ -14,8 +14,9 @@ Session(app)
 
 @app.route('/')
 def home():
+    # Verifica si el usuario está autenticado
     if 'nombre' in session:
-        return f"¡Hola, {session['nombre']}! <br><a href='/logout'>Cerrar sesión</a>"
+        return render_template('home.html', nombre=session['nombre'])
     return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -53,6 +54,7 @@ def login():
     return render_template('login.html')
 
 
+
 @app.route('/seleccionar_perfil', methods=['GET', 'POST'])
 def seleccionar_perfil():
     # Verificamos si el usuario ya está en la sesión
@@ -72,6 +74,9 @@ def seleccionar_perfil():
     # Renderizar la plantilla de selección de perfil
     return render_template('seleccionar_perfil.html', nombre=session['nombre'])
 
+
+
+
 @app.route('/dashboard_alumno')
 def dashboard_alumno():
     # Verificar si el usuario está autenticado y si es alumno
@@ -79,12 +84,50 @@ def dashboard_alumno():
         return f"Bienvenido al dashboard del alumno, {session['nombre']}"
     return redirect(url_for('login'))
 
-@app.route('/dashboard_admin')
+@app.route('/dashboard_amdin')
 def dashboard_admin():
     # Verificar si el usuario está autenticado y si es administrador
     if 'nombre' in session:
-        return f"Bienvenido al dashboard del administrador, {session['nombre']}"
+        return redirect(url_for('home'))
     return redirect(url_for('login'))
+
+@app.route('/pre_inscripcion')
+def pre_inscripcion():
+    # Renderiza la página de pre-inscripción
+    return render_template('pre_inscripcion.html')
+
+@app.route('/alumnos')
+def alumnos():
+    # Renderiza la página de gestión de alumnos
+    return render_template('alumnos.html')
+
+@app.route('/profesores')
+def profesores():
+    # Renderiza la página de gestión de profesores
+    return render_template('profesores.html')
+
+@app.route('/carreras')
+def carreras():
+    # Renderiza la página de gestión de carreras
+    return render_template('carreras.html')
+
+@app.route('/horarios')
+def horarios():
+    # Renderiza la página de gestión de horarios
+    return render_template('horarios.html')
+
+@app.route('/secretaria')
+def secretaria():
+    # Renderiza la página de gestión de la secretaría
+    return render_template('secretaria.html')
+
+@app.route('/reportes')
+def reportes():
+    # Renderiza la página de generación de reportes
+    return render_template('reportes.html')
+
+
+
 
 
 @app.route('/logout')
