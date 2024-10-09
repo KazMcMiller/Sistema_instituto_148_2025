@@ -33,25 +33,33 @@ def login():
             session['dni'] = dni
             session['nombre'] = result[0][2]  # Suponiendo que el nombre está en la tercera columna del resultado
             
-            # Verificar si el usuario tiene el perfil múltiple (id_perfil = 1)
-            query_perfil = "SELECT id_perfil FROM perfiles_usuarios WHERE id_usuarios = %s AND id_perfil = 1"
-            perfil_result = ejecutar_sql(query_perfil, (result[0][0],))  # result[0][0] es el id_usuario
+            # Obtener todos los perfiles asociados al usuario
+            query_perfil = "SELECT id_perfil FROM perfiles_usuarios WHERE id_usuarios = %s"
+            perfiles = ejecutar_sql(query_perfil, (result[0][0],))  # result[0][0] es el id_usuario
 
-            # Si el usuario tiene el id_perfil = 1, redirigir a la pantalla de selección de perfil
-            if perfil_result:
+            # Convertir los perfiles en una lista de ids para facilitar la verificación
+            perfil_ids = [perfil[0] for perfil in perfiles]
+
+            # Si el usuario tiene el perfil múltiple (id_perfil = 1)
+            if 1 in perfil_ids:
                 return redirect(url_for('seleccionar_perfil'))
 
-            # Redirigir según el perfil único si no tiene perfil múltiple
-            elif perfil_result and perfil_result[0][0] == 2:  # Supongamos que 2 es solo "alumno"
+            # Si el usuario solo tiene el perfil de alumno (id_perfil = 2)
+            elif 2 in perfil_ids and len(perfil_ids) == 1:
                 return redirect(url_for('dashboard_alumno'))
-            elif perfil_result and perfil_result[0][0] == 3:  # Supongamos que 3 es solo "admin"
+
+            # Si el usuario solo tiene el perfil de administrador (id_perfil = 3)
+            elif 3 in perfil_ids and len(perfil_ids) == 1:
                 return redirect(url_for('dashboard_admin'))
+
+            # Si el usuario tiene perfiles no válidos o una combinación inesperada
             else:
                 return "Perfil de usuario no válido"
         else:
             return "DNI o contraseña incorrectos"
         
     return render_template('login.html')
+
 
 
 
