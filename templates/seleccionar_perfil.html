@@ -46,10 +46,13 @@
 </head>
 <body>
     <div class="container">
-        <h2>Hola, {{ nombre }}. Selecciona tu perfil para continuar</h2>
-        <form method="POST">
-            <button type="submit" name="perfil" value="alumno" class="btn-alumno">Ingresar como Alumno</button>
-            <button type="submit" name="perfil" value="admin" class="btn-admin">Ingresar como Administrador</button>
+        <h2>Hola, {{ nombre }}</h2>
+        <h3>Selecciona tu perfil para continuar</h3>
+        <form action="/home" method="POST">
+            <!-- # Iterar sobre los perfiles y mostrar un botón por cada uno -->
+            {% for perfil in perfiles %}
+                <button type="submit" name={{perfil[0]}} value={{perfil[0]}} class="btn-alumno"> {{ perfil[1]}} </button>
+            {% endfor %}
         </form>
     </div>
 </body>
