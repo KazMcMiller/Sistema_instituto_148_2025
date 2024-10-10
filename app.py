@@ -87,12 +87,12 @@ def seleccionar_perfil():
 
 @app.route('/dashboard_alumno')
 def dashboard_alumno():
-    # Verificar si el usuario está autenticado y si es alumno
+    # Verificar si el usuario está autenticado y si es administrador
     if 'nombre' in session:
-        return f"Bienvenido al dashboard del alumno, {session['nombre']}"
+        return redirect(url_for('home'))
     return redirect(url_for('login'))
 
-@app.route('/dashboard_amdin')
+@app.route('/dashboard_admin')
 def dashboard_admin():
     # Verificar si el usuario está autenticado y si es administrador
     if 'nombre' in session:
