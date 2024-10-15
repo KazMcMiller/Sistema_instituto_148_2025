@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_session import Session
 from dotenv import load_dotenv
 from utils.db_utils import ejecutar_sql
@@ -55,8 +55,8 @@ def login():
         
             return redirect(url_for('seleccionar_perfil'))
         else:
-            return "DNI o contraseña incorrectos"
-        
+            flash('DNI o contraseña incorrectos', 'error')
+            return redirect(url_for('login'))
     return render_template('login.html')
 
 @app.route('/seleccionar_perfil', methods=['GET', 'POST'])
@@ -107,36 +107,57 @@ def dashboard_admin():
 
 @app.route('/pre_inscripcion')
 def pre_inscripcion():
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
     # Renderiza la página de pre-inscripción
     return render_template('pre_inscripcion.html')
 
-@app.route('/alumnos')
+@app.route('/alumnos', methods=['GET'])
 def alumnos():
-    # Renderiza la página de gestión de alumnos
-    return render_template('alumnos.html')
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
+
+    # Consultas de ejemplo para cada tabla
+    query_alumnos = "SELECT id_usuario, nombre_apellido, dni FROM usuarios"
+
+    usuarios = ejecutar_sql(query_alumnos)
+
+
+    return render_template('alumnos.html', usuarios=usuarios,)
+
 
 @app.route('/profesores')
 def profesores():
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
     # Renderiza la página de gestión de profesores
     return render_template('profesores.html')
 
 @app.route('/carreras')
 def carreras():
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
     # Renderiza la página de gestión de carreras
     return render_template('carreras.html')
 
 @app.route('/horarios')
 def horarios():
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
     # Renderiza la página de gestión de horarios
     return render_template('horarios.html')
 
 @app.route('/secretaria')
 def secretaria():
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
     # Renderiza la página de gestión de la secretaría
     return render_template('secretaria.html')
 
 @app.route('/reportes')
 def reportes():
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
     # Renderiza la página de generación de reportes
     return render_template('reportes.html')
 

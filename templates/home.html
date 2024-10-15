@@ -92,21 +92,18 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <img src="\static\img\LOGO-SIN-FONDO-1000x707-1.png" alt="Instituto 148" width="100" height="100">
+            <img src="static\img\LOGO-SIN-FONDO-1000x707-1.png" alt="Escuela logo" width="100" height="100">
             <ul>
-                <li><i class="fas fa-user-plus"></i>Pre-Inscripción</li>
-                <li class="active"><i class="fas fa-user-graduate"></i>Alumnos</li>
-                <li><i class="fas fa-chalkboard-teacher"></i>Profesores</li>
-                <li><i class="fas fa-book"></i>Carreras</li>
-                <li><i class="fas fa-clock"></i>Horarios</li>
-                <li><i class="fas fa-user-tie"></i>Secretaría</li>
-                <li><i class="fas fa-chart-bar"></i>Reportes</li>
+                <li><a href="{{ url_for('pre_inscripcion') }}"><i class="fas fa-user-plus"></i> Pre-Inscripción</a></li>
+                <li><a href="{{ url_for('alumnos') }}"><i class="fas fa-user-graduate"></i> Alumnos</a></li>
+                <li><a href="{{ url_for('profesores') }}"><i class="fas fa-chalkboard-teacher"></i> Profesores</a></li>
+                <li><a href="{{ url_for('carreras') }}"><i class="fas fa-book"></i> Carreras</a></li>
+                <li><a href="{{ url_for('horarios') }}"><i class="fas fa-clock"></i> Horarios</a></li>
+                <li><a href="{{ url_for('secretaria') }}"><i class="fas fa-user-tie"></i> Secretaría</a></li>
+                <li><a href="{{ url_for('reportes') }}"><i class="fas fa-chart-bar"></i> Reportes</a></li>
+                <li><a href="{{ url_for('logout') }}" class="logout"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a></li>
             </ul>
-            <ul>
-                <li><i class="fas fa-arrow-left"></i>Atrás</li>
-                <li><a href="{{ url_for('logout') }}" style="color: white; text-decoration: none;"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a></li>
-            </ul>
-        </div>
+        </div>       
         <div class="content">
             <div class="header">
                 <i class="fas fa-home"></i>
