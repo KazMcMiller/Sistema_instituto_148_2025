@@ -48,5 +48,8 @@
             <a href="{{ url_for('logout') }}" class="logout"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
         </li>
 
+        <li class="{% if request.path == url_for('logout') %}active{% endif %}">
+            <a href="{{ url_for('seleccionar_perfil') }}" class="logout"><i class="fas fa-sign-out-alt"></i> Seleccionar perfil</a>
+        </li>
     </ul>
 </div>
