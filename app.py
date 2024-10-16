@@ -96,21 +96,40 @@ def seleccionar_perfil():
 
     return render_template('seleccionar_perfil.html', nombre=session['nombre'], perfiles=perfiles)
 
-@app.route('/navbar', methods=['GET', 'POST'])
-def navbar():
 
-    # Obtener los perfiles para la selección
-    id_usuario = session['id_usuario']
-    query_perfil = """
-        SELECT perfiles_usuarios.id_perfil, perfiles.nombre
-        FROM perfiles_usuarios 
-        INNER JOIN perfiles ON perfiles_usuarios.id_perfil = perfiles.id_perfil 
-        WHERE perfiles_usuarios.id_usuarios = %s
-    """
-    perfiles = ejecutar_sql(query_perfil, (id_usuario,))
+@app.context_processor
+def inject_navbar_data():
+    # Obtener los perfiles para la barra de navegación
+    id_usuario = session.get('id_usuario')
 
-    
-    return render_template('navbar.html', nombre=session['nombre'], perfiles=perfiles)
+    if id_usuario:
+        query_perfil = """
+            SELECT perfiles_usuarios.id_perfil, perfiles.nombre
+            FROM perfiles_usuarios 
+            INNER JOIN perfiles ON perfiles_usuarios.id_perfil = perfiles.id_perfil 
+            WHERE perfiles_usuarios.id_usuarios = %s
+        """
+        perfiles = ejecutar_sql(query_perfil, (id_usuario,))
+
+        perfiles = [(perfil[0], perfil[1]) for perfil in perfiles]
+
+        query_permisos = """
+            SELECT DISTINCT pp.Id_permisos
+            FROM perfiles_usuarios pu
+            JOIN permisos_perfiles pp ON pu.id_perfil = pp.id_perfil
+            WHERE pu.id_usuarios = %s
+        """
+        permisos = ejecutar_sql(query_permisos, (id_usuario,))
+        permisos = [permiso[0] for permiso in permisos]
+
+        print(permisos)
+
+    else:
+        perfiles = []
+        permisos = []
+
+    return dict(perfiles=perfiles, permisos=permisos)
+
 
 @app.route('/dashboard_alumno')
 def dashboard_alumno():
