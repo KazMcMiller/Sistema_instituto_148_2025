@@ -1,13 +1,29 @@
 <div class="sidebar">
     <img src="{{ url_for('static', filename='img/LOGO-SIN-FONDO-1000x707-1.png') }}" alt="Escuela logo" width="100" height="100">
     <ul>
-        <li><a href="{{ url_for('pre_inscripcion') }}"><i class="fas fa-user-plus"></i> Pre-Inscripción</a></li>
-        <li><a href="{{ url_for('alumnos') }}"><i class="fas fa-user-graduate"></i> Alumnos</a></li>
-        <li><a href="{{ url_for('profesores') }}"><i class="fas fa-chalkboard-teacher"></i> Profesores</a></li>
-        <li><a href="{{ url_for('carreras') }}"><i class="fas fa-book"></i> Carreras</a></li>
-        <li><a href="{{ url_for('horarios') }}"><i class="fas fa-clock"></i> Horarios</a></li>
-        <li><a href="{{ url_for('secretaria') }}"><i class="fas fa-user-tie"></i> Secretaría</a></li>
-        <li><a href="{{ url_for('reportes') }}"><i class="fas fa-chart-bar"></i> Reportes</a></li>
-        <li><a href="{{ url_for('logout') }}" class="logout"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a></li>
+        <li class="{% if request.path == url_for('pre_inscripcion') %}active{% endif %}">
+            <a href="{{ url_for('pre_inscripcion') }}"><i class="fas fa-user-plus"></i> Pre-Inscripción</a>
+        </li>
+        <li class="{% if request.path == url_for('alumnos') %}active{% endif %}">
+            <a href="{{ url_for('alumnos') }}"><i class="fas fa-user-graduate"></i> Alumnos</a>
+        </li>
+        <li class="{% if request.path == url_for('profesores') %}active{% endif %}">
+            <a href="{{ url_for('profesores') }}"><i class="fas fa-chalkboard-teacher"></i> Profesores</a>
+        </li>
+        <li class="{% if request.path == url_for('carreras') %}active{% endif %}">
+            <a href="{{ url_for('carreras') }}"><i class="fas fa-book"></i> Carreras</a>
+        </li>
+        <li class="{% if request.path == url_for('horarios') %}active{% endif %}">
+            <a href="{{ url_for('horarios') }}"><i class="fas fa-clock"></i> Horarios</a>
+        </li>
+        <li class="{% if request.path == url_for('secretaria') %}active{% endif %}">
+            <a href="{{ url_for('secretaria') }}"><i class="fas fa-user-tie"></i> Secretaría</a>
+        </li>
+        <li class="{% if request.path == url_for('reportes') %}active{% endif %}">
+            <a href="{{ url_for('reportes') }}"><i class="fas fa-chart-bar"></i> Reportes</a>
+        </li>
+        <li class="{% if request.path == url_for('logout') %}active{% endif %}">
+            <a href="{{ url_for('logout') }}" class="logout"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
+        </li>
     </ul>
 </div>

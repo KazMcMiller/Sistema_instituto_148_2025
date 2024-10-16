@@ -29,6 +29,10 @@ body {
     display: flex;
     align-items: center;
 }
+.sidebar ul li.active a {
+    background-color: #4CAF50;
+    color: white;
+}
 .sidebar ul li a {
     color: white;
     text-decoration: none;

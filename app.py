@@ -18,7 +18,6 @@ def path_inicial():
      if 'nombre' in session:
         return redirect(url_for('seleccionar_perfil'))
 
-
 @app.route('/home')
 def home():
     # Verifica si el usuario está autenticado y ha seleccionado un perfil
@@ -75,8 +74,6 @@ def seleccionar_perfil():
         # Obtener el perfil seleccionado desde el formulario
         perfil_id = request.form.get('seleccionar_perfil')
 
-        print(perfil_id)
-
         session['perfil'] = perfil_id  # Guarda el perfil en la sesión
         return redirect(url_for('home'))
 
@@ -99,7 +96,21 @@ def seleccionar_perfil():
 
     return render_template('seleccionar_perfil.html', nombre=session['nombre'], perfiles=perfiles)
 
+@app.route('/navbar', methods=['GET', 'POST'])
+def navbar():
 
+    # Obtener los perfiles para la selección
+    id_usuario = session['id_usuario']
+    query_perfil = """
+        SELECT perfiles_usuarios.id_perfil, perfiles.nombre
+        FROM perfiles_usuarios 
+        INNER JOIN perfiles ON perfiles_usuarios.id_perfil = perfiles.id_perfil 
+        WHERE perfiles_usuarios.id_usuarios = %s
+    """
+    perfiles = ejecutar_sql(query_perfil, (id_usuario,))
+
+    
+    return render_template('navbar.html', nombre=session['nombre'], perfiles=perfiles)
 
 @app.route('/dashboard_alumno')
 def dashboard_alumno():
@@ -132,9 +143,7 @@ def alumnos():
 
     usuarios = ejecutar_sql(query_alumnos)
 
-
     return render_template('alumnos.html', usuarios=usuarios,)
-
 
 @app.route('/profesores')
 def profesores():
