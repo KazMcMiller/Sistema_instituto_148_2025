@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_session import Session
 from dotenv import load_dotenv
 from utils.db_utils import ejecutar_sql
@@ -14,7 +14,10 @@ Session(app)
 
 @app.route('/')
 def path_inicial():
-    return redirect(url_for('login'))
+    # Verifica si el usuario está autenticado y ha seleccionado un perfil
+     if 'nombre' in session:
+        return redirect(url_for('seleccionar_perfil'))
+
 
 @app.route('/home')
 def home():
@@ -59,8 +62,8 @@ def login():
         
             return redirect(url_for('seleccionar_perfil'))
         else:
-            return "DNI o contraseña incorrectos"
-        
+            flash('DNI o contraseña incorrectos', 'error')
+            return redirect(url_for('login'))
     return render_template('login.html')
 
 @app.route('/seleccionar_perfil', methods=['GET', 'POST'])
@@ -69,10 +72,15 @@ def seleccionar_perfil():
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        perfil_id = request.form.get('perfil_id')
-        session['perfil'] = perfil_id
+        # Obtener el perfil seleccionado desde el formulario
+        perfil_id = request.form.get('seleccionar_perfil')
+
+        print(perfil_id)
+
+        session['perfil'] = perfil_id  # Guarda el perfil en la sesión
         return redirect(url_for('home'))
 
+    # Obtener los perfiles para la selección
     id_usuario = session['id_usuario']
     query_perfil = """
         SELECT perfiles_usuarios.id_perfil, perfiles.nombre
@@ -82,17 +90,15 @@ def seleccionar_perfil():
     """
     perfiles = ejecutar_sql(query_perfil, (id_usuario,))
 
+    # Verificar si la consulta devolvió resultados
     if perfiles is None:
         return "Error al obtener los perfiles o no se encontraron perfiles asociados.", 500
 
+    # Convertir los resultados a una lista de tuplas
     perfiles = [(perfil[0], perfil[1]) for perfil in perfiles]
 
-    if request.method == 'GET':
-        action = request.form.get('seleccionar_perfil')
-
-        print('Perfil seleccionado' + action)
-
     return render_template('seleccionar_perfil.html', nombre=session['nombre'], perfiles=perfiles)
+
 
 
 @app.route('/dashboard_alumno')
@@ -111,36 +117,57 @@ def dashboard_admin():
 
 @app.route('/pre_inscripcion')
 def pre_inscripcion():
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
     # Renderiza la página de pre-inscripción
     return render_template('pre_inscripcion.html')
 
-@app.route('/alumnos')
+@app.route('/alumnos', methods=['GET'])
 def alumnos():
-    # Renderiza la página de gestión de alumnos
-    return render_template('alumnos.html')
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
+
+    # Consultas de ejemplo para cada tabla
+    query_alumnos = "SELECT id_usuario, nombre_apellido, dni FROM usuarios"
+
+    usuarios = ejecutar_sql(query_alumnos)
+
+
+    return render_template('alumnos.html', usuarios=usuarios,)
+
 
 @app.route('/profesores')
 def profesores():
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
     # Renderiza la página de gestión de profesores
     return render_template('profesores.html')
 
 @app.route('/carreras')
 def carreras():
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
     # Renderiza la página de gestión de carreras
     return render_template('carreras.html')
 
 @app.route('/horarios')
 def horarios():
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
     # Renderiza la página de gestión de horarios
     return render_template('horarios.html')
 
 @app.route('/secretaria')
 def secretaria():
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
     # Renderiza la página de gestión de la secretaría
     return render_template('secretaria.html')
 
 @app.route('/reportes')
 def reportes():
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
     # Renderiza la página de generación de reportes
     return render_template('reportes.html')
 

@@ -48,10 +48,12 @@
     <div class="container">
         <h2>Hola, {{ nombre }}</h2>
         <h3>Selecciona tu perfil para continuar</h3>
-            <!-- # Iterar sobre los perfiles y mostrar un botón por cada uno -->
+        <form method="POST">
+            <!-- Iterar sobre los perfiles y mostrar un botón por cada uno -->
             {% for perfil in perfiles %}
-                <button type="submit" name={{perfil[0]}} value={{perfil[0]}} class="btn-alumno"> {{ perfil[1]}} </button>
+                <button type="submit" name="seleccionar_perfil" value="{{ perfil[0] }}" class="btn-alumno">{{ perfil[1] }}</button>
             {% endfor %}
+        </form>
     </div>
 </body>
 </html>
