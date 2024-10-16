@@ -5,58 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pre_inscripcion - Sistema de Gestión Académica</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-        }
-        .container {
-            display: flex;
-        }
-        .sidebar {
-            width: 250px;
-            background-color: #4db6ac;
-            padding: 20px;
-            box-sizing: border-box;
-            height: 100vh;
-        }
-        .sidebar img {
-            width: 100px;
-            display: block;
-            margin: 0 auto 20px;
-        }
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-        }
-        .sidebar ul li {
-            margin: 20px 0;
-            color: white;
-            display: flex;
-            align-items: center;
-        }
-        .sidebar ul li a {
-            color: white;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .sidebar ul li a:hover {
-            background-color: #399d95;
-        }
-        .sidebar ul li a i {
-            margin-right: 10px;
-        }
-        .content {
-            flex-grow: 1;
-            padding: 20px;
-        }
-    
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
 </head>
 <body>
     <div class="container">
