@@ -122,8 +122,6 @@ def inject_navbar_data():
         permisos = ejecutar_sql(query_permisos, (id_usuario,))
         permisos = [permiso[0] for permiso in permisos]
 
-        print(permisos)
-
     else:
         perfiles = []
         permisos = []
