@@ -178,6 +178,11 @@ def reportes():
     # Renderiza la página de generación de reportes
     return render_template('reportes.html')
 
+@app.route('/pre_inscripcion_2', methods=['POST'])
+def pre_inscripcion_2():
+    if 'nombre' not in session:
+            return redirect(url_for('login'))
+    return render_template('pre_inscripcion2.html')
 
 @app.route('/logout')
 def logout():

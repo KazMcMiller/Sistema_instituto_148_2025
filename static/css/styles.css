@@ -6,6 +6,7 @@ body {
 }
 .container {
     display: flex;
+    height: 100vh;
 }
 .sidebar {
     width: 250px;
@@ -123,4 +124,67 @@ table th, table td {
 table th {
     background-color: #4db6ac;
     color: white;
+}
+.form-container {
+    flex: 1;
+    margin: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    overflow-y: auto;
+}
+
+h2 {
+    text-align: center;
+    color: #4db6ac;
+    margin-bottom: 10px;
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.form-group {
+    flex: 1 1 48%;
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.form-group select:disabled {
+    background-color: #e9ecef;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.actions button {
+    background-color: #4db6ac;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.actions button:hover {
+    background-color: #399d95;
 }

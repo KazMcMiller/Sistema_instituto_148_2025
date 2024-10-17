@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Inscripción - Parte 2</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #4db6ac;
+            margin-bottom: 10px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .form-group {
+            flex: 1 1 48%;
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .actions button {
+            background-color: #4db6ac;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .actions button:hover {
+            background-color: #399d95;
+        }
+
+        .form-radio {
+            margin-bottom: 15px;
+        }
+
+        .form-radio label {
+            margin-right: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% include 'navbar.html' %}
+        <div class="form-container">
+            <h2>Estudios Cursados</h2>
+            <form method="POST" action="/pre_inscripcion_2_save">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="titulo_base">Título Base:</label>
+                        <input type="text" id="titulo_base" name="titulo_base" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="anio_egreso">Año de Egreso:</label>
+                        <input type="number" id="anio_egreso" name="anio_egreso" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="provincia">Provincia:</label>
+                        <select id="provincia" name="provincia" required>
+                            <option value="">Seleccione una provincia</option>
+                            <option value="bsas">Buenos Aires</option>
+                            <option value="caba">CABA</option>
+                            <option value="cordoba">Córdoba</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="institucion">Institución:</label>
+                        <input type="text" id="institucion" name="institucion" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="otros_estudios">Otros Estudios:</label>
+                        <input type="text" id="otros_estudios" name="otros_estudios">
+                    </div>
+                    <div class="form-group">
+                        <label for="otros_anio_egreso">Año de Egreso (Otros Estudios):</label>
+                        <input type="number" id="otros_anio_egreso" name="otros_anio_egreso">
+                    </div>
+                </div>
+
+                <h2>Datos Laborales</h2>
+                <div class="form-row">
+                    <div class="form-radio">
+                        <label>¿Trabaja?</label>
+                        <input type="radio" id="trabaja_si" name="trabaja" value="si" required>
+                        <label for="trabaja_si">Sí</label>
+                        <input type="radio" id="trabaja_no" name="trabaja" value="no">
+                        <label for="trabaja_no">No</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="actividad">Actividad:</label>
+                        <input type="text" id="actividad" name="actividad">
+                    </div>
+                    <div class="form-group">
+                        <label for="horario_habitual">Horario Habitual:</label>
+                        <input type="text" id="horario_habitual" name="horario_habitual">
+                    </div>
+                    <div class="form-group">
+                        <label for="obra_social">Obra Social:</label>
+                        <input type="text" id="obra_social" name="obra_social">
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button type="submit">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
