@@ -40,7 +40,7 @@ def login():
         password = request.form['password']
         
         # Validar el usuario contra la base de datos
-        query = "SELECT id_usuario, nombre_apellido FROM usuarios WHERE dni = %s AND pass = %s"
+        query = "SELECT id_usuario, nombre_apellido FROM usuarios WHERE dni = %s AND pass = %s AND activo = 1"
         result = ejecutar_sql(query, (dni, password))
         
         if result:

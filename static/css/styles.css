@@ -30,8 +30,8 @@ body {
     align-items: center;
 }
 .sidebar ul li.active a {
-    background-color: #4CAF50;
-    color: white;
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
 }
 .sidebar ul li a {
     color: white;
