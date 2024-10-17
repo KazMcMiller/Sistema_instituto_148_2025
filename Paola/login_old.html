@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="./css/style_old.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+</head>
+<body>
+    <div class="container">
+        <div class="left-column">
+            <h1>¡Bienvenido!</h1>
+            <img src="./img/Logo_instituto.png" alt="logo-instituto">
+            <h3>¿Sos ingresante?</h3>
+            <a href="inscrbirse.html">¡Inscribite!</a>
+        </div>
+
+        <div class="right-column">
+            <form>
+                <h2>Iniciar Sesión</h2>
+                <label for="username">Usuario</label>
+                <input type="number" id="username" placeholder="DNI" required>
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" placeholder="Contraseña" required>
+                <button type="submit" id="submit">Iniciar Sesión</button>
+                <div class="recover-password">
+                    <a href="recuperar_contraseña.html">¿Olvidaste la Contraseña?</a>
+                </div>
+            </form>
+            <script src="./js/login.js"></script>
+        </div>
+    </div>
+</body>
+</html>

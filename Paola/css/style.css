@@ -1,0 +1,38 @@
+
+
+body{
+background-color: #f2f3f6;
+}
+
+.text-blanco{
+    color: white;
+}
+
+.text-primary {
+    color: #5DB3B7 !important;/* Color de Bootstrap para h2 */
+}
+
+.text-secundary {
+    color: white !important;
+}
+
+
+.bg{
+    background-color: #5DB3B7;
+}
+
+.bg-primary{
+    background-color: rgba(242, 243, 246, 0.45) !important;
+}
+
+.btn-primary {
+    background-color: #5DB3B7;
+    border-radius: 10px;
+    border-color: #5DB3B7;
+    display: flex; 
+    justify-content: center;
+    align-items: center; 
+}
+
+
+

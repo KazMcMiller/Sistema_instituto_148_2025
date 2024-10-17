@@ -1,0 +1,60 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión</title>
+    <!-- Incluir Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome (para el icono del ojo) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container vh-100 d-flex align-items-center">
+        <div class="row w-100">
+            <!-- Columna izquierda (Imagen) -->
+            <div class="col-md-6 d-flex justify-content-center align-items-center bg-info">
+                <img src="./img/Logo_instituto.png" alt="logo-instituto" class="img-fluid" style="max-width: 80%;">
+            </div>
+
+            <!-- Columna derecha (Formulario) -->
+            <div class="col-md-6 p-5 bg-white shadow-lg rounded">
+                <h1 class="text-center mb-4">Iniciar Sesión</h1>
+
+                <form>
+                    <!-- Usuario -->
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Usuario</label>
+                        <input type="number" class="form-control" id="username" placeholder="DNI" required>
+                    </div>
+
+                    <!-- Contraseña con ícono de ojo -->
+                    <div class="mb-3 position-relative">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="password" placeholder="Contraseña" required>
+                        <i class="fa fa-eye position-absolute top-50 end-0 me-3 translate-middle-y" id="toggle-password" style="cursor: pointer;"></i>
+                    </div>
+
+                    <!-- Mostrar contraseña -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="visible">
+                        <label class="form-check-label" for="visible">Mostrar Contraseña</label>
+                    </div>
+
+                    <!-- Botón Iniciar Sesión -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+                    </div>
+
+                    <!-- Enlace Recuperar Contraseña -->
+                    <div class="text-center mt-3">
+                        <a href="recuperar_contraseña.html" class="text-decoration-none">¿Olvidaste tu contraseña?</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agregar el JS de Bootstrap y el script -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./js/login.js"></script>
+</body>

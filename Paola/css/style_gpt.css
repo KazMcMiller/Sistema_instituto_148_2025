@@ -1,0 +1,5 @@
+/* Centrar la imagen dentro de su columna */
+.left-column img {
+    max-width: 80%;
+    height: auto;
+}
