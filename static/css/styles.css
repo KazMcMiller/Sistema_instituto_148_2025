@@ -1,9 +1,65 @@
-body {
-    font-family: 'Arial', sans-serif;
+html, body {
+    height: 100%;
     margin: 0;
-    padding: 0;
-    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
 }
+
+.container {
+/*    max-width: 600px; /* Ajusta el tamaño del contenedor 
+    width: 100%;*/
+    width: 800px;
+    height: 500px;
+/*    padding: 20px; /* Puedes ajustar este padding según lo que necesites */
+/*    background-color: #007bff; /* Color de fondo (bg-primary en Bootstrap) */
+    border-radius: 10px; /* Ajusta si lo necesitas */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para darle un efecto visual */
+    justify-content: center;
+}
+
+
+body{
+background-color: #f2f3f6;
+}
+
+form .form-control {
+    width: 100%; /* Asegura que los inputs ocupen todo el ancho disponible */
+    max-width: 400px; /* Puedes ajustar este valor según tus necesidades */
+    margin-bottom: 15px; /* Añade espacio entre los campos */
+}
+
+.text-blanco{
+    color: white;
+}
+
+.text-primary {
+    color: #5DB3B7 !important;/* Color de Bootstrap para h2 */
+}
+
+.text-secundary {
+    color: white !important;
+}
+
+
+.bg{
+    background-color: #5DB3B7;
+}
+
+.bg-primary{
+    background-color: rgba(242, 243, 246, 0.45) !important;
+}
+
+.btn-primary {
+    background-color: #5DB3B7;
+    border-radius: 10px;
+    border-color: #5DB3B7;
+    display: flex; 
+    justify-content: center;
+    align-items:center;
+}
+
+/* estilos de lucas
 .container {
     display: flex;
     height: 100vh;
@@ -134,31 +190,26 @@ table th {
     padding: 20px;
     overflow-y: auto;
 }
-
 h2 {
     text-align: center;
     color: #4db6ac;
     margin-bottom: 10px;
 }
-
 .form-row {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     justify-content: space-between;
 }
-
 .form-group {
     flex: 1 1 48%;
     margin-bottom: 10px;
 }
-
 .form-group label {
     display: block;
     margin-bottom: 5px;
     color: #333;
 }
-
 .form-group input, .form-group select {
     width: 100%;
     padding: 8px;
@@ -166,16 +217,13 @@ h2 {
     border-radius: 5px;
     box-sizing: border-box;
 }
-
 .form-group select:disabled {
     background-color: #e9ecef;
 }
-
 .actions {
     display: flex;
     justify-content: flex-end;
 }
-
 .actions button {
     background-color: #4db6ac;
     color: white;
@@ -184,7 +232,13 @@ h2 {
     border-radius: 5px;
     cursor: pointer;
 }
-
 .actions button:hover {
     background-color: #399d95;
 }
+.form-radio {
+    margin-bottom: 15px;
+}
+.form-radio label {
+    margin-right: 15px;
+}
+    /*

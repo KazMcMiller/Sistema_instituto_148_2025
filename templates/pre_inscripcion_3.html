@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmar Pre-Inscripción</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        {% include 'navbar.html' %}
+        
+        <div class="confirmation-section">
+            <h2>Confirmar Pre-Inscripción</h2>
+            <div class="data-summary">
+                <h3>Datos Personales</h3>
+                <p><strong>Apellido y Nombres:</strong> {{ apellido_nombres }}</p>
+                <p><strong>Sexo:</strong> {{ sexo }}</p>
+                <p><strong>DNI:</strong> {{ dni }}</p>
+                <p><strong>Fecha de Nacimiento:</strong> {{ fecha_nacimiento }}</p>
+                <p><strong>Lugar de Nacimiento:</strong> {{ lugar_nacimiento }}</p>
+                <!-- Agregar el resto de los datos personales -->
+
+                <h3>Estudios Cursados</h3>
+                <p><strong>Título Base:</strong> {{ titulo_base }}</p>
+                <p><strong>Año de Egreso:</strong> {{ anio_egreso }}</p>
+                <p><strong>Provincia:</strong> {{ provincia }}</p>
+                <p><strong>Institución:</strong> {{ institucion }}</p>
+                <!-- Agregar el resto de los datos de estudios -->
+
+                <h3>Datos Laborales</h3>
+                <p><strong>Trabaja:</strong> {{ trabaja }}</p>
+                <p><strong>Actividad:</strong> {{ actividad }}</p>
+                <p><strong>Horario Habitual:</strong> {{ horario_habitual }}</p>
+                <p><strong>Obra Social:</strong> {{ obra_social }}</p>
+            </div>
+
+            <form method="POST" action="/guardar_pre_inscripcion">
+                <!-- Pasar los datos como inputs ocultos para ser enviados al servidor -->
+                <input type="hidden" name="apellido_nombres" value="{{ apellido_nombres }}">
+                <input type="hidden" name="dni" value="{{ dni }}">
+                <!-- Incluir todos los datos como campos ocultos -->
+                
+                <div class="actions">
+                    <button type="submit">Confirmar y Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

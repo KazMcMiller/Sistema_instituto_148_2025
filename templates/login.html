@@ -1,110 +1,67 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Iniciar sesión</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      background-color: #40c4ff; /* Color de fondo celeste */
-    }
-
-    .container {
-      display: flex;
-      background-color: #fff;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    }
-
-    .left-side {
-      width: 300px;
-      padding: 40px;
-      text-align: center;
-      color: #fff;
-      background-color: #0091ea; /* Color de fondo azul */
-    }
-
-    .left-side img {
-      width: 150px;
-      margin-bottom: 20px;
-    }
-
-    .right-side {
-      width: 350px;
-      padding: 40px;
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    input[type="number"],
-    input[type="password"] {
-      width: 100%;
-      padding: 12px 20px;
-      margin: 8px 0;
-      display: inline-block;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-      border-radius: 4px;
-    }
-
-    button {
-      background-color: #0091ea; /* Color de fondo azul */
-      color: white;
-      padding: 14px 20px;
-      margin-top: 20px;
-      border: none;
-      cursor: pointer;
-      width: 100%;
-      border-radius: 4px;
-    }
-
-    button:hover {
-      opacity: 0.8;
-    }
-
-    .recaptcha {
-      display: flex;
-      align-items: center;
-      margin-top: 15px;
-    }
-
-    .recaptcha input[type="checkbox"] {
-      margin-right: 8px;
-    }
-
-
-
-    a {
-      color: #0091ea; /* Color de enlace azul */
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href=".\static\css\styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
+
 <body>
-  <div class="container">
-    
-    <div class="left-side">
-      <img src="static\img\LOGO-SIN-FONDO-1000x707-1.png" alt="Logo de la institución">
-      <h2>¿Sos Ingresante?</h2>
-      <p>¡Inscribete!</p>
-    </div>
+    <div class="container bg-primary mt-5 rounded shadow text-center">
+        <div class="row align-items-stretch">
+            <div class="col d-flex flex-column justify-content-center align-items-center bg rounded text-center rounded">
+                <h1 class="text-secundary p-3">¡Bienvenido!</h1>
+                <img src="./img/Logo_instituto.png" width="200px" alt="">
+                <h3 class="text-secundary p-3">¿Sos Ingresante?</h3>
+                <h5 href="inscribite.html" class="text-secundary">¡Inscribite!</h5>
+            </div>
 
-    <div class="right-side">
-      <h2>Iniciar sesión</h2>
-      <form method="POST" action="/login">
-        <input type="number" placeholder="xxxxxxxx" id="dni" name="dni" required>
-        <input type="password" placeholder="Contraseña" id="password" name="password" required>
+            <div class="col rounded bg-primary mt-5 rounded">
+                <div class="text-end">
+                    <h2 class="fw-bold text-center py-5">Iniciar Sesión</h2>
+                    <!--<img src="./img/Logo_instituto.png" width="200px" alt="">-->
+                </div>              
+                 <!-- LOGIN -->
+                <form method="POST" action="/login">
+                    <div class="mb-4 mt-5">
+                        <label for="dni" class="form-label">Usuario</label>
+                        <input type="number" class="form-control" name="dni" id= "dni" placeholder="Ingrese DNI" required>    
+                    </div>
 
-        <button type="submit">Ingresar</button>
-      </form>
+                    <div class="mb-4 mt-5">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
+                            <div class="input-group-append">
+                                <span class="input-group-text" onclick="togglePasswordVisibility()">
+                                    <i class="fas fa-eye" id="eyeIcon"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid text-center d-flex flex-column justify-content-center align-items-center">
+                        <button type="submit" class="btn btn-primary text-center">Iniciar Sesión</button>
+                            <div class="recover-password">
+                                <a href="recuperar_contraseña.html">¿Olvidaste la Contraseña?</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </form>
+                <script src=".\static\js\login.js"></script>
+
+            </div>
+        </div>
     </div>
-  </div>
+    <script src="bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

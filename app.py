@@ -182,7 +182,33 @@ def reportes():
 def pre_inscripcion_2():
     if 'nombre' not in session:
             return redirect(url_for('login'))
-    return render_template('pre_inscripcion2.html')
+    return render_template('pre_inscripcion_2.html')
+
+@app.route('/guardar_pre_inscripcion', methods=['POST'])
+def guardar_pre_inscripcion():
+    if 'nombre' not in session:
+            return redirect(url_for('login'))
+    return render_template('pre_inscripcion_3.html')
+
+
+    # # Recibir todos los datos desde el formulario de pre_inscripcion_3.html
+    # datos = request.form.to_dict()
+    
+    # # Aquí realizas las consultas para guardar los datos en la base de datos.
+    # # Ejemplo de una consulta para guardar en una tabla de usuarios
+    # query = """
+    #     INSERT INTO usuarios (
+    #         nombre_apellido, dni, sexo, fecha_nacimiento, lugar_nacimiento, ...
+    #     ) VALUES (%s, %s, %s, %s, %s, ...)
+    # """
+    # # Ejecutar la consulta
+    # ejecutar_sql(query, (
+    #     datos['apellido_nombres'], datos['dni'], datos['sexo'],
+    #     datos['fecha_nacimiento'], datos['lugar_nacimiento'], 
+    #     # Completar con los otros campos
+    # ))
+
+    # return redirect(url_for('home'))
 
 @app.route('/logout')
 def logout():
