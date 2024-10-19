@@ -215,8 +215,6 @@ def pre_inscripcion_2():
 @app.route('/guardar_pre_inscripcion', methods=['POST'])
 def guardar_pre_inscripcion():
     # Verificar si el usuario está autenticado
-    if 'nombre' not in session:
-        return redirect(url_for('login'))
 
  # Obtener todos los datos desde la sesión
     datos = session.get('datos_completos', {})
@@ -278,6 +276,43 @@ def pre_inscripcion_3():
 
     # Renderizar pre_inscripcion_3.html con los datos combinados para la revisión
     return render_template('pre_inscripcion_3.html', **datos_completos)
+
+@app.route('/inscribite')
+def inscribite():
+    # Renderiza la página de inscribite
+    return render_template('inscribite.html')
+
+
+@app.route('/inscribite_2', methods=['POST'])
+def inscribite_2():
+
+    # Recibir los datos del formulario anterior
+    datos_personales = request.form.to_dict()
+    
+    # Guardar en la sesión para usarlos más adelante
+    session['datos_personales'] = datos_personales
+
+    return render_template('inscribite_2.html', **datos_personales)
+
+@app.route('/inscribite_3', methods=['POST'])
+def inscribite_3():
+
+    # Obtener los datos personales desde la sesión
+    datos_personales = session.get('datos_personales', {})
+    print(session.get('datos_personales'))
+    # Recibir los datos de estudios y laborales del formulario de pre_inscripcion_2
+    datos_estudios_y_laborales = request.form.to_dict()
+
+    # Combinar todos los datos
+    datos_completos = {**datos_personales, **datos_estudios_y_laborales}
+    session['datos_completos'] = datos_completos
+
+    # Renderizar inscribite_3.html con los datos combinados para la revisión
+    return render_template('inscribite_3.html', **datos_completos)
+
+
+
+
 
 @app.route('/logout')
 def logout():

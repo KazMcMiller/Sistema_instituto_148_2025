@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmar Pre-Inscripción</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        
+        <div class="confirmation-section">
+            <h2>Confirmar Pre-Inscripción</h2>
+            <div class="data-summary">
+                <h3>Datos Personales</h3>
+                <p><strong>Apellido y Nombres:</strong> {{ nombre_apellido }}</p>
+                <p><strong>Sexo:</strong> {{ id_sexo }}</p>
+                <p><strong>DNI:</strong> {{ dni }}</p>
+                <p><strong>Fecha de Nacimiento:</strong> {{ fecha_nacimiento }}</p>
+                <p><strong>Lugar de Nacimiento:</strong> {{ lugar_nacimiento }}</p>
+                <p><strong>Estado Civil:</strong> {{ id_estado_civil }}</p>
+                <p><strong>Cantidad de Hijos:</strong> {{ cantidad_hijos }}</p>
+                <p><strong>Familiares a Cargo:</strong> {{ familiares_a_cargo }}</p>
+                <p><strong>Domicilio:</strong> {{ domicilio }}</p>
+                <p><strong>Piso:</strong> {{ piso }}</p>
+                <p><strong>Localidad:</strong> {{ id_localidad }}</p>
+                <p><strong>Pais:</strong> {{ id_pais }}</p>
+                <p><strong>Provincia:</strong> {{ provincia }}</p>
+                <p><strong>Código Postal:</strong> {{ codigo_postal }}</p>
+                <p><strong>Teléfono:</strong> {{ telefono }}</p>
+                <p><strong>Teléfono Alternativo:</strong> {{ telefono_alt }}</p>
+                <p><strong>A quién pertenece ese teléfono:</strong> {{ telefono_alt_propietario }}</p>
+                <p><strong>Email:</strong> {{ email }}</p>
+                <p><strong>Carrera:</strong> {{ carrera }}</p>
+                <p><strong>Turno:</strong> {{ turno }}</p>
+            </div>
+
+            <div class="form-container">
+                <h3>Estudios Cursados</h3>
+                <p><strong>Título Base:</strong> {{ titulo_base }}</p>
+                <p><strong>Año de Egreso:</strong> {{ anio_egreso }}</p>
+                <p><strong>Provincia:</strong> {{ provincia }}</p>
+                <p><strong>Institución:</strong> {{ id_institucion }}</p>
+                <p><strong>Otros Estudios:</strong> {{ otros_estudios }}</p>
+                <p><strong>Año de Egreso de Otros Estudios:</strong> {{ anio_egreso_otros }}</p>
+            </div>
+
+            <div class="form-container">
+                <h3>Datos Laborales</h3>
+                <p><strong>Trabaja:</strong> {{ trabaja }}</p>
+                <p><strong>Actividad:</strong> {{ actividad }}</p>
+                <p><strong>Horario Habitual:</strong> {{ horario_habitual }}</p>
+                <p><strong>Obra Social:</strong> {{ obra_social }}</p>
+            </div>
+
+            <form method="POST" action="/guardar_pre_inscripcion">
+                <!-- Pasar los datos como inputs ocultos para ser enviados al servidor -->
+                <input type="hidden" name="nombre_apellido" value="{{ nombre_apellido }}">
+                <input type="hidden" name="id_sexo" value="{{ id_sexo }}">
+                <input type="hidden" name="dni" value="{{ dni }}">
+                <input type="hidden" name="fecha_nacimiento" value="{{ fecha_nacimiento }}">
+                <input type="hidden" name="lugar_nacimiento" value="{{ lugar_nacimiento }}">
+                <input type="hidden" name="id_estado_civil" value="{{ id_estado_civil }}">
+                <input type="hidden" name="cantidad_hijos" value="{{ cantidad_hijos }}">
+                <input type="hidden" name="familiares_a_cargo" value="{{ familiares_a_cargo }}">
+                <input type="hidden" name="domicilio" value="{{ domicilio }}">
+                <input type="hidden" name="piso" value="{{ piso }}">
+                <input type="hidden" name="id_localidad" value="{{ id_localidad }}">
+                <input type="hidden" name="id_pais" value="{{ id_pais }}">
+                <input type="hidden" name="id_provincia" value="{{ id_provincia }}">
+                <input type="hidden" name="codigo_postal" value="{{ codigo_postal }}">
+                <input type="hidden" name="telefono" value="{{ telefono }}">
+                <input type="hidden" name="telefono_alt" value="{{ telefono_alt }}">
+                <input type="hidden" name="telefono_alt_propietario" value="{{ telefono_alt_propietario }}">
+                <input type="hidden" name="email" value="{{ email }}">
+                <input type="hidden" name="carrera" value="{{ carrera }}">
+                <input type="hidden" name="turno" value="{{ turno }}">
+
+                <!-- Datos de estudios cursados -->
+                <input type="hidden" name="titulo_base" value="{{ titulo_base }}">
+                <input type="hidden" name="anio_egreso" value="{{ anio_egreso }}">
+                <input type="hidden" name="provincia" value="{{ provincia }}">
+                <input type="hidden" name="id_institucion" value="{{ id_institucion }}">
+                <input type="hidden" name="otros_estudios" value="{{ otros_estudios }}">
+                <input type="hidden" name="anio_egreso_otros" value="{{ anio_egreso_otros }}">
+
+                <!-- Datos laborales -->
+                <input type="hidden" name="trabaja" value="{{ trabaja }}">
+                <input type="hidden" name="actividad" value="{{ actividad }}">
+                <input type="hidden" name="horario_habitual" value="{{ horario_habitual }}">
+                <input type="hidden" name="obra_social" value="{{ obra_social }}">
+
+                <div class="actions">
+                    <button type="submit">Confirmar y Guardar</button>
+                </div>
+                <button type="submit" formaction="{{ url_for('inscribite_2') }}" class="btn btn-secondary">
+                    Atrás
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

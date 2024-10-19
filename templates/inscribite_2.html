@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Inscripción - Parte 2</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+     <script>
+        function toggleLaborFields() {
+            const trabajaSi = document.getElementById('trabaja_si');
+            const trabajaNo = document.getElementById('trabaja_no');
+            const laborFields = document.querySelectorAll('.labor-field');
+
+            if (trabajaSi.checked) {
+                laborFields.forEach(field => field.disabled = false);
+            } else {
+                laborFields.forEach(field => field.disabled = true);
+                laborFields.forEach(field => field.value = '');
+            }
+        }
+
+        window.onload = function() {
+            toggleLaborFields();
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        
+        <div class="form-container">
+            <!-- Sección de Estudios Cursados -->
+            <div class="form-section">
+                <h2>Estudios Cursados</h2>
+                <form method="POST" action="/inscribite_3">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="titulo_base">Título Base:</label>
+                            <input type="text" id="titulo_base" name="titulo_base" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="anio_egreso">Año de Egreso:</label>
+                            <input type="number" id="anio_egreso" name="anio_egreso" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="provincia">Provincia:</label>
+                            <select id="provincia" name="provincia" required>
+                                <option value="">Seleccione una provincia</option>
+                                <option value="1">Buenos Aires</option>
+                                <option value="2">CABA</option>
+                                <option value="3">Córdoba</option>
+                                <!-- Añadir las demás provincias -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_institucion">Institución:</label>
+                            <input type="text" id="id_institucion" name="id_institucion" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="otros_estudios">Otros Estudios:</label>
+                            <input type="text" id="otros_estudios" name="otros_estudios">
+                        </div>
+                        <div class="form-group">
+                            <label for="anio_egreso_otros">Año de Egreso (Otros Estudios):</label>
+                            <input type="number" id="anio_egreso_otros" name="anio_egreso_otros">
+                        </div>
+                    </div>
+                    <h2>Datos Laborales</h2>
+                    <div class="form-row">
+                        <div class="form-radio">
+                            <label>¿Trabaja?</label>
+                            <input type="radio" id="trabaja_si" name="trabaja" value="1" onclick="toggleLaborFields()">
+                            <label for="trabaja_si">Sí</label>
+                            <input type="radio" id="trabaja_no" name="trabaja" value="2" onclick="toggleLaborFields()" checked>
+                            <label for="trabaja_no">No</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="actividad">Actividad:</label>
+                            <input type="text" id="actividad" name="actividad" class="labor-field" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="horario_habitual">Horario Habitual:</label>
+                            <input type="text" id="horario_habitual" name="horario_habitual" class="labor-field" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="obra_social">Obra Social:</label>
+                            <input type="text" id="obra_social" name="obra_social" class="labor-field" disabled>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button type="submit">Siguiente</button>
+                    </div>
+                    <div class="btn btn-secondary">
+                        <button type="submit" formaction="{{ url_for('inscribite') }}">
+                            Atrás
+                        </button>
+                    </div>
+                </form>
+        </div>
+    </div>
+</body>
+</html>
