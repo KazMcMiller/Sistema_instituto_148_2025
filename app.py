@@ -134,7 +134,7 @@ def alumnos():
 
     # Consulta para la lista de alumnos con todos los campos
     query_alumnos = """
-        SELECT dni, nombre_apellido, id_usuario, id_sexo, fecha_nacimiento, lugar_nacimiento,
+        SELECT id_usuario, dni, nombre_apellido, id_sexo, fecha_nacimiento, lugar_nacimiento,
         id_estado_civil, cantidad_hijos, familiares_a_cargo, domicilio, piso, id_localidad,
         id_pais, id_provincia, codigo_postal, telefono, telefono_alt, telefono_alt_propietario,
         email, titulo_base, anio_egreso, id_institucion, otros_estudios, anio_egreso_otros,
@@ -145,7 +145,7 @@ def alumnos():
 
     # Consulta para la lista de personas en pre-inscripciones con todos los campos
     query_pre_inscripciones = """
-        SELECT dni, nombre_apellido, id_usuario, id_sexo, fecha_nacimiento, lugar_nacimiento,
+        SELECT dni, nombre_apellido, id_sexo, fecha_nacimiento, lugar_nacimiento,
         id_estado_civil, cantidad_hijos, familiares_a_cargo, domicilio, piso, id_localidad,
         id_pais, id_provincia, codigo_postal, telefono, telefono_alt, telefono_alt_propietario,
         email, titulo_base, anio_egreso, id_institucion, otros_estudios, anio_egreso_otros,
@@ -155,6 +155,58 @@ def alumnos():
     pre_inscripciones = ejecutar_sql(query_pre_inscripciones)
 
     return render_template('alumnos.html', usuarios=usuarios, pre_inscripciones=pre_inscripciones)
+
+
+@app.route('/alumno/<int:id_usuario>', methods=['GET', 'POST'])
+def editar_alumno(id_usuario):
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        # Recibir datos actualizados desde el formulario y actualizar en la base de datos
+        datos = request.form.to_dict()
+        
+        query_update = """
+            UPDATE usuarios SET 
+                nombre_apellido = %s, id_sexo = %s, fecha_nacimiento = %s, lugar_nacimiento = %s, 
+                id_estado_civil = %s, cantidad_hijos = %s, familiares_a_cargo = %s, domicilio = %s, 
+                piso = %s, id_localidad = %s, id_pais = %s, id_provincia = %s, codigo_postal = %s, 
+                telefono = %s, telefono_alt = %s, telefono_alt_propietario = %s, email = %s, 
+                titulo_base = %s, anio_egreso = %s, id_institucion = %s, otros_estudios = %s, 
+                anio_egreso_otros = %s, trabaja = %s, actividad = %s, horario_habitual = %s, 
+                obra_social = %s, pass = %s, activo = %s
+            WHERE id_usuario = %s
+        """
+        
+        ejecutar_sql(query_update, (
+            datos['nombre_apellido'], datos['id_sexo'], datos['fecha_nacimiento'], datos['lugar_nacimiento'],
+            datos['id_estado_civil'], datos['cantidad_hijos'], datos['familiares_a_cargo'], datos['domicilio'],
+            datos['piso'], datos['id_localidad'], datos['id_pais'], datos['id_provincia'], datos['codigo_postal'],
+            datos['telefono'], datos['telefono_alt'], datos['telefono_alt_propietario'], datos['email'],
+            datos['titulo_base'], datos['anio_egreso'], datos['id_institucion'], datos['otros_estudios'],
+            datos['anio_egreso_otros'], datos['trabaja'], datos['actividad'], datos['horario_habitual'],
+            datos['obra_social'], datos['pass'], datos['activo'], id_usuario
+        ))
+
+        return redirect(url_for('alumnos'))
+
+    # Si es una solicitud GET, obtener los datos del alumno para editar
+    query_alumno = "SELECT * FROM usuarios WHERE id_usuario = %s"
+    alumno = ejecutar_sql(query_alumno, (id_usuario,))[0]  # Obtener el primer resultado
+    print (alumno)
+    return render_template('editar_alumno.html', alumno=alumno)
+
+
+@app.route('/alumno/<int:id_usuario>/borrar', methods=['POST'])
+def borrar_alumno(id_usuario):
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
+
+    # Consulta para eliminar al alumno de la base de datos
+    query_borrar = " UPDATE usuarios SET activo = 0 WHERE id_usuario = %s"
+    ejecutar_sql(query_borrar, (id_usuario,))
+    
+    return redirect(url_for('alumnos'))
 
 @app.route('/profesores')
 def profesores():

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Alumno</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        {% include 'navbar.html' %}
+        <div class="content">
+            <h2>Editar Alumno - {{ alumno[2] }}</h2> <!--2= nombre-->
+            <form method="POST">
+                <div class="form-container">
+                    <h3>Datos Personales</h3>
+                    <div class="form-group">
+                        <label for="nombre_apellido">Nombre y Apellido</label>
+                        <input type="text" id="nombre_apellido" name="nombre_apellido" value="{{ alumno[2] }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dni">DNI</label>
+                        <input type="text" id="dni" name="dni" value="{{ alumno[1] }}" required><!--1= dni-->
+                    </div>
+                    <div class="form-group">
+                        <label for="sexo">Sexo</label>
+                        <select id="sexo" name="sexo" required>
+                            <option value="1" {% if alumno[3] == 1 %}selected{% endif %}>Masculino</option><!--3= sexo-->
+                            <option value="2" {% if alumno[3] == 2 %}selected{% endif %}>Femenino</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fecha_nacimiento">Fecha de Nacimiento</label>
+                        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ alumno[4] }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lugar_nacimiento">Lugar de Nacimiento</label>
+                        <input type="text" id="lugar_nacimiento" name="lugar_nacimiento" value="{{ alumno[5] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="estado_civil">Estado Civil</label>
+                        <select id="estado_civil" name="estado_civil" required>
+                            <option value="1" {% if alumno[6] == 1 %}selected{% endif %}>Soltero/a</option>
+                            <option value="2" {% if alumno[6] == 2 %}selected{% endif %}>Casado/a</option>
+                            <option value="3" {% if alumno[6] == 3 %}selected{% endif %}>Divorciado/a</option>
+                            <option value="4" {% if alumno[6] == 4 %}selected{% endif %}>Viudo/a</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cantidad_hijos">Cantidad de Hijos</label>
+                        <input type="number" id="cantidad_hijos" name="cantidad_hijos" value="{{ alumno[7] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="familiares_a_cargo">Familiares a Cargo</label>
+                        <input type="number" id="familiares_a_cargo" name="familiares_a_cargo" value="{{ alumno[8] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="domicilio">Domicilio</label>
+                        <input type="text" id="domicilio" name="domicilio" value="{{ alumno[9] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="piso">Piso</label>
+                        <input type="text" id="piso" name="piso" value="{{ alumno[10] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_localidad">localidad</label>
+                        <input type="text" id="id_localidad" name="id_localidad" value="{{ alumno[11] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_pais">Pais</label>
+                        <input type="text" id="id_pais" name="id_pais" value="{{ alumno[12] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_provincia">Provincia</label>
+                        <input type="text" id="id_provincia" name="id_provincia" value="{{ alumno[13] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="codigo_postal">Código Postal</label>
+                        <input type="text" id="codigo_postal" name="codigo_postal" value="{{ alumno[14] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="telefono">Teléfono</label>
+                        <input type="text" id="telefono" name="telefono" value="{{ alumno[15] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="telefono_alternativo">Teléfono Alternativo</label>
+                        <input type="text" id="telefono_alternativo" name="telefono_alternativo" value="{{ alumno[16] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="pertenece_telefono">A quién pertenece ese teléfono</label>
+                        <input type="text" id="pertenece_telefono" name="pertenece_telefono" value="{{ alumno[17] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" value="{{ alumno[18] }}">
+                    </div>
+
+                    <h3>Estudios Cursados</h3>
+                    <div class="form-group">
+                        <label for="titulo_base">Título Base</label>
+                        <input type="text" id="titulo_base" name="titulo_base" value="{{ alumno[19] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="anio_egreso">Año de Egreso</label>
+                        <input type="number" id="anio_egreso" name="anio_egreso" value="{{ alumno[20] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="institucion">Institución</label>
+                        <input type="text" id="institucion" name="institucion" value="{{ alumno[21] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="otros_estudios">Otros Estudios</label>
+                        <input type="text" id="otros_estudios" name="otros_estudios" value="{{ alumno[22] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="anio_egreso_otros">Año de Egreso de Otros Estudios</label>
+                        <input type="number" id="anio_egreso_otros" name="anio_egreso_otros" value="{{ alumno[23] }}">
+                    </div>
+
+                    <h3>Datos Laborales</h3>
+                    <div class="form-group">
+                        <label for="trabaja">Trabaja</label>
+                        <select id="trabaja" name="trabaja">
+                            <option value="1" {% if alumno[24] == 1 %}selected{% endif %}>Sí</option>
+                            <option value="0" {% if alumno[24] == 0 %}selected{% endif %}>No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="actividad">Actividad</label>
+                        <input type="text" id="actividad" name="actividad" value="{{ alumno[25] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="horario_habitual">Horario Habitual</label>
+                        <input type="text" id="horario_habitual" name="horario_habitual" value="{{ alumno[26] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="obra_social">Obra Social</label>
+                        <input type="text" id="obra_social" name="obra_social" value="{{ alumno[27] }}">
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        <a href="{{ url_for('alumnos') }}" class="btn btn-secondary">Volver</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+
+<!--- cada numero representa un indice de la tabla usuarios, como id_usuario es lo primero, le corresponde 0
+      aqui la lista de la tabla usuarios:
+id_usuario 0
+dni 1
+nombre_apellido 2
+id_sexo 3
+fecha_nacimiento 4
+lugar_nacimiento 5
+id_estado_civil 6     
+cantidad_hijos 7
+familiares_a_cargo 8
+domicilio 9
+piso 10
+id_localidad 11
+id_pais 12
+id_provincia 13
+codigo_postal 14   
+telefono 15 
+telefono_alt 16
+telefono_alt_propietario 17 
+email 18
+titulo_base 19
+anio_egreso 20
+id_institucion 21
+otros_estudios 22
+anio_egreso_otros 23
+trabaja 24
+actividad 25
+horario_habitual 26
+obra_social 27
+pass 28
+activo 29
+-->

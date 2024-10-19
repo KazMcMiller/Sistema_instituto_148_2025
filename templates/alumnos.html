@@ -46,9 +46,9 @@
                         <table>
                             <thead>
                                 <tr>
+                                    <th>ID</th>
                                     <th>DNI</th>
                                     <th>Nombre</th>
-                                    <th>ID Usuario</th>
                                     <th>ID Sexo</th>
                                     <th>Fecha Nacimiento</th>
                                     <th>Lugar Nacimiento</th>
@@ -76,6 +76,7 @@
                                     <th>Obra Social</th>
                                     <th>Contraseña</th>
                                     <th>Activo</th>
+                                    <th>Editar</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -84,6 +85,12 @@
                                     {% for campo in usuario %}
                                     <td>{{ campo }}</td>
                                     {% endfor %}
+                                    <td>
+                                        <a href="{{ url_for('editar_alumno', id_usuario=usuario[0]) }}" class="btn btn-primary">Ver/Editar</a>
+                                        <form action="{{ url_for('borrar_alumno', id_usuario=usuario[0]) }}" method="POST" style="display:inline;">
+                                            <button type="submit" class="btn btn-danger">Borrar</button>
+                                        </form>
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
