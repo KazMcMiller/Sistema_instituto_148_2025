@@ -145,7 +145,7 @@ def alumnos():
 
     # Consulta para la lista de personas en pre-inscripciones con todos los campos
     query_pre_inscripciones = """
-        SELECT dni, nombre_apellido, id_sexo, fecha_nacimiento, lugar_nacimiento,
+        SELECT id_usuario,dni, nombre_apellido, id_sexo, fecha_nacimiento, lugar_nacimiento,
         id_estado_civil, cantidad_hijos, familiares_a_cargo, domicilio, piso, id_localidad,
         id_pais, id_provincia, codigo_postal, telefono, telefono_alt, telefono_alt_propietario,
         email, titulo_base, anio_egreso, id_institucion, otros_estudios, anio_egreso_otros,
@@ -165,6 +165,16 @@ def editar_alumno(id_usuario):
     if request.method == 'POST':
         # Recibir datos actualizados desde el formulario y actualizar en la base de datos
         datos = request.form.to_dict()
+        # Normalizar campos que pueden ser nulos
+        datos['lugar_nacimiento'] = datos['lugar_nacimiento'] if datos['lugar_nacimiento'] else None
+        datos['telefono_alt'] = datos['telefono_alt'] if datos['telefono_alt'] else None
+        datos['telefono_alt_propietario'] = datos['telefono_alt_propietario'] if datos['telefono_alt_propietario'] else None
+        datos['titulo_base'] = datos['titulo_base'] if datos['titulo_base'] else None
+        datos['anio_egreso_otros'] = datos['anio_egreso_otros'] if datos['anio_egreso_otros'] else None
+        datos['actividad'] = datos['actividad'] if datos['actividad'] else None
+        datos['horario_habitual'] = datos['horario_habitual'] if datos['horario_habitual'] else None
+        datos['obra_social'] = datos['obra_social'] if datos['obra_social'] else None
+        datos['piso'] = datos['piso'] if datos['piso'] and datos['piso'] != 'NULL' else None
         
         query_update = """
             UPDATE usuarios SET 
@@ -174,7 +184,7 @@ def editar_alumno(id_usuario):
                 telefono = %s, telefono_alt = %s, telefono_alt_propietario = %s, email = %s, 
                 titulo_base = %s, anio_egreso = %s, id_institucion = %s, otros_estudios = %s, 
                 anio_egreso_otros = %s, trabaja = %s, actividad = %s, horario_habitual = %s, 
-                obra_social = %s, pass = %s, activo = %s
+                obra_social = %s
             WHERE id_usuario = %s
         """
         
@@ -185,7 +195,7 @@ def editar_alumno(id_usuario):
             datos['telefono'], datos['telefono_alt'], datos['telefono_alt_propietario'], datos['email'],
             datos['titulo_base'], datos['anio_egreso'], datos['id_institucion'], datos['otros_estudios'],
             datos['anio_egreso_otros'], datos['trabaja'], datos['actividad'], datos['horario_habitual'],
-            datos['obra_social'], datos['pass'], datos['activo'], id_usuario
+            datos['obra_social'], id_usuario
         ))
 
         return redirect(url_for('alumnos'))
@@ -208,6 +218,77 @@ def borrar_alumno(id_usuario):
     
     return redirect(url_for('alumnos'))
 
+@app.route('/ingresante/<int:id_usuario>', methods=['GET', 'POST'])
+def editar_ingresante(id_usuario):
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        # Recibir datos actualizados desde el formulario y convertir a diccionario
+        datos = request.form.to_dict()
+        # Normalizar campos que pueden ser nulos
+        datos['lugar_nacimiento'] = datos['lugar_nacimiento'] or None
+        datos['telefono_alt'] = datos['telefono_alt'] or None
+        datos['telefono_alt_propietario'] = datos['telefono_alt_propietario'] or None
+        datos['titulo_base'] = datos['titulo_base'] or None
+        datos['titulo_base'] = datos['titulo_base'] or None
+        datos['anio_egreso_otros'] = datos['anio_egreso_otros'] or None
+        datos['actividad'] = datos['actividad'] or None
+        datos['horario_habitual'] = datos['horario_habitual'] or None
+        datos['obra_social'] = datos['obra_social'] or None
+        datos['anio_egreso_otros'] = datos['anio_egreso_otros'] or None
+        datos['piso'] = datos['piso'] if datos['piso'] != 'NULL' else None
+        query_insert = """
+            INSERT INTO usuarios (
+                dni, nombre_apellido, id_sexo, fecha_nacimiento, lugar_nacimiento,
+                id_estado_civil, cantidad_hijos, familiares_a_cargo, domicilio, piso, id_localidad,
+                id_pais, id_provincia, codigo_postal, telefono, telefono_alt, telefono_alt_propietario,
+                email, titulo_base, anio_egreso, id_institucion, otros_estudios, anio_egreso_otros,
+                trabaja, actividad, horario_habitual, obra_social, pass, activo
+            ) VALUES (
+                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+            )
+        """
+
+        # Ejecutar la consulta
+        ejecutar_sql(query_insert, (
+            datos['dni'], datos['nombre_apellido'], datos['id_sexo'], datos['fecha_nacimiento'],
+            datos['lugar_nacimiento'], datos['id_estado_civil'], datos['cantidad_hijos'], datos['familiares_a_cargo'],
+            datos['domicilio'], datos['piso'], datos['id_localidad'], datos['id_pais'], datos['id_provincia'],
+            datos['codigo_postal'], datos['telefono'], datos['telefono_alt'], datos['telefono_alt_propietario'],
+            datos['email'], datos['titulo_base'], datos['anio_egreso'], datos['id_institucion'],
+            datos['otros_estudios'], datos['anio_egreso_otros'], datos['trabaja'], datos['actividad'],
+            datos['horario_habitual'], datos['obra_social'], 12345678, 1
+        ))
+
+        # Consulta para eliminar el ingresante de la tabla `pre_inscripciones` después de ser trasladado
+        query_delete = "DELETE FROM pre_inscripciones WHERE id_usuario = %s"
+        ejecutar_sql(query_delete, (id_usuario,))
+
+        return redirect(url_for('alumnos'))
+
+    # Si es una solicitud GET, obtener los datos del ingresante para editar
+    query_ingresante = "SELECT * FROM pre_inscripciones WHERE id_usuario = %s"
+    ingresante = ejecutar_sql(query_ingresante, (id_usuario,))[0]  # Obtener el primer resultado
+    print (ingresante)
+    
+    return render_template('editar_ingresante.html', alumno=ingresante)
+
+
+
+@app.route('/ingresante/<int:id_usuario>/borrar', methods=['POST'])
+def borrar_ingresante(id_usuario):
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
+
+    # Consulta para eliminar al ingresante de la base de datos
+    query_borrar = "DELETE FROM pre_inscripciones WHERE id_usuario = %s"
+    ejecutar_sql(query_borrar, (id_usuario,))
+    
+    return redirect(url_for('alumnos'))
+
+    
 @app.route('/profesores')
 def profesores():
     if 'nombre' not in session:
@@ -272,13 +353,18 @@ def guardar_pre_inscripcion():
     datos = session.get('datos_completos', {})
     
     # Ajustar campos que pueden no estar presentes
-    trabaja = datos.get('trabaja', '2')  # Si no está presente, asumimos que la respuesta es 'no'
-    actividad = datos.get('actividad', '') if trabaja == '1' else None
-    horario_habitual = datos.get('horario_habitual', '') if trabaja == '1' else None
-    obra_social = datos.get('obra_social', '') if trabaja == '1' else None
-    anio_egreso_otros = datos.get('anio_egreso_otros', None)
-    if anio_egreso_otros == '':
-        anio_egreso_otros = None
+    datos['lugar_nacimiento'] = datos.get('lugar_nacimiento') or None
+    datos['telefono_alt'] = datos.get('telefono_alt') or None
+    datos['telefono_alt_propietario'] = datos.get('telefono_alt_propietario') or None
+    datos['titulo_base'] = datos.get('titulo_base') or None
+    datos['anio_egreso_otros'] = datos.get('anio_egreso_otros') or None
+    datos['piso'] = datos.get('piso') if datos.get('piso') != 'NULL' else None
+
+    # Ajustar los campos relacionados con el trabajo
+    trabaja = datos.get('trabaja')  # Asumimos que '2' significa que no trabaja si no está presente
+    actividad = datos.get('actividad', '') if trabaja == 'si' else None
+    horario_habitual = datos.get('horario_habitual', '') if trabaja == 'si' else None
+    obra_social = datos.get('obra_social', '') if trabaja == 'si' else None
 
     # Consulta SQL para insertar en la tabla usuarios
     query_usuario = """
@@ -300,7 +386,7 @@ def guardar_pre_inscripcion():
         datos['id_provincia'], datos['codigo_postal'], datos['telefono'],
         datos['telefono_alt'], datos['telefono_alt_propietario'], datos['email'],
         datos['titulo_base'], datos['anio_egreso'], datos['id_institucion'],
-        datos['otros_estudios'], anio_egreso_otros, trabaja,
+        datos['otros_estudios'], datos['anio_egreso_otros'], trabaja,
         actividad, horario_habitual, obra_social
     ))
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar ingresante</title>
+    <title>Editar Ingresante</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
@@ -84,12 +84,12 @@
                         <input type="text" id="telefono" name="telefono" value="{{ alumno[15] or '' }}">
                     </div>
                     <div class="form-group">
-                        <label for="telefono_alternativo">Teléfono Alternativo</label>
+                        <label for="telefono_alt">Teléfono Alternativo</label>
                         <input type="text" id="telefono_alt" name="telefono_alt" value="{{ alumno[16] or '' }}">
                     </div>
                     <div class="form-group">
-                        <label for="pertenece_telefono">A quién pertenece ese teléfono</label>
-                        <input type="text" id="pertenece_telefono" name="telefono_alt_propietario" value="{{ alumno[17] or '' }}">
+                        <label for="telefono_alt_propietario">A quién pertenece ese teléfono</label>
+                        <input type="text" id="telefono_alt_propietario" name="telefono_alt_propietario" value="{{ alumno[17] or '' }}">
                     </div>
                     <div class="form-group">
                         <label for="email">Email</label>
@@ -140,7 +140,7 @@
                     </div>
 
                     <div class="actions">
-                        <button type="submit" class="btn btn-primary">Guardar ca</button>
+                        <button type="submit" class="btn btn-primary">Dar de alta</button>
                         <a href="{{ url_for('alumnos') }}" class="btn btn-secondary">Volver</a>
                     </div>
                 </div>
@@ -182,8 +182,4 @@ horario_habitual 26
 obra_social 27
 pass 28
 activo 29
-
-
-
-
 -->

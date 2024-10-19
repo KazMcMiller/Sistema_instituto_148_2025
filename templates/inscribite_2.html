@@ -54,7 +54,7 @@
                         </div>
                         <div class="form-group">
                             <label for="id_institucion">Institución:</label>
-                            <input type="text" id="id_institucion" name="id_institucion" required>
+                            <input type="int" id="id_institucion" name="id_institucion" required>
                         </div>
                         <div class="form-group">
                             <label for="otros_estudios">Otros Estudios:</label>
@@ -69,9 +69,9 @@
                     <div class="form-row">
                         <div class="form-radio">
                             <label>¿Trabaja?</label>
-                            <input type="radio" id="trabaja_si" name="trabaja" value="1" onclick="toggleLaborFields()">
+                            <input type="radio" id="trabaja_si" name="trabaja" value="si" onclick="toggleLaborFields()">
                             <label for="trabaja_si">Sí</label>
-                            <input type="radio" id="trabaja_no" name="trabaja" value="2" onclick="toggleLaborFields()" checked>
+                            <input type="radio" id="trabaja_no" name="trabaja" value="no" onclick="toggleLaborFields()" checked>
                             <label for="trabaja_no">No</label>
                         </div>
                         <div class="form-group">
