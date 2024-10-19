@@ -15,8 +15,10 @@ Session(app)
 @app.route('/')
 def path_inicial():
     # Verifica si el usuario está autenticado y ha seleccionado un perfil
-     if 'nombre' in session:
+    if 'nombre' in session:
         return redirect(url_for('seleccionar_perfil'))
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/home')
 def home():
@@ -124,24 +126,35 @@ def dashboard_admin():
         return redirect(url_for('home'))
     return redirect(url_for('login'))
 
-@app.route('/pre_inscripcion')
-def pre_inscripcion():
-    if 'nombre' not in session:
-        return redirect(url_for('login'))
-    # Renderiza la página de pre-inscripción
-    return render_template('pre_inscripcion.html')
 
 @app.route('/alumnos', methods=['GET'])
 def alumnos():
     if 'nombre' not in session:
         return redirect(url_for('login'))
 
-    # Consultas de ejemplo para cada tabla
-    query_alumnos = "SELECT id_usuario, nombre_apellido, dni FROM usuarios"
-
+    # Consulta para la lista de alumnos con todos los campos
+    query_alumnos = """
+        SELECT dni, nombre_apellido, id_usuario, id_sexo, fecha_nacimiento, lugar_nacimiento,
+        id_estado_civil, cantidad_hijos, familiares_a_cargo, domicilio, piso, id_localidad,
+        id_pais, id_provincia, codigo_postal, telefono, telefono_alt, telefono_alt_propietario,
+        email, titulo_base, anio_egreso, id_institucion, otros_estudios, anio_egreso_otros,
+        trabaja, actividad, horario_habitual, obra_social, pass, activo
+        FROM usuarios
+    """
     usuarios = ejecutar_sql(query_alumnos)
 
-    return render_template('alumnos.html', usuarios=usuarios,)
+    # Consulta para la lista de personas en pre-inscripciones con todos los campos
+    query_pre_inscripciones = """
+        SELECT dni, nombre_apellido, id_usuario, id_sexo, fecha_nacimiento, lugar_nacimiento,
+        id_estado_civil, cantidad_hijos, familiares_a_cargo, domicilio, piso, id_localidad,
+        id_pais, id_provincia, codigo_postal, telefono, telefono_alt, telefono_alt_propietario,
+        email, titulo_base, anio_egreso, id_institucion, otros_estudios, anio_egreso_otros,
+        trabaja, actividad, horario_habitual, obra_social, pass, activo
+        FROM pre_inscripciones
+    """
+    pre_inscripciones = ejecutar_sql(query_pre_inscripciones)
+
+    return render_template('alumnos.html', usuarios=usuarios, pre_inscripciones=pre_inscripciones)
 
 @app.route('/profesores')
 def profesores():
@@ -178,37 +191,93 @@ def reportes():
     # Renderiza la página de generación de reportes
     return render_template('reportes.html')
 
+@app.route('/pre_inscripcion')
+def pre_inscripcion():
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
+    # Renderiza la página de pre-inscripción
+    return render_template('pre_inscripcion.html')
+
+
 @app.route('/pre_inscripcion_2', methods=['POST'])
 def pre_inscripcion_2():
     if 'nombre' not in session:
-            return redirect(url_for('login'))
-    return render_template('pre_inscripcion_2.html')
+        return redirect(url_for('login'))
+
+    # Recibir los datos del formulario anterior
+    datos_personales = request.form.to_dict()
+    
+    # Guardar en la sesión para usarlos más adelante
+    session['datos_personales'] = datos_personales
+
+    return render_template('pre_inscripcion_2.html', **datos_personales)
 
 @app.route('/guardar_pre_inscripcion', methods=['POST'])
 def guardar_pre_inscripcion():
+    # Verificar si el usuario está autenticado
     if 'nombre' not in session:
-            return redirect(url_for('login'))
-    return render_template('pre_inscripcion_3.html')
+        return redirect(url_for('login'))
 
-
-    # # Recibir todos los datos desde el formulario de pre_inscripcion_3.html
-    # datos = request.form.to_dict()
+ # Obtener todos los datos desde la sesión
+    datos = session.get('datos_completos', {})
     
-    # # Aquí realizas las consultas para guardar los datos en la base de datos.
-    # # Ejemplo de una consulta para guardar en una tabla de usuarios
-    # query = """
-    #     INSERT INTO usuarios (
-    #         nombre_apellido, dni, sexo, fecha_nacimiento, lugar_nacimiento, ...
-    #     ) VALUES (%s, %s, %s, %s, %s, ...)
-    # """
-    # # Ejecutar la consulta
-    # ejecutar_sql(query, (
-    #     datos['apellido_nombres'], datos['dni'], datos['sexo'],
-    #     datos['fecha_nacimiento'], datos['lugar_nacimiento'], 
-    #     # Completar con los otros campos
-    # ))
+    # Ajustar campos que pueden no estar presentes
+    trabaja = datos.get('trabaja', '2')  # Si no está presente, asumimos que la respuesta es 'no'
+    actividad = datos.get('actividad', '') if trabaja == '1' else None
+    horario_habitual = datos.get('horario_habitual', '') if trabaja == '1' else None
+    obra_social = datos.get('obra_social', '') if trabaja == '1' else None
+    anio_egreso_otros = datos.get('anio_egreso_otros', None)
+    if anio_egreso_otros == '':
+        anio_egreso_otros = None
 
-    # return redirect(url_for('home'))
+    # Consulta SQL para insertar en la tabla usuarios
+    query_usuario = """
+        INSERT INTO pre_inscripciones (
+            dni, nombre_apellido, id_sexo, fecha_nacimiento, lugar_nacimiento, id_estado_civil,
+            cantidad_hijos, familiares_a_cargo, domicilio, piso, id_localidad, id_pais,
+            id_provincia, codigo_postal, telefono, telefono_alt, telefono_alt_propietario, email,
+            titulo_base, anio_egreso, id_institucion, otros_estudios, anio_egreso_otros,
+            trabaja, actividad, horario_habitual, obra_social
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """
+    
+    # Ejecutar la consulta
+    ejecutar_sql(query_usuario, (
+        datos['dni'], datos['nombre_apellido'], datos['id_sexo'],
+        datos['fecha_nacimiento'], datos['lugar_nacimiento'], datos['id_estado_civil'],
+        datos['cantidad_hijos'], datos['familiares_a_cargo'], datos['domicilio'],
+        datos['piso'], datos['id_localidad'], datos['id_pais'],
+        datos['id_provincia'], datos['codigo_postal'], datos['telefono'],
+        datos['telefono_alt'], datos['telefono_alt_propietario'], datos['email'],
+        datos['titulo_base'], datos['anio_egreso'], datos['id_institucion'],
+        datos['otros_estudios'], anio_egreso_otros, trabaja,
+        actividad, horario_habitual, obra_social
+    ))
+
+    # Redirigir al home una vez completada la inscripción
+    return redirect(url_for('home'))
+
+
+
+
+@app.route('/pre_inscripcion_3', methods=['POST'])
+def pre_inscripcion_3():
+    # Verificar si el usuario está autenticado
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
+
+    # Obtener los datos personales desde la sesión
+    datos_personales = session.get('datos_personales', {})
+    print(session.get('datos_personales'))
+    # Recibir los datos de estudios y laborales del formulario de pre_inscripcion_2
+    datos_estudios_y_laborales = request.form.to_dict()
+
+    # Combinar todos los datos
+    datos_completos = {**datos_personales, **datos_estudios_y_laborales}
+    session['datos_completos'] = datos_completos
+
+    # Renderizar pre_inscripcion_3.html con los datos combinados para la revisión
+    return render_template('pre_inscripcion_3.html', **datos_completos)
 
 @app.route('/logout')
 def logout():

@@ -59,7 +59,7 @@ form .form-control {
     align-items:center;
 }
 
-/* estilos de lucas
+
 .container {
     display: flex;
     height: 100vh;
@@ -241,4 +241,22 @@ h2 {
 .form-radio label {
     margin-right: 15px;
 }
-    /*
+.table-container {
+    max-height: 70vh; /* Limitar la altura del contenedor para que no sobrepase la pantalla */
+    overflow-x: auto; /* Permitir desplazamiento lateral */
+    overflow-y: auto; /* Permitir desplazamiento vertical si es necesario */
+    margin-top: 20px;
+    background-color: #ffffff; /* Fondo blanco para la tabla */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra */
+    padding: 10px; /* Espaciado interno */
+}
+
+.table-wrapper {
+    min-width: 1200px; /* Ancho mínimo de la tabla para evitar que se compacte demasiado */
+}
+
+.tab-content {
+    display: none; /* Ocultar todas las pestañas inicialmente */
+    margin-top: 20px;
+}
