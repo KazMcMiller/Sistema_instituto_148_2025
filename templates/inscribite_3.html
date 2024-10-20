@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,7 +8,6 @@
 </head>
 <body>
     <div class="container">
-        {% include 'navbar.html' %}
         
         <div class="confirmation-section">
             <h2>Confirmar Pre-Inscripción</h2>
@@ -95,7 +93,7 @@
                 <div class="actions">
                     <button type="submit">Confirmar y Guardar</button>
                 </div>
-                <button type="submit" formaction="{{ url_for('pre_inscripcion_2') }}" class="btn btn-secondary">
+                <button type="submit" formaction="{{ url_for('inscribite_2') }}" class="btn btn-secondary">
                     Atrás
                 </button>
             </form>

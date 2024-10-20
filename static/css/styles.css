@@ -19,11 +19,35 @@ body{
     width: 800px;
     height: 500px;
     border-radius: 10px; 
-    box-shadow: 6px 10px 6px 10px rgba(0, 0, 0, 0.45);
+    box-shadow: 6px 10px 6px 6px rgba(0, 0, 0, 0.45);
     justify-content: center;
     align-content: center;
     text-align: center;
 }
+
+.menu-interno{
+    /* Menu para navegar dentro de los módulos*/
+    background-color: #F0F0F0;
+    border-radius: 18px;
+    margin-left: 200px;
+    border: 0.3px solid #4E4E4E;
+    display: flex;
+    justify-content: center;
+    margin-top: 15%;
+}
+
+.menu-interno ul a{
+    /* Menu para navegar dentro de los módulos*/
+    color: #5DB3B7;
+    font-weight: 500;
+}
+
+.menu-interno .nav-link.active {
+    background-color: #5DB3B7; /* Cambia este valor al color que quieras */
+    color: #fff; /* Cambiar el color del texto en el botón seleccionado */
+    border-radius: 18px; /* Opcional: para redondear los bordes */
+}
+
 .col{
     /*Login*/
     height: 500px;
@@ -54,7 +78,7 @@ form .form-control {
     /*Login*/
     color: white !important;
 }
- .text-gris{
+.text-gris{
     /*Login*/
     color: #4E4E4E;
  }
@@ -74,7 +98,6 @@ form .form-control {
     /*Login*/
     background-color: #5DB3B7;
     border-radius: 10px;
-    border-color: #5DB3B7;
     display: flex; 
     width: 120px;
     height: 40px;
@@ -103,31 +126,33 @@ form .form-control {
 .info-container img{
     margin-right: 20px;
 }
+/*Lucas*/
 
-
-/* estilos de lucas
-.container {
-    display: flex;
-    height: 100vh;
-}
 .sidebar {
     width: 250px;
-    background-color: #4db6ac;
-    padding: 20px;
+    padding: 10px;
     box-sizing: border-box;
-    height: 100vh;
+    border-radius: 5px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
 }
+
+
 .sidebar img {
-    width: 100px;
+    width: 150px;
+    height: 150px;
     display: block;
-    margin: 0 auto 20px;
+    margin: 0 auto;
 }
 .sidebar ul {
     list-style: none;
     padding: 0;
+    margin-top: 20px;
 }
 .sidebar ul li {
-    margin: 20px 0;
+    margin: 10px 0;
     color: white;
     display: flex;
     align-items: center;
@@ -135,6 +160,13 @@ form .form-control {
 .sidebar ul li.active a {
     background-color: #ffffff;
     color: rgb(0, 0, 0);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 20px;
+    width: 100%; /* El enlace ocupa todo el ancho del contenedor */
+    box-sizing: border-box;
 }
 .sidebar ul li a {
     color: white;
@@ -146,10 +178,60 @@ form .form-control {
 }
 .sidebar ul li a:hover {
     background-color: #399d95;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 20px;
+    width: 100%; /* El enlace ocupa todo el ancho del contenedor */
+    box-sizing: border-box;
 }
 .sidebar ul li a i {
     margin-right: 10px;
 }
+
+.header{
+    /*Mensaje de bienvenida para el home*/
+    margin-left: 300px; /* Deja espacio para el sidebar */
+    padding: 10px 20px;
+    color: #4E4E4E;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Alinea el contenido a la izquierda */
+    border-bottom: 2px solid #ccc;
+    position: fixed;
+    top: 0;
+    left: 10px; /* Alineado con el sidebar */
+    height: 60px; /* Ajusta la altura del header */
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.table-container {
+    max-height: 70vh; /* Limitar la altura del contenedor para que no sobrepase la pantalla */
+    overflow-x: auto; /* Permitir desplazamiento lateral */
+    overflow-y: auto; /* Permitir desplazamiento vertical si es necesario */
+    margin-top: 20px;
+    background-color: #ffffff; /* Fondo blanco para la tabla */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra */
+    padding: 10px; /* Espaciado interno */
+}
+
+.table-wrapper {
+    min-width: 1200px; /* Ancho mínimo de la tabla para evitar que se compacte demasiado */
+}
+
+.tab-content {
+    display: none; /* Ocultar todas las pestañas inicialmente */
+    margin-top: 20px;
+}
+
+/* estilos de lucas
 .content {
     flex-grow: 1;
     padding: 20px;

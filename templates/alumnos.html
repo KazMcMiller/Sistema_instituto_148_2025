@@ -4,60 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alumnos - Sistema de Gestión Académica</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
-    <script>
-        function showTab(tabName) {
-            const tabs = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => tab.style.display = 'none');
-
-            const activeTab = document.getElementById(tabName);
-            if (activeTab) {
-                activeTab.style.display = 'block';
-            }
-
-            const tabButtons = document.querySelectorAll('.tabs button');
-            tabButtons.forEach(button => button.classList.remove('active'));
-            document.getElementById(tabName + '-btn').classList.add('active');
-        }
-
-        window.onload = function() {
-            showTab('alumnos'); // Mostrar la pestaña de Alumnos por defecto
-        };
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        {% include 'navbar.html' %}
-        <div class="content">
-            <h2>Gestión de Alumnos</h2>
-            <div class="tabs">
-                <button id="alumnos-btn" onclick="showTab('alumnos')" class="active">Alumnos</button>
+            {% include 'navbar.html' %}
+            <div class="menu-interno">
+                <ul class="nav nav-pills" id="pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Matriculación</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Inscripciones</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Alumnos</a>
+                    </li>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Egresados</a>
+                    </li>
+                </ul>
             </div>
 
-            <!-- Contenido de cada tab -->
-            <div id="alumnos" class="tab-content">
-                <h3>Listado de Alumnos</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nº</th>
-                            <th>Nombre</th>
-                            <th>DNI</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for usuario in usuarios %}
-                        <tr>
-                            <td>{{ usuario[0] }}</td> <!-- id_usuario -->
-                            <td>{{ usuario[1] }}</td> <!-- dni -->
-                            <td>{{ usuario[2] }}</td> <!-- nombre_apellido -->
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+
+
+        
+  <div class="tab-content" id="pills-tabContent">
+    <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">...</div>
+    <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">...</div>
+    <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">...</div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="bootstrap.bundle.min.js"></script>
 </body>
 </html>
