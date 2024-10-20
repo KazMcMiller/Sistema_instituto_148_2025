@@ -1,63 +1,109 @@
 html, body {
+    /*Login*/
+    display: flex;
     height: 100%;
     margin: 0;
+    margin-top: 10px;
     display: flex;
     justify-content: center; /* Centra horizontalmente */
     align-items: center; /* Centra verticalmente */
 }
 
-.container {
-/*    max-width: 600px; /* Ajusta el tamaño del contenedor 
-    width: 100%;*/
-    width: 800px;
-    height: 500px;
-/*    padding: 20px; /* Puedes ajustar este padding según lo que necesites */
-/*    background-color: #007bff; /* Color de fondo (bg-primary en Bootstrap) */
-    border-radius: 10px; /* Ajusta si lo necesitas */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para darle un efecto visual */
-    justify-content: center;
+body{
+    /*Login*/
+    background-color: #f2f3f6;
 }
 
+.container {
+    /*Login*/
+    width: 800px;
+    height: 500px;
+    border-radius: 10px; 
+    box-shadow: 6px 10px 6px 10px rgba(0, 0, 0, 0.45);
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+}
+.col{
+    /*Login*/
+    height: 500px;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
 
-body{
-background-color: #f2f3f6;
+}
+
+.text-end{
+    /*Login*/
+    height: 100%;
 }
 
 form .form-control {
+    /*Login*/
     width: 100%; /* Asegura que los inputs ocupen todo el ancho disponible */
     max-width: 400px; /* Puedes ajustar este valor según tus necesidades */
     margin-bottom: 15px; /* Añade espacio entre los campos */
 }
 
-.text-blanco{
-    color: white;
-}
-
 .text-primary {
+    /*Login*/
     color: #5DB3B7 !important;/* Color de Bootstrap para h2 */
 }
 
 .text-secundary {
+    /*Login*/
     color: white !important;
 }
+ .text-gris{
+    /*Login*/
+    color: #4E4E4E;
+ }
 
 
 .bg{
+    /*Login*/
     background-color: #5DB3B7;
 }
 
 .bg-primary{
-    background-color: rgba(242, 243, 246, 0.45) !important;
+    /*Login*/
+    background-color: rgba(242, 243, 246, 0.451) !important;
 }
 
 .btn-primary {
+    /*Login*/
     background-color: #5DB3B7;
     border-radius: 10px;
     border-color: #5DB3B7;
     display: flex; 
-    justify-content: center;
-    align-items:center;
+    width: 120px;
+    height: 40px;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;
+    border: none;
+    
 }
+.btn-primary:hover{
+    /*Login*/
+    background-color: #468285;
+}
+
+.info-container{
+    /*Imágen de usuario y texto 'Hola {usuario}'*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.info-container h2{
+    margin-left: 20px;
+}
+
+.info-container img{
+    margin-right: 20px;
+}
+
 
 /* estilos de lucas
 .container {
