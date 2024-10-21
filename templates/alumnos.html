@@ -9,6 +9,27 @@
     <link href="bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script>
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.style.display = 'none');
+
+            const activeTab = document.getElementById(tabName);
+            if (activeTab) {
+                activeTab.style.display = 'block';
+            }
+
+            const tabButtons = document.querySelectorAll('.tabs button');
+            tabButtons.forEach(button => button.classList.remove('active'));
+            document.getElementById(tabName + '-btn').classList.add('active');
+        }
+
+        window.onload = function() {
+            // No mostrar ninguna tabla por defecto, solo los botones
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.style.display = 'none');
+        };
+    </script>
 </head>
 <body>
             {% include 'navbar.html' %}
@@ -28,6 +49,42 @@
                         <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Egresados</a>
                     </li>
                 </ul>
+            </div>
+
+            <div class="container">
+                {% include 'navbar.html' %}
+                <div class="content">
+                    <h2>Gestión de Alumnos</h2>
+                    <div class="tabs">
+                        <button id="alumnos-btn" onclick="showTab('alumnos')">Alumnos</button>
+                        <button id="pre-inscripciones-btn" onclick="showTab('pre_inscripciones')">Pre-Inscripciones</button>
+                    </div>
+                            <!-- Contenido de la pestaña de Alumnos -->
+                            <div id="alumnos" class="tab-content">
+                                <div class="table-container">
+                                    <div class="table-wrapper">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>DNI</th>
+                                                    <th>Nombre</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for usuario in usuarios %}
+                                                <tr>
+                                                    {% for campo in usuario %}
+                                                    <td>{{ campo or '' }}</td>
+                                                    {% endfor %}
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                </div>
             </div>
 
 

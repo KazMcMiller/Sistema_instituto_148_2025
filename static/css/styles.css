@@ -25,6 +25,71 @@ body{
     text-align: center;
 }
 
+#cont-insc {
+    margin-top: 70px;
+    background-color: rgba(242, 243, 246, 0.451);
+    width: 80%;
+    height: 75%;
+    margin-right: 0;
+    margin-left: 250px;
+    position: relative;
+    padding: 20px;
+}
+
+#cont-insc h3{
+    color: #5DB3B7;
+    margin: 0; /* Elimina cualquier margen superior predeterminado */
+    padding-top: 0;
+    text-align: center;   /* Centra horizontalmente */
+    position: absolute;   /* Usa `position` para ajustar la ubicación */
+    left: 50%;            /* Mueve el elemento hacia la mitad horizontal */
+    transform: translateX(-50%); /* Centra el texto horizontalmente */
+    top: 0;               /* Coloca el h3 en la parte superior */
+    padding-top: 0;       /* Elimina cualquier relleno superior */
+    padding-bottom: 10px;
+}
+
+#form-insc{
+    margin-top: 60px; /* Ajusta el espacio debajo del h3 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%; /* Asegura que el formulario ocupe todo el contenedor */
+}
+
+
+.form-group{
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+}
+
+.form-group input{
+    border-radius: 8px;
+    border-color: #f2f3f6;
+}
+
+.form-group select{
+    height: 30px;
+    border-radius: 8px;
+    border-color: #4E4E4E;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+#form-insc #campos-form{
+    
+    color: #4E4E4E;
+}
+
+#boton-siguiente{
+        text-align: right; /* Alinea el contenido del div a la derecha */
+        display: flex;
+        justify-content: flex-end; /* Alinea el botón a la derecha */
+        margin-right: 80px;    
+}
+
 .menu-interno{
     /* Menu para navegar dentro de los módulos*/
     background-color: #F0F0F0;
