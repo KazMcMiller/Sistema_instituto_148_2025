@@ -6,9 +6,7 @@
     <title>Alumnos - Sistema de Gestión Académica</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script>
         function showTab(tabName) {
             const tabs = document.querySelectorAll('.tab-content');
@@ -25,34 +23,39 @@
         }
 
         window.onload = function() {
-            // No mostrar ninguna tabla por defecto, solo los botones
-            const tabs = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => tab.style.display = 'none');
+            const table = '{{ table }}';  // Saber qué tabla está seleccionada (alumnos o pre_inscripciones)
+            if (table === 'pre_inscripciones') {
+                showTab('pre_inscripciones');
+            } else {
+                showTab('alumnos');  // Por defecto mostramos alumnos
+            }
         };
     </script>
 </head>
 <body>
-    <div class="menu-interno">
-        <ul class="nav nav-pills" id="pills-tab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Matriculación</a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false" onclick="showTab('pre_inscripciones')">Inscripciones</a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false" onclick="showTab('alumnos')">Alumnos</a>
-            </li>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Egresados</a>
-            </li>
-        </ul>
-    </div>
-
     <div class="container">
         {% include 'navbar.html' %}
         <div class="content">
+            <div class="menu-interno">
+                <ul class="nav nav-pills" id="pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Matriculación</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile"   
+                     aria-selected="false" onclick="window.location.href='alumnos?page=1&table=pre_inscripciones'">Inscripciones</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile"   
+                     aria-selected="false" onclick="window.location.href='alumnos?page=1&table=alumnos'">Alumnos</a>
+                    </li>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Egresados</a>
+                    </li>
+                </ul>
+            </div>
+
             <!-- Contenido de la pestaña de Alumnos -->
             <div id="alumnos" class="tab-content">
                 <h5>Listado de Alumnos</h5>
@@ -64,45 +67,20 @@
                                     <th>ID</th>
                                     <th>DNI</th>
                                     <th>Nombre</th>
-                                    <th>ID Sexo</th>
-                                    <th>Fecha Nacimiento</th>
-                                    <th>Lugar Nacimiento</th>
-                                    <th>ID Estado Civil</th>
-                                    <th>Cantidad de Hijos</th>
-                                    <th>Familiares a Cargo</th>
-                                    <th>Domicilio</th>
-                                    <th>Piso</th>
-                                    <th>ID Localidad</th>
-                                    <th>ID País</th>
-                                    <th>ID Provincia</th>
-                                    <th>Código Postal</th>
+                                    <th>Ciudad</th>
                                     <th>Teléfono</th>
-                                    <th>Teléfono Alternativo</th>
-                                    <th>Propietario Tel. Alt.</th>
-                                    <th>Email</th>
-                                    <th>Título Base</th>
-                                    <th>Año Egreso</th>
-                                    <th>ID Institución</th>
-                                    <th>Otros Estudios</th>
-                                    <th>Año Egreso Otros</th>
-                                    <th>Trabaja</th>
-                                    <th>Actividad</th>
-                                    <th>Horario Habitual</th>
-                                    <th>Obra Social</th>
-                                    <th>Contraseña</th>
-                                    <th>Activo</th>
                                     <th>Editar</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for usuario in usuarios %}
+                                {% for alumno in alumnos %}
                                 <tr>
-                                    {% for campo in usuario %}
+                                    {% for campo in alumno %}
                                     <td>{{ campo or '' }}</td>
                                     {% endfor %}
                                     <td>
-                                        <a href="{{ url_for('editar_alumno', id_usuario=usuario[0]) }}" class="btn btn-primary">Ver/Editar</a>
-                                        <form action="{{ url_for('borrar_alumno', id_usuario=usuario[0]) }}" method="POST" style="display:inline;">
+                                        <a href="{{ url_for('editar_alumno', id_usuario=alumno[0]) }}" class="btn btn-primary">Ver/Editar</a>
+                                        <form action="{{ url_for('borrar_alumno', id_usuario=alumno[0]) }}" method="POST" style="display:inline;">
                                             <button type="submit" class="btn btn-danger">Borrar</button>
                                         </form>
                                     </td>
@@ -112,8 +90,21 @@
                         </table>
                     </div>
                 </div>
+                <!-- Paginación de Alumnos -->
+                {% if total_paginas_alumnos %}
+                <div class="pagination">
+                    <ul class="pagination">
+                        {% for p in range(1, total_paginas_alumnos + 1) %}
+                        <li class="page-item {% if p == page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('alumnos', page=p, table='alumnos') }}">{{ p }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
             </div>
-                        <!-- Contenido de la pestaña de Pre-Inscripciones -->
+
+            <!-- Contenido de la pestaña de Pre-Inscripciones -->
             <div id="pre_inscripciones" class="tab-content">
                 <h5>Listado de Pre-Inscripciones</h5>
                 <div class="table-container">
@@ -121,36 +112,12 @@
                         <table>
                             <thead>
                                 <tr>
+                                    <th>ID</th>
                                     <th>DNI</th>
                                     <th>Nombre</th>
-                                    <th>ID Usuario</th>
-                                    <th>ID Sexo</th>
-                                    <th>Fecha Nacimiento</th>
-                                    <th>Lugar Nacimiento</th>
-                                    <th>ID Estado Civil</th>
-                                    <th>Cantidad de Hijos</th>
-                                    <th>Familiares a Cargo</th>
-                                    <th>Domicilio</th>
-                                    <th>Piso</th>
-                                    <th>ID Localidad</th>
-                                    <th>ID País</th>
-                                    <th>ID Provincia</th>
-                                    <th>Código Postal</th>
+                                    <th>Ciudad</th>
                                     <th>Teléfono</th>
-                                    <th>Teléfono Alternativo</th>
-                                    <th>Propietario Tel. Alt.</th>
-                                    <th>Email</th>
-                                    <th>Título Base</th>
-                                    <th>Año Egreso</th>
-                                    <th>ID Institución</th>
-                                    <th>Otros Estudios</th>
-                                    <th>Año Egreso Otros</th>
-                                    <th>Trabaja</th>
-                                    <th>Actividad</th>
-                                    <th>Horario Habitual</th>
-                                    <th>Obra Social</th>
-                                    <th>Contraseña</th>
-                                    <th>Activo</th>
+                                    <th>Editar</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -171,18 +138,24 @@
                         </table>
                     </div>
                 </div>
+                <!-- Paginación de Pre-Inscripciones -->
+                {% if total_paginas_pre_inscripciones %}
+                <div class="pagination">
+                    <ul class="pagination">
+                        {% for p in range(1, total_paginas_pre_inscripciones + 1) %}
+                        <li class="page-item {% if p == page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('alumnos', page=p, table='pre_inscripciones') }}">{{ p }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
             </div>
-
-
-        
-  <div class="tab-content" id="pills-tabContent">
-    <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">...</div>
-    <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">...</div>
-    <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">...</div>
-  </div>
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="bootstrap.bundle.min.js"></script>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="bootstrap.bundle.min.js"></script>
 </body>
 </html>

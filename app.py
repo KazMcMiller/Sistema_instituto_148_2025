@@ -132,29 +132,63 @@ def alumnos():
     if 'nombre' not in session:
         return redirect(url_for('login'))
 
-    # Consulta para la lista de alumnos con todos los campos
-    query_alumnos = """
-        SELECT id_usuario, dni, nombre_apellido, id_sexo, fecha_nacimiento, lugar_nacimiento,
-        id_estado_civil, cantidad_hijos, familiares_a_cargo, domicilio, piso, id_localidad,
-        id_pais, id_provincia, codigo_postal, telefono, telefono_alt, telefono_alt_propietario,
-        email, titulo_base, anio_egreso, id_institucion, otros_estudios, anio_egreso_otros,
-        trabaja, actividad, horario_habitual, obra_social, pass, activo
-        FROM usuarios
-    """
-    usuarios = ejecutar_sql(query_alumnos)
+    # Obtener el número de página y la tabla seleccionada
+    page = request.args.get('page', 1, type=int)
+    table = request.args.get('table', 'alumnos')  # Por defecto será alumnos
+    per_page = 5  # Número de registros por página
+    offset = (page - 1) * per_page
 
-    # Consulta para la lista de personas en pre-inscripciones con todos los campos
-    query_pre_inscripciones = """
-        SELECT id_usuario,dni, nombre_apellido, id_sexo, fecha_nacimiento, lugar_nacimiento,
-        id_estado_civil, cantidad_hijos, familiares_a_cargo, domicilio, piso, id_localidad,
-        id_pais, id_provincia, codigo_postal, telefono, telefono_alt, telefono_alt_propietario,
-        email, titulo_base, anio_egreso, id_institucion, otros_estudios, anio_egreso_otros,
-        trabaja, actividad, horario_habitual, obra_social, pass, activo
-        FROM pre_inscripciones
-    """
-    pre_inscripciones = ejecutar_sql(query_pre_inscripciones)
+    if table == 'alumnos':
+        # Consulta paginada para la lista de alumnos
+        query_alumnos = """
+            SELECT id_usuario, dni, nombre_apellido, id_localidad, telefono
+            FROM usuarios
+            LIMIT %s OFFSET %s
+        """
+        alumnos = ejecutar_sql(query_alumnos, (per_page, offset))
 
-    return render_template('alumnos.html', usuarios=usuarios, pre_inscripciones=pre_inscripciones)
+        # Consulta para contar el total de alumnos
+        query_total_alumnos = "SELECT COUNT(*) FROM usuarios"
+        total_alumnos = ejecutar_sql(query_total_alumnos)[0][0]
+
+        # Calcular el número total de páginas para alumnos
+        total_paginas_alumnos = (total_alumnos + per_page - 1) // per_page
+
+        return render_template(
+            'alumnos.html', 
+            alumnos=alumnos, 
+            pre_inscripciones=[],  # No mostrar pre-inscripciones en esta vista
+            page=page, 
+            table='alumnos',
+            total_paginas_alumnos=total_paginas_alumnos, 
+            total_paginas_pre_inscripciones=None  # No se necesitan para alumnos
+        )
+
+    elif table == 'pre_inscripciones':
+        # Consulta paginada para la lista de pre-inscripciones
+        query_pre_inscripciones = """
+            SELECT id_usuario, dni, nombre_apellido, id_localidad, telefono
+            FROM pre_inscripciones
+            LIMIT %s OFFSET %s
+        """
+        pre_inscripciones = ejecutar_sql(query_pre_inscripciones, (per_page, offset))
+
+        # Consulta para contar el total de pre-inscripciones
+        query_total_pre_inscripciones = "SELECT COUNT(*) FROM pre_inscripciones"
+        total_pre_inscripciones = ejecutar_sql(query_total_pre_inscripciones)[0][0]
+
+        # Calcular el número total de páginas para pre-inscripciones
+        total_paginas_pre_inscripciones = (total_pre_inscripciones + per_page - 1) // per_page
+
+        return render_template(
+            'alumnos.html', 
+            alumnos=[],  # No mostrar alumnos en esta vista
+            pre_inscripciones=pre_inscripciones,
+            page=page, 
+            table='pre_inscripciones',
+            total_paginas_alumnos=None,  # No se necesitan para pre-inscripciones
+            total_paginas_pre_inscripciones=total_paginas_pre_inscripciones
+        )
 
 
 @app.route('/alumno/<int:id_usuario>', methods=['GET', 'POST'])
