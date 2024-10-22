@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pre-Inscripción - Parte 2</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-     <script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script>
         function toggleLaborFields() {
             const trabajaSi = document.getElementById('trabaja_si');
             const trabajaNo = document.getElementById('trabaja_no');
@@ -27,7 +30,6 @@
 </head>
 <body>
     <div class="container">
-        
         <div class="form-container">
             <!-- Sección de Estudios Cursados -->
             <div class="form-section">
@@ -65,38 +67,48 @@
                             <input type="number" id="anio_egreso_otros" name="anio_egreso_otros">
                         </div>
                     </div>
-                    <h2>Datos Laborales</h2>
-                    <div class="form-row">
-                        <div class="form-radio">
-                            <label>¿Trabaja?</label>
-                            <input type="radio" id="trabaja_si" name="trabaja" value="si" onclick="toggleLaborFields()">
-                            <label for="trabaja_si">Sí</label>
-                            <input type="radio" id="trabaja_no" name="trabaja" value="no" onclick="toggleLaborFields()" checked>
-                            <label for="trabaja_no">No</label>
-                        </div>
-                        <div class="form-group">
-                            <label for="actividad">Actividad:</label>
-                            <input type="text" id="actividad" name="actividad" class="labor-field" disabled>
-                        </div>
-                        <div class="form-group">
-                            <label for="horario_habitual">Horario Habitual:</label>
-                            <input type="text" id="horario_habitual" name="horario_habitual" class="labor-field" disabled>
-                        </div>
-                        <div class="form-group">
-                            <label for="obra_social">Obra Social:</label>
-                            <input type="text" id="obra_social" name="obra_social" class="labor-field" disabled>
-                        </div>
+            </div>
+
+            <!-- Sección de Datos Laborales -->
+            <div class="form-section">
+                <h2>Datos Laborales</h2>
+                <div class="form-row">
+                    <div class="form-radio">
+                        <label>¿Trabaja?</label>
+                        <input type="radio" id="trabaja_si" name="trabaja" value="si" onclick="toggleLaborFields()">
+                        <label for="trabaja_si">Sí</label>
+                        <input type="radio" id="trabaja_no" name="trabaja" value="no" onclick="toggleLaborFields()" checked>
+                        <label for="trabaja_no">No</label>
                     </div>
-                    <div class="actions">
-                        <button type="submit">Siguiente</button>
+                    <div class="form-group">
+                        <label for="actividad">Actividad:</label>
+                        <input type="text" id="actividad" name="actividad" class="labor-field" disabled>
                     </div>
-                    <div class="btn btn-secondary">
-                        <button type="submit" formaction="{{ url_for('inscribite') }}">
-                            Atrás
-                        </button>
+                    <div class="form-group">
+                        <label for="horario_habitual">Horario Habitual:</label>
+                        <input type="text" id="horario_habitual" name="horario_habitual" class="labor-field" disabled>
                     </div>
-                </form>
+                    <div class="form-group">
+                        <label for="obra_social">Obra Social:</label>
+                        <input type="text" id="obra_social" name="obra_social" class="labor-field" disabled>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button type="submit">Siguiente</button>
+            </div>
+            <div class="btn btn-secondary">
+                <button type="submit" formaction="{{ url_for('pre_inscripcion') }}">
+                    Atrás
+                </button>
+            </div>
+        </form>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="bootstrap.bundle.min.js"></script>
 </body>
 </html>
