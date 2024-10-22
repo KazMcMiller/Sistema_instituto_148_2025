@@ -33,105 +33,116 @@
     </script>
 </head>
 <body>
-        {% include 'navbar.html' %}
-        {% include 'nav.html' %}
+    {% include 'navbar.html' %}
 
 
-            <!-- Contenido de la pestaña de Alumnos -->
-            <div id="alumnos" class="tab-content">
-                <h5>Listado de Alumnos</h5>
-                <div class="table-container">
-                    <div class="table-wrapper">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th scope="col">ID</th>
-                                    <th scope="col">DNI</th>
-                                    <th scope="col">Nombre</th>
-                                    <th scope="col">Ciudad</th>
-                                    <th scope="col">Teléfono</th>
-                                    <th scope="col">Editar</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for alumno in alumnos %}
-                                <tr>
-                                    {% for campo in alumno %}
-                                    <td>{{ campo or '' }}</td>
+    <div style="margin-left:250px">
+        <div class="container container-fluid bg">
+            {% include 'nav.html' %}
+    
+    
+                <!-- Contenido de la pestaña de Alumnos -->
+                <div id="alumnos" class="tab-content">
+                    <h5 class="text-primary">Listado de Alumnos</h5>
+                    <div class="table-container">
+                        <div class="table-wrapper">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">DNI</th>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Ciudad</th>
+                                        <th scope="col">Teléfono</th>
+                                        <th scope="col">Editar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for alumno in alumnos %}
+                                    <tr>
+                                        {% for campo in alumno %}
+                                        <td>{{ campo or '' }}</td>
+                                        {% endfor %}
+                                        <td>
+                                            <div style="display: flex; gap: 3px;">
+                                                <!-- Meto los botones en un Div para alinearlos-->
+                                                <a href="{{ url_for('editar_alumno', id_usuario=alumno[0]) }}" class="btn btn-primary">Ver/Editar</a>
+                                                <form action="{{ url_for('borrar_alumno', id_usuario=alumno[0]) }}" method="POST" style="display:inline;">
+                                                    <button type="submit" class="btn btn-danger" style="display: flex;">Borrar</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     {% endfor %}
-                                    <td>
-                                        <a href="{{ url_for('editar_alumno', id_usuario=alumno[0]) }}" class="btn btn-primary">Ver/Editar</a>
-                                        <form action="{{ url_for('borrar_alumno', id_usuario=alumno[0]) }}" method="POST" style="display:inline;">
-                                            <button type="submit" class="btn btn-danger" style="display: flex;">Borrar</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+                    <!-- Paginación de Alumnos -->
+                    {% if total_paginas_alumnos %}
+                    <div class="pagination">
+                        <ul class="pagination">
+                            {% for p in range(1, total_paginas_alumnos + 1) %}
+                            <li class="page-item {% if p == page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('alumnos', page=p, table='alumnos') }}">{{ p }}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
                 </div>
-                <!-- Paginación de Alumnos -->
-                {% if total_paginas_alumnos %}
-                <div class="pagination">
-                    <ul class="pagination">
-                        {% for p in range(1, total_paginas_alumnos + 1) %}
-                        <li class="page-item {% if p == page %}active{% endif %}">
-                            <a class="page-link" href="{{ url_for('alumnos', page=p, table='alumnos') }}">{{ p }}</a>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
-            </div>
-
-            <!-- Contenido de la pestaña de Pre-Inscripciones -->
-            <div id="pre_inscripciones" class="tab-content">
-                <h5>Listado de Pre-Inscripciones</h5>
-                <div class="table-container">
-                    <div class="table-wrapper">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>DNI</th>
-                                    <th>Nombre</th>
-                                    <th>Ciudad</th>
-                                    <th>Teléfono</th>
-                                    <th>Editar</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for pre_inscripcion in pre_inscripciones %}
-                                <tr>
-                                    {% for campo in pre_inscripcion %}
-                                    <td>{{ campo or '' }}</td>
+    
+                <!-- Contenido de la pestaña de Pre-Inscripciones -->
+                <div id="pre_inscripciones" class="tab-content">
+                    <h5>Listado de Pre-Inscripciones</h5>
+                    <div class="table-container">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>DNI</th>
+                                        <th>Nombre</th>
+                                        <th>Ciudad</th>
+                                        <th>Teléfono</th>
+                                        <th>Editar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for pre_inscripcion in pre_inscripciones %}
+                                    <tr>
+                                        {% for campo in pre_inscripcion %}
+                                        <td>{{ campo or '' }}</td>
+                                        {% endfor %}
+                                        <td>
+                                            <a href="{{ url_for('editar_ingresante', id_usuario=pre_inscripcion[0]) }}" class="btn btn-primary">Ver/Dar de alta</a>
+                                            <form action="{{ url_for('borrar_ingresante', id_usuario=pre_inscripcion[0]) }}" method="POST" style="display:inline;">
+                                                <button type="submit" class="btn btn-danger">Borrar</button>
+                                            </form>
+                                        </td>
+                                    </tr>
                                     {% endfor %}
-                                    <td>
-                                        <a href="{{ url_for('editar_ingresante', id_usuario=pre_inscripcion[0]) }}" class="btn btn-primary">Ver/Dar de alta</a>
-                                        <form action="{{ url_for('borrar_ingresante', id_usuario=pre_inscripcion[0]) }}" method="POST" style="display:inline;">
-                                            <button type="submit" class="btn btn-danger">Borrar</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+                    <!-- Paginación de Pre-Inscripciones -->
+                    {% if total_paginas_pre_inscripciones %}
+                    <div class="pagination">
+                        <ul class="pagination">
+                            {% for p in range(1, total_paginas_pre_inscripciones + 1) %}
+                            <li class="page-item {% if p == page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('alumnos', page=p, table='pre_inscripciones') }}">{{ p }}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
                 </div>
-                <!-- Paginación de Pre-Inscripciones -->
-                {% if total_paginas_pre_inscripciones %}
-                <div class="pagination">
-                    <ul class="pagination">
-                        {% for p in range(1, total_paginas_pre_inscripciones + 1) %}
-                        <li class="page-item {% if p == page %}active{% endif %}">
-                            <a class="page-link" href="{{ url_for('alumnos', page=p, table='pre_inscripciones') }}">{{ p }}</a>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
-            </div>
+        </div>
+    </div>
+
+    
         
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
