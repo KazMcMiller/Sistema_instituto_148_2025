@@ -31,6 +31,7 @@
             }
         };
     </script>
+    <style></style>
 </head>
 <body>
         {% include 'navbar.html' %}
@@ -42,15 +43,15 @@
                 <h5>Listado de Alumnos</h5>
                 <div class="table-container">
                     <div class="table-wrapper">
-                        <table class="table table-striped">
+                        <table>
                             <thead>
                                 <tr>
-                                    <th scope="col">ID</th>
-                                    <th scope="col">DNI</th>
-                                    <th scope="col">Nombre</th>
-                                    <th scope="col">Ciudad</th>
-                                    <th scope="col">Teléfono</th>
-                                    <th scope="col">Editar</th>
+                                    <th>ID</th>
+                                    <th>DNI</th>
+                                    <th>Nombre</th>
+                                    <th>Ciudad</th>
+                                    <th>Teléfono</th>
+                                    <th>Editar</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -62,7 +63,7 @@
                                     <td>
                                         <a href="{{ url_for('editar_alumno', id_usuario=alumno[0]) }}" class="btn btn-primary">Ver/Editar</a>
                                         <form action="{{ url_for('borrar_alumno', id_usuario=alumno[0]) }}" method="POST" style="display:inline;">
-                                            <button type="submit" class="btn btn-danger" style="display: flex;">Borrar</button>
+                                            <button type="submit" class="btn btn-danger">Borrar</button>
                                         </form>
                                     </td>
                                 </tr>
