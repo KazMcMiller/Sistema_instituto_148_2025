@@ -362,8 +362,16 @@ def reportes():
 def pre_inscripcion():
     if 'nombre' not in session:
         return redirect(url_for('login'))
-    # Renderiza la página de pre-inscripción
-    return render_template('pre_inscripcion.html')
+    
+    # Consultar los países y las provincias
+    query_paises = "SELECT id_pais, nombre FROM paises"
+    paises = ejecutar_sql(query_paises)
+
+    query_provincias = "SELECT id_provincia, nombre, id_pais FROM provincias"
+    provincias = ejecutar_sql(query_provincias)
+
+    return render_template('pre_inscripcion.html', paises=paises, provincias=provincias)
+
 
 
 @app.route('/pre_inscripcion_2', methods=['POST'])
