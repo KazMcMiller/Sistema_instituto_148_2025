@@ -22,7 +22,7 @@
 <body>
 
     <div class="sidebar bg">
-        <img src="/static/img/LOGO-SIN-FONDO-1000x707-1.png" alt="Escuela logo" width="100" height="100">
+        <img src="/static/img/LOGO-SIN-FONDO-1000x707-1.png" alt="Escuela logo" width="100" height="100" onclick="home()">
         <ul>
             {% if 21 in permisos %} 
             <li class="{% if request.path == url_for('pre_inscripcion') %}active{% endif %}">
@@ -80,5 +80,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="bootstrap.bundle.min.js"></script>
+    <script>
+        function home() {
+          // Aquí puedes agregar código JavaScript adicional para realizar acciones antes de llamar a la función en el servidor
+          window.location.href = "/home"; // Redirige a la ruta '/home'
+        }
+      </script>
 </body>
 </html>
