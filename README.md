@@ -1,4 +1,5 @@
 readme
-a sos gracioso gil
-remove system32
-uw
+pip install Flask
+pip install Flask-Session
+pip install python-dotenv
+pip install mysql-connector-python
