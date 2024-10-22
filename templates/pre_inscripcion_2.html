@@ -43,15 +43,16 @@
                             <label for="anio_egreso">Año de Egreso:</label>
                             <input type="number" id="anio_egreso" name="anio_egreso" required>
                         </div>
+                        <!-- Aquí controlamos la provincia si es Argentina -->
                         <div class="form-group">
-                            <label for="provincia">Provincia:</label>
-                            <select id="provincia" name="provincia" required>
+                            <label for="provincia_estudio_otros">Provincia (Solo si los otros estudios fueron en Argentina):</label>
+                            <select id="provincia_estudio_otros" name="provincia_estudio_otros" disabled>
                                 <option value="">Seleccione una provincia</option>
-                                <option value="1">Buenos Aires</option>
-                                <option value="2">CABA</option>
-                                <option value="3">Córdoba</option>
-                                <!-- Añadir las demás provincias -->
+                                {% for provincia in provincias %}
+                                    <option value="{{ provincia[0] }}" data-pais="{{ provincia[1] }}">{{ provincia[2] }}</option>
+                                {% endfor %}
                             </select>
+                            <span id="mensaje-provincia" style="display: none; color: red;">*Seleccione una provincia solo si estudió en Argentina.</span>
                         </div>
                         <div class="form-group">
                             <label for="id_institucion">Institución:</label>
@@ -105,5 +106,28 @@
         </form>
         </div>
     </div>
+    <script>
+        // Si el alumno ya seleccionó Argentina en los otros estudios
+        function toggleProvinciaOtros() {
+        const provinciaSelectOtros = document.getElementById('provincia_estudio_otros');
+        const mensajeProvincia = document.getElementById('mensaje-provincia');
+
+        const paisEstudiosAnteriores = {{ id_pais_estudio }}; // ID del país previamente seleccionado, este valor viene de la base de datos.
+
+        if (paisEstudiosAnteriores === 1) { // Si '1' es el ID de Argentina
+            provinciaSelectOtros.disabled = false;
+            mensajeProvincia.style.display = 'block';
+        } else {
+            provinciaSelectOtros.disabled = true;
+            provinciaSelectOtros.value = ''; // Limpiar la selección si no es Argentina
+            mensajeProvincia.style.display = 'none';
+        }
+    }
+
+    // Ejecutar al cargar la página
+    window.onload = function() {
+        toggleProvinciaOtros();
+    };
+    </script>
 </body>
 </html>

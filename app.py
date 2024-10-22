@@ -362,8 +362,16 @@ def reportes():
 def pre_inscripcion():
     if 'nombre' not in session:
         return redirect(url_for('login'))
-    # Renderiza la página de pre-inscripción
-    return render_template('pre_inscripcion.html')
+    
+    # Consultar los países y las provincias
+    query_paises = "SELECT id_pais, nombre FROM paises"
+    paises = ejecutar_sql(query_paises)
+
+    query_provincias = "SELECT id_provincia, nombre, id_pais FROM provincias"
+    provincias = ejecutar_sql(query_provincias)
+
+    return render_template('pre_inscripcion.html', paises=paises, provincias=provincias)
+
 
 
 @app.route('/pre_inscripcion_2', methods=['POST'])
@@ -377,7 +385,14 @@ def pre_inscripcion_2():
     # Guardar en la sesión para usarlos más adelante
     session['datos_personales'] = datos_personales
 
-    return render_template('pre_inscripcion_2.html', **datos_personales)
+    # Aquí obtienes el país seleccionado previamente (lo que corresponde a Argentina o no)
+    id_pais_estudio = int(datos_personales['id_pais'])
+
+    query_provincias = "SELECT id_provincia, id_pais, nombre FROM provincias"
+    provincias = ejecutar_sql(query_provincias)
+    # Pasar el ID del país al template de pre_inscripcion_2
+    return render_template('pre_inscripcion_2.html', id_pais_estudio=id_pais_estudio, provincias=provincias)
+
 
 @app.route('/guardar_pre_inscripcion', methods=['POST'])
 def guardar_pre_inscripcion():
@@ -451,20 +466,32 @@ def pre_inscripcion_3():
 
 @app.route('/inscribite')
 def inscribite():
-    # Renderiza la página de inscribite
-    return render_template('inscribite.html')
+
+    # Consultar los países y las provincias
+    query_paises = "SELECT id_pais, nombre FROM paises"
+    paises = ejecutar_sql(query_paises)
+
+    query_provincias = "SELECT id_provincia, nombre, id_pais FROM provincias"
+    provincias = ejecutar_sql(query_provincias)
+
+    return render_template('inscribite.html', paises=paises, provincias=provincias)
 
 
 @app.route('/inscribite_2', methods=['POST'])
 def inscribite_2():
-
     # Recibir los datos del formulario anterior
     datos_personales = request.form.to_dict()
     
     # Guardar en la sesión para usarlos más adelante
     session['datos_personales'] = datos_personales
 
-    return render_template('inscribite_2.html', **datos_personales)
+    # Aquí obtienes el país seleccionado previamente (lo que corresponde a Argentina o no)
+    id_pais_estudio = int(datos_personales['id_pais'])
+
+    query_provincias = "SELECT id_provincia, id_pais, nombre FROM provincias"
+    provincias = ejecutar_sql(query_provincias)
+    # Pasar el ID del país al template de pre_inscripcion_2
+    return render_template('inscribite_2.html', id_pais_estudio=id_pais_estudio, provincias=provincias)
 
 @app.route('/inscribite_3', methods=['POST'])
 def inscribite_3():

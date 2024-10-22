@@ -3,9 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>inscribite</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Inscripción</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body{
+            justify-content: center;
+            display: flex;
+            align-items: center; /* Centrar verticalmente */
+            height: 100vh; /* Ocupa toda la altura de la ventana */
+        }
+    </style>
     <script>
         function updateTurno() {
             const carreraSelect = document.getElementById('carrera');
@@ -18,15 +29,41 @@
                 turnoSelect.value = '';
             }
         }
+        function validarDNI(input) {
+        const regex = /^[0-9]{8}$/;
+        const errorElement = document.getElementById('error-dni');
+
+        if (!regex.test(input.value)) {
+            input.value = input.value.replace(/[^0-9]/g, '');
+            errorElement.textContent = 'Por favor, ingrese solo 8 números.';
+        } else {
+            errorElement.textContent = '';
+        }
+        }
+        function filterProvincias() {
+        const id_pais = document.getElementById('id_pais').value;
+        const provinciaSelect = document.getElementById('id_provincia');
+        const provinciasData = document.getElementById('provincias-data').children;
+
+        provinciaSelect.innerHTML = '<option value="">Seleccionar una provincia</option>'; // Reset del select de provincias
+
+        if (id_pais) {
+            for (let i = 0; i < provinciasData.length; i++) {
+                const provinciaOption = provinciasData[i];
+                if (provinciaOption.getAttribute('data-pais') === id_pais) {
+                    provinciaSelect.appendChild(provinciaOption.cloneNode(true));
+                }
+            }
+        }
+    }
     </script>
 </head>
 <body>
-    <div class="container">
-        
-        <div class="form-container">
-            <h2>Datos Personales</h2>
+    <div class="container" id="cont-insc">
+        <div class="form-container" id="form-insc">
+            <h3>Datos Personales</h3>
             <form method="POST" action="/inscribite_2">
-                <div class="form-row">
+                <div class="form-row" id="campos-form">
                     <div class="form-group">
                         <label for="nombre_apellido">Apellido y Nombres:</label>
                         <input type="text" id="nombre_apellido" name="nombre_apellido" required>
@@ -42,7 +79,8 @@
                     </div>
                     <div class="form-group">
                         <label for="dni">DNI:</label>
-                        <input type="number" id="dni" name="dni" required>
+                        <input type="number" id="dni" name="dni" maxlength="8" oninput="validarDNI(this)" required>
+                        <span id="error-dni" style="color: red;"></span>
                     </div>
                     <div class="form-group">
                         <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
@@ -76,19 +114,35 @@
                     </div>
                     <div class="form-group">
                         <label for="piso">Piso:</label>
-                        <input type="text" id="piso" name="piso">
+                        <input type="number" id="piso" name="piso">
                     </div>
                     <div class="form-group">
-                        <label for="id_pais">Pais:</label>
-                        <input type="text" id="id_pais" name="id_pais">
+                        <label for="id_pais">País:</label>
+                        <select id="id_pais" name="id_pais" required onchange="filterProvincias()">
+                            <option value="">Seleccionar un país</option>
+                            {% for pais in paises %}
+                                <option value="{{ pais[0] }}">{{ pais[1] }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
+                    
                     <div class="form-group">
                         <label for="id_provincia">Provincia:</label>
-                        <input type="text" id="id_provincia" name="id_provincia" required>
+                        <select id="id_provincia" name="id_provincia" required>
+                            <option value="">Seleccionar una provincia</option>
+                            <!-- Aquí las provincias se cargarán dinámicamente -->
+                        </select>
+                    </div>
+                    
+                    <!-- Provincias ocultas en el DOM -->
+                    <div id="provincias-data" style="display: none;">
+                        {% for provincia in provincias %}
+                            <option value="{{ provincia[0] }}" data-pais="{{ provincia[2] }}">{{ provincia[1] }}</option>
+                        {% endfor %}
                     </div>
                     <div class="form-group">
                         <label for="id_localidad">Localidad:</label>
-                        <input type="text" id="id_localidad" name="id_localidad" required>
+                        <input type="number" id="id_localidad" name="id_localidad" required>
                     </div>
                     <div class="form-group">
                         <label for="codigo_postal">Código Postal:</label>
@@ -96,11 +150,11 @@
                     </div>
                     <div class="form-group">
                         <label for="telefono">Teléfono:</label>
-                        <input type="text" id="telefono" name="telefono" required>
+                        <input type="number" id="telefono" name="telefono" required>
                     </div>
                     <div class="form-group">
                         <label for="telefono_alt">Teléfono Alternativo:</label>
-                        <input type="text" id="telefono_alt" name="telefono_alt">
+                        <input type="number" id="telefono_alt" name="telefono_alt">
                     </div>
                     <div class="form-group">
                         <label for="telefono_alt_propietario">A quién pertenece el teléfono alternativo:</label>
@@ -127,11 +181,15 @@
                         </select>
                     </div>
                 </div>
-                <div class="actions">
-                    <button type="submit">Siguiente</button>
+                <div class="actions" id="boton-siguiente">
+                    <button type="submit" class="btn-primary" id="btn-siguiente">Siguiente</button>
                 </div>
             </form>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="bootstrap.bundle.min.js"></script>
 </body>
 </html>

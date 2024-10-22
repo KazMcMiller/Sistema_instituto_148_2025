@@ -1,13 +1,15 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmar Pre-Inscripción</title>
+    <title>Confirmar Inscripción</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="container">
+        {% include 'navbar.html' %}
         
         <div class="confirmation-section">
             <h2>Confirmar Pre-Inscripción</h2>
@@ -25,7 +27,7 @@
                 <p><strong>Piso:</strong> {{ piso }}</p>
                 <p><strong>Localidad:</strong> {{ id_localidad }}</p>
                 <p><strong>Pais:</strong> {{ id_pais }}</p>
-                <p><strong>Provincia:</strong> {{ provincia }}</p>
+                <p><strong>Provincia:</strong> {{ id_provincia }}</p>
                 <p><strong>Código Postal:</strong> {{ codigo_postal }}</p>
                 <p><strong>Teléfono:</strong> {{ telefono }}</p>
                 <p><strong>Teléfono Alternativo:</strong> {{ telefono_alt }}</p>
@@ -39,7 +41,7 @@
                 <h3>Estudios Cursados</h3>
                 <p><strong>Título Base:</strong> {{ titulo_base }}</p>
                 <p><strong>Año de Egreso:</strong> {{ anio_egreso }}</p>
-                <p><strong>Provincia:</strong> {{ provincia }}</p>
+                <p><strong>Provincia:</strong> {{ id_provincia }}</p>
                 <p><strong>Institución:</strong> {{ id_institucion }}</p>
                 <p><strong>Otros Estudios:</strong> {{ otros_estudios }}</p>
                 <p><strong>Año de Egreso de Otros Estudios:</strong> {{ anio_egreso_otros }}</p>
