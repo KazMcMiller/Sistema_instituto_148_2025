@@ -29,6 +29,17 @@
                 turnoSelect.value = '';
             }
         }
+        function validarDNI(input) {
+        const regex = /^[0-9]{8}$/;
+        const errorElement = document.getElementById('error-dni');
+
+        if (!regex.test(input.value)) {
+            input.value = input.value.replace(/[^0-9]/g, '');
+            errorElement.textContent = 'Por favor, ingrese solo 8 números.';
+        } else {
+            errorElement.textContent = '';
+        }
+        }
     </script>
 </head>
 <body>
@@ -54,7 +65,8 @@
                     </div>
                     <div class="form-group">
                         <label for="dni">DNI:</label>
-                        <input type="number" id="dni" name="dni" required>
+                        <input type="number" id="dni" name="dni" maxlength="8" oninput="validarDNI(this)" required>
+                        <span id="error-dni" style="color: red;"></span>>
                     </div>
                     <div class="form-group">
                         <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
@@ -88,7 +100,7 @@
                     </div>
                     <div class="form-group">
                         <label for="piso">Piso:</label>
-                        <input type="text" id="piso" name="piso">
+                        <input type="number" id="piso" name="piso">
                     </div>
                     <div class="form-group">
                         <label for="id_pais">Pais:</label>
@@ -108,11 +120,11 @@
                     </div>
                     <div class="form-group">
                         <label for="telefono">Teléfono:</label>
-                        <input type="int" id="telefono" name="telefono" required>
+                        <input type="number" id="telefono" name="telefono" required>
                     </div>
                     <div class="form-group">
                         <label for="telefono_alt">Teléfono Alternativo:</label>
-                        <input type="int" id="telefono_alt" name="telefono_alt">
+                        <input type="number" id="telefono_alt" name="telefono_alt">
                     </div>
                     <div class="form-group">
                         <label for="telefono_alt_propietario">A quién pertenece el teléfono alternativo:</label>
