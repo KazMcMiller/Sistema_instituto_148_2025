@@ -18,6 +18,7 @@
         }
     </style>
     <script>
+
         function updateTurno() {
             const carreraSelect = document.getElementById('carrera');
             const turnoSelect = document.getElementById('turno');
@@ -29,6 +30,7 @@
                 turnoSelect.value = '';
             }
         }
+
         function validarDNI(input) {
         const regex = /^[0-9]{8}$/;
         const errorElement = document.getElementById('error-dni');
@@ -40,22 +42,44 @@
             errorElement.textContent = '';
         }
         }
+
+        // Filtra las provincias en función del país seleccionado
         function filterProvincias() {
-        const id_pais = document.getElementById('id_pais').value;
-        const provinciaSelect = document.getElementById('id_provincia');
-        const provinciasData = document.getElementById('provincias-data').children;
+            const id_pais = document.getElementById('id_pais').value;
+            const provinciaSelect = document.getElementById('id_provincia');
+            const provinciasData = document.getElementById('provincias-data').children;
 
-        provinciaSelect.innerHTML = '<option value="">Seleccionar una provincia</option>'; // Reset del select de provincias
+            provinciaSelect.innerHTML = '<option value="">Seleccionar una provincia</option>'; // Reset del select de provincias
 
-        if (id_pais) {
-            for (let i = 0; i < provinciasData.length; i++) {
-                const provinciaOption = provinciasData[i];
-                if (provinciaOption.getAttribute('data-pais') === id_pais) {
-                    provinciaSelect.appendChild(provinciaOption.cloneNode(true));
+            if (id_pais) {
+                for (let i = 0; i < provinciasData.length; i++) {
+                    const provinciaOption = provinciasData[i];
+                    if (provinciaOption.getAttribute('data-pais') === id_pais) {
+                        provinciaSelect.appendChild(provinciaOption.cloneNode(true));
+                    }
+                }
+            }
+
+            // Limpiar la selección de localidad cuando cambie la provincia
+            document.getElementById('id_localidad').innerHTML = '<option value="">Seleccione una localidad</option>';
+        }
+
+        function mostrarLocalidades() {
+            const id_provincia = document.getElementById('id_provincia').value;
+            const localidadSelect = document.getElementById('id_localidad');
+            const localidadesData = document.getElementById('localidades-data').children;
+
+            localidadSelect.innerHTML = '<option value="">Seleccione una localidad</option>'; // Reset del select de localidades
+
+            if (id_provincia) {
+                for (let i = 0; i < localidadesData.length; i++) {
+                    const localidadOption = localidadesData[i];
+                    if (localidadOption.getAttribute('data-provincia') === id_provincia) {
+                        localidadSelect.appendChild(localidadOption.cloneNode(true));
+                    }
                 }
             }
         }
-    }
     </script>
 </head>
 <body>
@@ -130,7 +154,7 @@
                     
                     <div class="form-group">
                         <label for="id_provincia">Provincia:</label>
-                        <select id="id_provincia" name="id_provincia" required>
+                        <select id="id_provincia" name="id_provincia" required onchange="mostrarLocalidades()">
                             <option value="">Seleccionar una provincia</option>
                             <!-- Aquí las provincias se cargarán dinámicamente -->
                         </select>
@@ -142,9 +166,22 @@
                             <option value="{{ provincia[0] }}" data-pais="{{ provincia[2] }}">{{ provincia[1] }}</option>
                         {% endfor %}
                     </div>
+
                     <div class="form-group">
                         <label for="id_localidad">Localidad:</label>
-                        <input type="number" id="id_localidad" name="id_localidad" required>
+                        <select id="id_localidad" name="id_localidad" required>
+                            <option value="">Seleccione una localidad</option>
+                            {% for localidad in localidades %}
+                                <option value="{{ localidad[0] }}" data-provincia="{{ localidad[2] }}">{{ localidad[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Localidades ocultas en el DOM -->
+                    <div id="localidades-data" style="display: none;">
+                        {% for localidad in localidades %}
+                            <option value="{{ localidad[0] }}" data-provincia="{{ localidad[2] }}">{{ localidad[1] }}</option>
+                        {% endfor %}
                     </div>
                     <div class="form-group">
                         <label for="codigo_postal">Código Postal:</label>

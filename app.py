@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from flask_session import Session
 from dotenv import load_dotenv
 from utils.db_utils import ejecutar_sql
+from functools import wraps
 
 load_dotenv()
 
@@ -55,6 +56,18 @@ def login():
             flash('DNI o contraseña incorrectos', 'error')
             return redirect(url_for('login'))
     return render_template('login.html')
+
+def perfil_requerido(perfiles_permitidos):
+    def decorador(f):
+        @wraps(f)
+        def funcion_verificada(*args, **kwargs):
+            if 'perfil' not in session:
+                return redirect(url_for('seleccionar_perfil'))  # Si no ha seleccionado un perfil
+            if session['perfil'] not in perfiles_permitidos:
+                return redirect(url_for('home'))  # Si el perfil no está permitido, redirigir a home
+            return f(*args, **kwargs)
+        return funcion_verificada
+    return decorador
 
 @app.route('/seleccionar_perfil', methods=['GET', 'POST'])
 def seleccionar_perfil():
@@ -324,6 +337,7 @@ def borrar_ingresante(id_usuario):
 
     
 @app.route('/profesores')
+@perfil_requerido(['1', '3'])  # Solo perfiles 1 (directivo) y 3 (profesor) pueden acceder
 def profesores():
     if 'nombre' not in session:
         return redirect(url_for('login'))
@@ -331,6 +345,7 @@ def profesores():
     return render_template('profesores.html')
 
 @app.route('/carreras')
+@perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 2 (preseptor) pueden acceder
 def carreras():
     if 'nombre' not in session:
         return redirect(url_for('login'))
@@ -338,6 +353,7 @@ def carreras():
     return render_template('carreras.html')
 
 @app.route('/horarios')
+@perfil_requerido(['1', '3', '4'])  # Solo perfiles 1 (directivo), 3 (profesor) y 4 (alumno) pueden acceder
 def horarios():
     if 'nombre' not in session:
         return redirect(url_for('login'))
@@ -345,6 +361,7 @@ def horarios():
     return render_template('horarios.html')
 
 @app.route('/secretaria')
+@perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 3 (profesor) pueden acceder
 def secretaria():
     if 'nombre' not in session:
         return redirect(url_for('login'))
@@ -352,6 +369,7 @@ def secretaria():
     return render_template('secretaria.html')
 
 @app.route('/reportes')
+@perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 3 (profesor) pueden acceder
 def reportes():
     if 'nombre' not in session:
         return redirect(url_for('login'))
@@ -359,22 +377,30 @@ def reportes():
     return render_template('reportes.html')
 
 @app.route('/pre_inscripcion')
+@perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 3 (profesor) pueden acceder
 def pre_inscripcion():
     if 'nombre' not in session:
         return redirect(url_for('login'))
-    
-    # Consultar los países y las provincias
+
+    # Consulta para obtener los países
     query_paises = "SELECT id_pais, nombre FROM paises"
     paises = ejecutar_sql(query_paises)
 
+    # Consulta para obtener las provincias
     query_provincias = "SELECT id_provincia, nombre, id_pais FROM provincias"
     provincias = ejecutar_sql(query_provincias)
 
-    return render_template('pre_inscripcion.html', paises=paises, provincias=provincias)
+    # Consulta para obtener las localidades
+    query_localidades = "SELECT id_localidad, nombre, id_provincia FROM localidades"
+    localidades = ejecutar_sql(query_localidades)
+
+    return render_template('pre_inscripcion.html', paises=paises, provincias=provincias, localidades=localidades)
+
 
 
 
 @app.route('/pre_inscripcion_2', methods=['POST'])
+@perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 3 (profesor) pueden acceder
 def pre_inscripcion_2():
     if 'nombre' not in session:
         return redirect(url_for('login'))
@@ -446,6 +472,7 @@ def guardar_pre_inscripcion():
 
 
 @app.route('/pre_inscripcion_3', methods=['POST'])
+@perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 3 (profesor) pueden acceder
 def pre_inscripcion_3():
     # Verificar si el usuario está autenticado
     if 'nombre' not in session:
