@@ -212,17 +212,24 @@ def editar_alumno(id_usuario):
     if request.method == 'POST':
         # Recibir datos actualizados desde el formulario y actualizar en la base de datos
         datos = request.form.to_dict()
+
+        # Convertir los campos a enteros, si es necesario
+        datos['id_localidad'] = int(datos['id_localidad']) if datos['id_localidad'].isdigit() else None
+        datos['id_pais'] = int(datos['id_pais']) if datos['id_pais'].isdigit() else None
+        datos['id_provincia'] = int(datos['id_provincia']) if datos['id_provincia'].isdigit() else None
+
         # Normalizar campos que pueden ser nulos
-        datos['lugar_nacimiento'] = datos['lugar_nacimiento'] if datos['lugar_nacimiento'] else None
-        datos['telefono_alt'] = datos['telefono_alt'] if datos['telefono_alt'] else None
-        datos['telefono_alt_propietario'] = datos['telefono_alt_propietario'] if datos['telefono_alt_propietario'] else None
-        datos['titulo_base'] = datos['titulo_base'] if datos['titulo_base'] else None
-        datos['anio_egreso_otros'] = datos['anio_egreso_otros'] if datos['anio_egreso_otros'] else None
-        datos['actividad'] = datos['actividad'] if datos['actividad'] else None
-        datos['horario_habitual'] = datos['horario_habitual'] if datos['horario_habitual'] else None
-        datos['obra_social'] = datos['obra_social'] if datos['obra_social'] else None
-        datos['piso'] = datos['piso'] if datos['piso'] and datos['piso'] != 'NULL' else None
-        
+        datos['lugar_nacimiento'] = datos.get('lugar_nacimiento') or None
+        datos['telefono_alt'] = datos.get('telefono_alt') or None
+        datos['telefono_alt_propietario'] = datos.get('telefono_alt_propietario') or None
+        datos['titulo_base'] = datos.get('titulo_base') or None
+        datos['anio_egreso_otros'] = datos.get('anio_egreso_otros') or None
+        datos['actividad'] = datos.get('actividad') or None
+        datos['horario_habitual'] = datos.get('horario_habitual') or None
+        datos['obra_social'] = datos.get('obra_social') or None
+        datos['piso'] = datos.get('piso') if datos.get('piso') and datos['piso'] != 'NULL' else None
+
+        # Consulta para actualizar los datos del alumno
         query_update = """
             UPDATE usuarios SET 
                 nombre_apellido = %s, id_sexo = %s, fecha_nacimiento = %s, lugar_nacimiento = %s, 
@@ -234,7 +241,7 @@ def editar_alumno(id_usuario):
                 obra_social = %s
             WHERE id_usuario = %s
         """
-        
+
         ejecutar_sql(query_update, (
             datos['nombre_apellido'], datos['id_sexo'], datos['fecha_nacimiento'], datos['lugar_nacimiento'],
             datos['id_estado_civil'], datos['cantidad_hijos'], datos['familiares_a_cargo'], datos['domicilio'],
@@ -247,11 +254,24 @@ def editar_alumno(id_usuario):
 
         return redirect(url_for('alumnos'))
 
-    # Si es una solicitud GET, obtener los datos del alumno para editar
-    query_alumno = "SELECT * FROM usuarios WHERE id_usuario = %s"
-    alumno = ejecutar_sql(query_alumno, (id_usuario,))[0]  # Obtener el primer resultado
-    print (alumno)
-    return render_template('editar_alumno.html', alumno=alumno)
+    # Si es GET, obtener los datos del alumno y preparar el formulario
+    query_ingresante = "SELECT * FROM usuarios WHERE id_usuario = %s"
+    ingresante = ejecutar_sql(query_ingresante, (id_usuario,))[0]
+
+    # Obtener los países
+    query_paises = "SELECT id_pais, nombre FROM paises"
+    paises = ejecutar_sql(query_paises)
+
+    # Obtener las provincias
+    query_provincias = "SELECT id_provincia, nombre, id_pais FROM provincias"
+    provincias = ejecutar_sql(query_provincias)
+
+    # Obtener las localidades
+    query_localidades = "SELECT id_localidad, nombre, id_provincia FROM localidades"
+    localidades = ejecutar_sql(query_localidades)
+
+    return render_template('editar_alumno.html', alumno=ingresante, paises=paises, provincias=provincias, localidades=localidades)
+
 
 
 @app.route('/alumno/<int:id_usuario>/borrar', methods=['POST'])
@@ -273,6 +293,10 @@ def editar_ingresante(id_usuario):
     if request.method == 'POST':
         # Recibir datos actualizados desde el formulario y convertir a diccionario
         datos = request.form.to_dict()
+        print (datos['id_localidad'])
+        # Asegurarse de que 'id_localidad' sea un entero y no un string
+        datos['id_localidad'] = int(datos['id_localidad']) if datos['id_localidad'].isdigit() else None
+
         # Normalizar campos que pueden ser nulos
         datos['lugar_nacimiento'] = datos['lugar_nacimiento'] or None
         datos['telefono_alt'] = datos['telefono_alt'] or None
@@ -315,12 +339,25 @@ def editar_ingresante(id_usuario):
 
         return redirect(url_for('alumnos'))
 
-    # Si es una solicitud GET, obtener los datos del ingresante para editar
+# Si es una solicitud GET, obtener los datos del ingresante para editar
     query_ingresante = "SELECT * FROM pre_inscripciones WHERE id_usuario = %s"
-    ingresante = ejecutar_sql(query_ingresante, (id_usuario,))[0]  # Obtener el primer resultado
+    ingresante = ejecutar_sql(query_ingresante, (id_usuario,))[0]
     print (ingresante)
-    
-    return render_template('editar_ingresante.html', alumno=ingresante)
+    # Obtener los países
+    query_paises = "SELECT id_pais, nombre FROM paises"
+    paises = ejecutar_sql(query_paises)
+
+    # Obtener las provincias
+    query_provincias = "SELECT id_provincia, nombre, id_pais FROM provincias"
+    provincias = ejecutar_sql(query_provincias)
+
+    # Obtener las localidades
+    query_localidades = "SELECT id_localidad, nombre, id_provincia FROM localidades"
+    localidades = ejecutar_sql(query_localidades)
+
+    print (ingresante[11])
+
+    return render_template('editar_ingresante.html', alumno=ingresante, paises=paises, provincias=provincias, localidades=localidades)
 
 
 
@@ -441,6 +478,21 @@ def guardar_pre_inscripcion():
     horario_habitual = datos.get('horario_habitual', '') if trabaja == 'si' else None
     obra_social = datos.get('obra_social', '') if trabaja == 'si' else None
 
+    # Consultas SQL para obtener los IDs de país y provincia a partir de los nombres
+    query_id_pais = "SELECT id_pais FROM paises WHERE nombre = %s"
+    id_pais = ejecutar_sql(query_id_pais, (datos['id_pais'],))[0][0]  # Obtenemos el primer resultado
+
+    query_id_provincia = "SELECT id_provincia FROM provincias WHERE nombre = %s"
+    id_provincia = ejecutar_sql(query_id_provincia, (datos['id_provincia'],))[0][0]  # Obtenemos el primer resultado
+
+    query_id_localidad = "SELECT id_localidad FROM localidades WHERE nombre = %s AND id_provincia = %s"
+    id_localidad = ejecutar_sql(query_id_localidad, (datos['id_localidad'], id_provincia))[0][0]  # Obtenemos el primer resultado
+
+    # Actualizar los datos con los IDs obtenidos
+    datos['id_pais'] = id_pais
+    datos['id_provincia'] = id_provincia
+    datos['id_localidad'] = id_localidad
+
     # Consulta SQL para insertar en la tabla usuarios
     query_usuario = """
         INSERT INTO pre_inscripciones (
@@ -487,6 +539,20 @@ def pre_inscripcion_3():
     # Combinar todos los datos
     datos_completos = {**datos_personales, **datos_estudios_y_laborales}
     session['datos_completos'] = datos_completos
+
+    # Obtener nombres en lugar de IDs
+    query_pais = "SELECT nombre FROM paises WHERE id_pais = %s"
+    query_provincia = "SELECT nombre FROM provincias WHERE id_provincia = %s"
+    query_localidad = "SELECT nombre FROM localidades WHERE id_localidad = %s"
+
+    pais_nombre = ejecutar_sql(query_pais, (datos_completos['id_pais'],))[0][0] if datos_completos.get('id_pais') else None
+    provincia_nombre = ejecutar_sql(query_provincia, (datos_completos['id_provincia'],))[0][0] if datos_completos.get('id_provincia') else None
+    localidad_nombre = ejecutar_sql(query_localidad, (datos_completos['id_localidad'],))[0][0] if datos_completos.get('id_localidad') else None
+
+    # Pasar nombres en lugar de IDs
+    datos_completos['id_pais'] = pais_nombre
+    datos_completos['id_provincia'] = provincia_nombre
+    datos_completos['id_localidad'] = localidad_nombre
 
     # Renderizar pre_inscripcion_3.html con los datos combinados para la revisión
     return render_template('pre_inscripcion_3.html', **datos_completos)

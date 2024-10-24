@@ -6,6 +6,44 @@
     <title>Editar Ingresante</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script>
+        // Script para filtrar provincias y localidades (igual que en pre_inscripcion)
+        function filterProvincias() {
+            const id_pais = document.getElementById('id_pais').value;
+            const provinciaSelect = document.getElementById('id_provincia');
+            const provinciasData = document.getElementById('provincias-data').children;
+
+            provinciaSelect.innerHTML = '<option value="">Seleccionar una provincia</option>';
+
+            if (id_pais) {
+                for (let i = 0; i < provinciasData.length; i++) {
+                    const provinciaOption = provinciasData[i];
+                    if (provinciaOption.getAttribute('data-pais') === id_pais) {
+                        provinciaSelect.appendChild(provinciaOption.cloneNode(true));
+                    }
+                }
+            }
+
+            document.getElementById('id_localidad').innerHTML = '<option value="">Seleccione una localidad</option>';
+        }
+
+        function mostrarLocalidades() {
+            const id_provincia = document.getElementById('id_provincia').value;
+            const localidadSelect = document.getElementById('id_localidad');
+            const localidadesData = document.getElementById('localidades-data').children;
+
+            localidadSelect.innerHTML = '<option value="">Seleccione una localidad</option>';
+
+            if (id_provincia) {
+                for (let i = 0; i < localidadesData.length; i++) {
+                    const localidadOption = localidadesData[i];
+                    if (localidadOption.getAttribute('data-provincia') === id_provincia) {
+                        localidadSelect.appendChild(localidadOption.cloneNode(true));
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -64,16 +102,51 @@
                         <input type="text" id="piso" name="piso" value="{{ alumno[10] or '' }}">
                     </div>
                     <div class="form-group">
-                        <label for="id_localidad">localidad</label>
-                        <input type="text" id="id_localidad" name="id_localidad" value="{{ alumno[11] or '' }}">
+                        <label for="id_pais">País</label>
+                        <select id="id_pais" name="id_pais" required onchange="filterProvincias()">
+                            <option value="">Seleccionar un país</option>
+                            {% for pais in paises %}
+                                <option value="{{ pais[0] }}" {% if alumno[12] == pais[0] %}selected{% endif %}>{{ pais[1] }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
-                    <div class="form-group">
-                        <label for="id_pais">Pais</label>
-                        <input type="text" id="id_pais" name="id_pais" value="{{ alumno[12] or '' }}">
-                    </div>
+                    
                     <div class="form-group">
                         <label for="id_provincia">Provincia</label>
-                        <input type="text" id="id_provincia" name="id_provincia" value="{{ alumno[13] or '' }}">
+                        <select id="id_provincia" name="id_provincia" required onchange="mostrarLocalidades()">
+                            <option value="">Seleccionar una provincia</option>
+                            {% for provincia in provincias %}
+                                {% if provincia[2] == alumno[12] %} <!-- Mostrar solo las provincias del país seleccionado -->
+                                    <option value="{{ provincia[0] }}" {% if alumno[13] == provincia[0] %}selected{% endif %}>{{ provincia[1] }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Provincias ocultas en el DOM -->
+                    <div id="provincias-data" style="display: none;">
+                        {% for provincia in provincias %}
+                            <option value="{{ provincia[0] }}" data-pais="{{ provincia[2] }}">{{ provincia[1] }}</option>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_localidad">Localidad</label>
+                        <select id="id_localidad" name="id_localidad" required>
+                            <option value="">Seleccione una localidad</option>
+                            {% for localidad in localidades %}
+                                {% if localidad[2] == alumno[13] %} <!-- Mostrar solo las localidades de la provincia seleccionada -->
+                                    <option value="{{ localidad[0] }}" {% if alumno[11] == localidad[0] %}selected{% endif %}>{{ localidad[1] }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Localidades ocultas en el DOM -->
+                    <div id="localidades-data" style="display: none;">
+                        {% for localidad in localidades %}
+                            <option value="{{ localidad[0] }}" data-provincia="{{ localidad[2] }}">{{ localidad[1] }}</option>
+                        {% endfor %}
                     </div>
                     <div class="form-group">
                         <label for="codigo_postal">Código Postal</label>
