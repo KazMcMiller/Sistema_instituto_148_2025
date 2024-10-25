@@ -18,17 +18,49 @@
         }
     </style>
     <script>
+    // Parsear la variable turnos_carreras a JSON
+    const turnosCarreras = {{ turnos_carreras | tojson }}; 
+
     function updateTurno() {
         const carreraSelect = document.getElementById('carrera');
         const turnoSelect = document.getElementById('turno');
-        if (carreraSelect.value) {
-            turnoSelect.value = carreraSelect.value === '1' ? 'Mañana' : 'Tarde';
-            turnoSelect.disabled = true;
+        const idCarrera = carreraSelect.value;
+
+        // Limpiar el select de turno antes de agregar nuevas opciones
+        turnoSelect.innerHTML = '<option value="">Seleccione un turno</option>';
+
+        if (idCarrera) {
+            const turnosDisponibles = turnosCarreras.filter(turno => turno.id_carrera == idCarrera);
+
+            if (turnosDisponibles.length == 1) {
+                // Si solo hay un turno, seleccionarlo automáticamente
+                turnoSelect.innerHTML = `<option value="${turnosDisponibles[0].id_turno}" selected>${turnosDisponibles[0].descripcion}</option>`;
+                turnoSelect.disabled = true;
+            } else if (turnosDisponibles.length > 1) {
+                // Si hay más de un turno, permitir que el usuario lo elija
+                turnosDisponibles.forEach(turno => {
+                    const option = document.createElement('option');
+                    option.value = turno.id_turno;
+                    option.textContent = turno.descripcion;
+                    turnoSelect.appendChild(option);
+                });
+                turnoSelect.disabled = false;
+            }
         } else {
-            turnoSelect.disabled = false;
-            turnoSelect.value = '';
+            turnoSelect.disabled = false; // Habilitar el select si no hay carrera seleccionada
         }
     }
+
+    // Mantener el turno seleccionado si ya estaba definido (en caso de que el usuario vuelva)
+    document.addEventListener("DOMContentLoaded", function() {
+        const carreraSelect = document.getElementById('carrera');
+        const turnoSelect = document.getElementById('turno');
+        const turnoSeleccionado = "{{ session.get('datos_personales', {}).get('turno', '') }}";
+
+        if (turnoSeleccionado) {
+            turnoSelect.value = turnoSeleccionado;
+        }
+    });
 
     // Ejecutar la función al cargar la página para mantener el estado
     window.onload = function() {
@@ -217,16 +249,19 @@
                         <label for="carrera">Carrera:</label>
                         <select id="carrera" name="carrera" onchange="updateTurno()" required>
                             <option value="">Seleccione una carrera</option>
-                            <option value="1" {% if session.get('datos_personales', {}).get('carrera') == '1' %}selected{% endif %}>Analista de Sistemas</option>
-                            <option value="2" {% if session.get('datos_personales', {}).get('carrera') == '2' %}selected{% endif %}>Profesorado de Matemáticas</option>
-                            <option value="3" {% if session.get('datos_personales', {}).get('carrera') == '3' %}selected{% endif %}>Profesorado de Economía</option>
+                            {% for carrera in lista_carreras %}
+                                <option value="{{ carrera[0] }}" {% if session.get('datos_personales', {}).get('carrera') == carrera[0] %}selected{% endif %}>
+                                    {{ carrera[1] }}
+                                </option>
+                            {% endfor %}
                         </select>
                     </div>
+                    
                     <div class="form-group">
                         <label for="turno">Turno:</label>
                         <select id="turno" name="turno" required>
-                            <option value="Mañana" {% if session.get('datos_personales', {}).get('turno') == 'Mañana' %}selected{% endif %}>Mañana</option>
-                            <option value="Tarde" {% if session.get('datos_personales', {}).get('turno') == 'Tarde' %}selected{% endif %}>Tarde</option>
+                            <option value="">Seleccione un turno</option>
+                            <!-- Opciones de turno dinámicas -->
                         </select>
                     </div>
                 </div>

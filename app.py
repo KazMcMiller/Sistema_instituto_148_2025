@@ -3,6 +3,7 @@ from flask_session import Session
 from dotenv import load_dotenv
 from utils.db_utils import ejecutar_sql
 from functools import wraps
+from flask import jsonify
 
 load_dotenv()
 
@@ -50,7 +51,19 @@ def login():
             session['dni'] = dni
             session['nombre'] = result[0][1]  # Suponiendo que el nombre está en la segunda columna del resultado
             session['id_usuario'] = result[0][0]  # Suponiendo que el id_usuario está en la primera columna del resultado
-        
+            id_usuario = session['id_usuario']  # ID del usuario autenticado
+
+            # Consulta para obtener el instituto asociado al usuario
+            query_instituto_usuario = """
+                SELECT id_instituto
+                FROM instituto_usuario
+                WHERE id_usuario = %s
+            """
+            id_instituto = ejecutar_sql(query_instituto_usuario, (id_usuario,))[0][0]
+
+            # Guardar el ID de la institución en la sesión
+            session['id_instituto'] = id_instituto
+            
             return redirect(url_for('seleccionar_perfil'))
         else:
             flash('DNI o contraseña incorrectos', 'error')
@@ -431,8 +444,37 @@ def pre_inscripcion():
     query_localidades = "SELECT id_localidad, nombre, id_provincia FROM localidades"
     localidades = ejecutar_sql(query_localidades)
 
-    return render_template('pre_inscripcion.html', paises=paises, provincias=provincias, localidades=localidades)
+    id_instituto = session.get('id_instituto')  # Obtener la institución del usuario
 
+    # Consulta para obtener las carreras vinculadas a esa institución
+    query_carreras = """
+        SELECT c.id_carrera, c.nombre
+        FROM lista_carreras c
+        WHERE c.id_instituto = %s
+    """
+    lista_carreras = ejecutar_sql(query_carreras, (id_instituto,))
+
+    # Consulta para obtener los turnos asociados a las carreras
+    query_turnos = """
+        SELECT tc.id_carrera, tc.descripcion, tc.id_turno
+        FROM turno_carrera tc
+        WHERE tc.estado = 1
+    """
+    turnos_carreras = ejecutar_sql(query_turnos)
+
+    # Convertir los turnos a una lista de diccionarios
+    turnos_carreras_dict = [{"id_carrera": turno[0], "descripcion": turno[1], "id_turno": turno[2]} for turno in turnos_carreras]
+
+    print(turnos_carreras_dict)  # Para verificar el formato
+
+    return render_template(
+        'pre_inscripcion.html',
+        turnos_carreras=turnos_carreras_dict,  # Pasamos la lista de diccionarios
+        lista_carreras=lista_carreras,
+        paises=paises,
+        provincias=provincias,
+        localidades=localidades
+    )
 
 
 
