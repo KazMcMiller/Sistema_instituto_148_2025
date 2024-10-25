@@ -526,35 +526,47 @@ def guardar_pre_inscripcion():
 @app.route('/pre_inscripcion_3', methods=['POST'])
 @perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 3 (profesor) pueden acceder
 def pre_inscripcion_3():
-    # Verificar si el usuario está autenticado
     if 'nombre' not in session:
         return redirect(url_for('login'))
 
     # Obtener los datos personales desde la sesión
     datos_personales = session.get('datos_personales', {})
-    print(session.get('datos_personales'))
+    
     # Recibir los datos de estudios y laborales del formulario de pre_inscripcion_2
     datos_estudios_y_laborales = request.form.to_dict()
 
     # Combinar todos los datos
     datos_completos = {**datos_personales, **datos_estudios_y_laborales}
+
+    # Guardar en la sesión
     session['datos_completos'] = datos_completos
 
-    # Obtener nombres en lugar de IDs
+    # Obtener los nombres en lugar de IDs
     query_pais = "SELECT nombre FROM paises WHERE id_pais = %s"
     query_provincia = "SELECT nombre FROM provincias WHERE id_provincia = %s"
     query_localidad = "SELECT nombre FROM localidades WHERE id_localidad = %s"
 
-    pais_nombre = ejecutar_sql(query_pais, (datos_completos['id_pais'],))[0][0] if datos_completos.get('id_pais') else None
-    provincia_nombre = ejecutar_sql(query_provincia, (datos_completos['id_provincia'],))[0][0] if datos_completos.get('id_provincia') else None
-    localidad_nombre = ejecutar_sql(query_localidad, (datos_completos['id_localidad'],))[0][0] if datos_completos.get('id_localidad') else None
+    # Mantener los IDs originales
+    id_pais_original = datos_completos.get('id_pais')
+    id_provincia_original = datos_completos.get('id_provincia')
+    id_localidad_original = datos_completos.get('id_localidad')
 
-    # Pasar nombres en lugar de IDs
+    # Obtener los nombres basados en los IDs
+    pais_nombre = ejecutar_sql(query_pais, (id_pais_original,))[0][0] if id_pais_original else None
+    provincia_nombre = ejecutar_sql(query_provincia, (id_provincia_original,))[0][0] if id_provincia_original else None
+    localidad_nombre = ejecutar_sql(query_localidad, (id_localidad_original,))[0][0] if id_localidad_original else None
+
+    # Guardar los valores originales junto con los nombres
+    datos_completos['id_pais_original'] = id_pais_original
+    datos_completos['id_provincia_original'] = id_provincia_original
+    datos_completos['id_localidad_original'] = id_localidad_original
+
+    # Reemplazar los IDs por sus nombres para mostrar en la vista
     datos_completos['id_pais'] = pais_nombre
     datos_completos['id_provincia'] = provincia_nombre
     datos_completos['id_localidad'] = localidad_nombre
 
-    # Renderizar pre_inscripcion_3.html con los datos combinados para la revisión
+    # Renderizar la página de confirmación con todos los datos
     return render_template('pre_inscripcion_3.html', **datos_completos)
 
 @app.route('/inscribite')
