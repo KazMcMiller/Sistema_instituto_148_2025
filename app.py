@@ -426,13 +426,23 @@ def reportes():
     # Renderiza la página de generación de reportes
     return render_template('reportes.html')
 
-@app.route('/pre_inscripcion')
-@perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 3 (profesor) pueden acceder
+@app.route('/pre_inscripcion', methods=['GET', 'POST'])
+@perfil_requerido(['1', '2'])
 def pre_inscripcion():
     if 'nombre' not in session:
         return redirect(url_for('login'))
 
-    # Consulta para obtener los países
+    if request.method == 'POST':
+        # Recibir los datos desde el formulario
+        datos_personales = request.form.to_dict()
+
+        # Guardar los datos en la sesión
+        session['datos_personales'] = datos_personales
+
+        # Redirigir a pre_inscripcion_2
+        return redirect(url_for('pre_inscripcion_2'))
+
+    # Obtener países, provincias, localidades, carreras y turnos
     query_paises = "SELECT id_pais, nombre FROM paises"
     paises = ejecutar_sql(query_paises)
 
@@ -444,7 +454,7 @@ def pre_inscripcion():
     query_localidades = "SELECT id_localidad, nombre, id_provincia FROM localidades"
     localidades = ejecutar_sql(query_localidades)
 
-    id_instituto = session.get('id_instituto')  # Obtener la institución del usuario
+    id_instituto = session.get('id_instituto')
 
     # Consulta para obtener las carreras vinculadas a esa institución
     query_carreras = """
@@ -461,11 +471,9 @@ def pre_inscripcion():
         WHERE tc.estado = 1
     """
     turnos_carreras = ejecutar_sql(query_turnos)
-
+    print (turnos_carreras)
     # Convertir los turnos a una lista de diccionarios
     turnos_carreras_dict = [{"id_carrera": turno[0], "descripcion": turno[1], "id_turno": turno[2]} for turno in turnos_carreras]
-
-    print(turnos_carreras_dict)  # Para verificar el formato
 
     return render_template(
         'pre_inscripcion.html',
@@ -478,15 +486,19 @@ def pre_inscripcion():
 
 
 
+
 @app.route('/pre_inscripcion_2', methods=['POST'])
-@perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 3 (profesor) pueden acceder
+@perfil_requerido(['1', '2'])
 def pre_inscripcion_2():
     if 'nombre' not in session:
         return redirect(url_for('login'))
 
     # Recibir los datos del formulario anterior
     datos_personales = request.form.to_dict()
-    
+
+    # Imprimir para ver qué datos llegan
+    print("Datos recibidos desde pre_inscripcion:", datos_personales)
+
     # Guardar en la sesión para usarlos más adelante
     session['datos_personales'] = datos_personales
 
@@ -495,17 +507,16 @@ def pre_inscripcion_2():
 
     query_provincias = "SELECT id_provincia, id_pais, nombre FROM provincias"
     provincias = ejecutar_sql(query_provincias)
-    # Pasar el ID del país al template de pre_inscripcion_2
+
     return render_template('pre_inscripcion_2.html', id_pais_estudio=id_pais_estudio, provincias=provincias)
+
 
 
 @app.route('/guardar_pre_inscripcion', methods=['POST'])
 def guardar_pre_inscripcion():
-    # Verificar si el usuario está autenticado
-
- # Obtener todos los datos desde la sesión
+    # Obtener todos los datos desde la sesión
     datos = session.get('datos_completos', {})
-    
+
     # Ajustar campos que pueden no estar presentes
     datos['lugar_nacimiento'] = datos.get('lugar_nacimiento') or None
     datos['telefono_alt'] = datos.get('telefono_alt') or None
@@ -515,48 +526,40 @@ def guardar_pre_inscripcion():
     datos['piso'] = datos.get('piso') if datos.get('piso') != 'NULL' else None
 
     # Ajustar los campos relacionados con el trabajo
-    trabaja = datos.get('trabaja')  # Asumimos que '2' significa que no trabaja si no está presente
+    trabaja = datos.get('trabaja')
     actividad = datos.get('actividad', '') if trabaja == 'si' else None
     horario_habitual = datos.get('horario_habitual', '') if trabaja == 'si' else None
     obra_social = datos.get('obra_social', '') if trabaja == 'si' else None
 
-    # Consultas SQL para obtener los IDs de país y provincia a partir de los nombres
-    query_id_pais = "SELECT id_pais FROM paises WHERE nombre = %s"
-    id_pais = ejecutar_sql(query_id_pais, (datos['id_pais'],))[0][0]  # Obtenemos el primer resultado
+    # Usar los IDs originales para la inserción
+    id_carrera = datos.get('id_carrera_original')
+    id_turno = datos.get('id_turno_original')
+    id_pais = datos.get('id_pais_original')
+    id_provincia = datos.get('id_provincia_original')
+    id_localidad = datos.get('id_localidad_original')
 
-    query_id_provincia = "SELECT id_provincia FROM provincias WHERE nombre = %s"
-    id_provincia = ejecutar_sql(query_id_provincia, (datos['id_provincia'],))[0][0]  # Obtenemos el primer resultado
-
-    query_id_localidad = "SELECT id_localidad FROM localidades WHERE nombre = %s AND id_provincia = %s"
-    id_localidad = ejecutar_sql(query_id_localidad, (datos['id_localidad'], id_provincia))[0][0]  # Obtenemos el primer resultado
-
-    # Actualizar los datos con los IDs obtenidos
-    datos['id_pais'] = id_pais
-    datos['id_provincia'] = id_provincia
-    datos['id_localidad'] = id_localidad
-
-    # Consulta SQL para insertar en la tabla usuarios
+    # Consulta SQL para insertar en la tabla pre_inscripciones
     query_usuario = """
         INSERT INTO pre_inscripciones (
             dni, nombre_apellido, id_sexo, fecha_nacimiento, lugar_nacimiento, id_estado_civil,
             cantidad_hijos, familiares_a_cargo, domicilio, piso, id_localidad, id_pais,
             id_provincia, codigo_postal, telefono, telefono_alt, telefono_alt_propietario, email,
             titulo_base, anio_egreso, id_institucion, otros_estudios, anio_egreso_otros,
-            trabaja, actividad, horario_habitual, obra_social
+            trabaja, actividad, horario_habitual, obra_social, id_carrera, id_turno
         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
     
-    # Ejecutar la consulta
+    # Ejecutar la consulta con los datos originales
     ejecutar_sql(query_usuario, (
         datos['dni'], datos['nombre_apellido'], datos['id_sexo'],
         datos['fecha_nacimiento'], datos['lugar_nacimiento'], datos['id_estado_civil'],
         datos['cantidad_hijos'], datos['familiares_a_cargo'], datos['domicilio'],
-        datos['piso'], datos['id_localidad'], datos['id_pais'],
-        datos['id_provincia'], datos['codigo_postal'], datos['telefono'],
+        datos['piso'], id_localidad, id_pais,
+        id_provincia, datos['codigo_postal'], datos['telefono'],
         datos['telefono_alt'], datos['telefono_alt_propietario'], datos['email'],
         datos['titulo_base'], datos['anio_egreso'], datos['id_institucion'],
         datos['otros_estudios'], datos['anio_egreso_otros'], trabaja,
-        actividad, horario_habitual, obra_social
+        actividad, horario_habitual, obra_social, id_carrera, id_turno
     ))
 
     # Redirigir al home una vez completada la inscripción
@@ -565,15 +568,16 @@ def guardar_pre_inscripcion():
 
 
 
+
 @app.route('/pre_inscripcion_3', methods=['POST'])
-@perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 3 (profesor) pueden acceder
+@perfil_requerido(['1', '2'])
 def pre_inscripcion_3():
     if 'nombre' not in session:
         return redirect(url_for('login'))
 
     # Obtener los datos personales desde la sesión
     datos_personales = session.get('datos_personales', {})
-    
+
     # Recibir los datos de estudios y laborales del formulario de pre_inscripcion_2
     datos_estudios_y_laborales = request.form.to_dict()
 
@@ -583,33 +587,43 @@ def pre_inscripcion_3():
     # Guardar en la sesión
     session['datos_completos'] = datos_completos
 
-    # Obtener los nombres en lugar de IDs
+    # Consultas SQL para obtener los nombres en lugar de IDs
     query_pais = "SELECT nombre FROM paises WHERE id_pais = %s"
     query_provincia = "SELECT nombre FROM provincias WHERE id_provincia = %s"
     query_localidad = "SELECT nombre FROM localidades WHERE id_localidad = %s"
+    query_carrera = "SELECT nombre FROM lista_carreras WHERE id_carrera = %s"
+    query_turno = "SELECT descripcion FROM turno_carrera WHERE id_turno = %s"
 
     # Mantener los IDs originales
     id_pais_original = datos_completos.get('id_pais')
     id_provincia_original = datos_completos.get('id_provincia')
     id_localidad_original = datos_completos.get('id_localidad')
+    id_carrera_original = datos_completos.get('carrera')
+    id_turno_original = datos_completos.get('turno')
 
     # Obtener los nombres basados en los IDs
     pais_nombre = ejecutar_sql(query_pais, (id_pais_original,))[0][0] if id_pais_original else None
     provincia_nombre = ejecutar_sql(query_provincia, (id_provincia_original,))[0][0] if id_provincia_original else None
     localidad_nombre = ejecutar_sql(query_localidad, (id_localidad_original,))[0][0] if id_localidad_original else None
+    carrera_nombre = ejecutar_sql(query_carrera, (id_carrera_original,))[0][0] if id_carrera_original else None
+    turno_descripcion = ejecutar_sql(query_turno, (id_turno_original,))[0][0] if id_turno_original else None
 
     # Guardar los valores originales junto con los nombres
     datos_completos['id_pais_original'] = id_pais_original
     datos_completos['id_provincia_original'] = id_provincia_original
     datos_completos['id_localidad_original'] = id_localidad_original
+    datos_completos['id_carrera_original'] = id_carrera_original
+    datos_completos['id_turno_original'] = id_turno_original
 
     # Reemplazar los IDs por sus nombres para mostrar en la vista
     datos_completos['id_pais'] = pais_nombre
     datos_completos['id_provincia'] = provincia_nombre
     datos_completos['id_localidad'] = localidad_nombre
+    datos_completos['carrera'] = carrera_nombre
+    datos_completos['turno'] = turno_descripcion
 
-    # Renderizar la página de confirmación con todos los datos
     return render_template('pre_inscripcion_3.html', **datos_completos)
+
 
 @app.route('/inscribite')
 def inscribite():

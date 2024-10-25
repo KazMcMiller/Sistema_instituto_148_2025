@@ -18,60 +18,49 @@
         }
     </style>
     <script>
-    // Parsear la variable turnos_carreras a JSON
-    const turnosCarreras = {{ turnos_carreras | tojson }}; 
+// Parsear la variable turnos_carreras a JSON
+const turnosCarreras = {{ turnos_carreras | tojson }};
 
-    function updateTurno() {
-        const carreraSelect = document.getElementById('carrera');
-        const turnoSelect = document.getElementById('turno');
-        const idCarrera = carreraSelect.value;
+function updateTurno() {
+    const carreraSelect = document.getElementById('carrera');
+    const turnoSelect = document.getElementById('turno');
+    const idCarrera = carreraSelect.value;
 
-        // Limpiar el select de turno antes de agregar nuevas opciones
-        turnoSelect.innerHTML = '<option value="">Seleccione un turno</option>';
+    // Limpiar el select de turno antes de agregar nuevas opciones
+    turnoSelect.innerHTML = '<option value="">Seleccione un turno</option>';
 
-        if (idCarrera) {
-            const turnosDisponibles = turnosCarreras.filter(turno => turno.id_carrera == idCarrera);
+    if (idCarrera) {
+        const turnosDisponibles = turnosCarreras.filter(turno => turno.id_carrera == idCarrera);
 
-            if (turnosDisponibles.length == 1) {
-                // Si solo hay un turno, seleccionarlo automáticamente
-                turnoSelect.innerHTML = `<option value="${turnosDisponibles[0].id_turno}" selected>${turnosDisponibles[0].descripcion}</option>`;
-                turnoSelect.disabled = true;
-            } else if (turnosDisponibles.length > 1) {
-                // Si hay más de un turno, permitir que el usuario lo elija
-                turnosDisponibles.forEach(turno => {
-                    const option = document.createElement('option');
-                    option.value = turno.id_turno;
-                    option.textContent = turno.descripcion;
-                    turnoSelect.appendChild(option);
-                });
-                turnoSelect.disabled = false;
-            }
-        } else {
-            turnoSelect.disabled = false; // Habilitar el select si no hay carrera seleccionada
+        if (turnosDisponibles.length == 1) {
+            // Si solo hay un turno, seleccionarlo automáticamente
+            turnoSelect.innerHTML = `<option value="${turnosDisponibles[0].id_turno}" selected>${turnosDisponibles[0].descripcion}</option>`;
+            turnoSelect.disabled = false;  // No deshabilitar el select
+        } else if (turnosDisponibles.length > 1) {
+            // Si hay más de un turno, permitir que el usuario lo elija
+            turnosDisponibles.forEach(turno => {
+                const option = document.createElement('option');
+                option.value = turno.id_turno;
+                option.textContent = turno.descripcion;
+                turnoSelect.appendChild(option);
+            });
+            turnoSelect.disabled = false;  // Asegurarse de que el select esté habilitado
         }
+    } else {
+        turnoSelect.disabled = false;  // Habilitar el select si no hay carrera seleccionada
     }
+}
 
-    // Mantener el turno seleccionado si ya estaba definido (en caso de que el usuario vuelva)
-    document.addEventListener("DOMContentLoaded", function() {
-        const carreraSelect = document.getElementById('carrera');
-        const turnoSelect = document.getElementById('turno');
-        const turnoSeleccionado = "{{ session.get('datos_personales', {}).get('turno', '') }}";
+// Mantener el turno seleccionado si ya estaba definido
+document.addEventListener("DOMContentLoaded", function() {
+    const turnoSeleccionado = "{{ session.get('datos_personales', {}).get('turno', '') }}";
+    const turnoSelect = document.getElementById('turno');
+    
+    if (turnoSeleccionado) {
+        turnoSelect.value = turnoSeleccionado;  // Setear el turno si ya fue seleccionado previamente
+    }
+});
 
-        if (turnoSeleccionado) {
-            turnoSelect.value = turnoSeleccionado;
-        }
-    });
-
-    // Ejecutar la función al cargar la página para mantener el estado
-    window.onload = function() {
-        const carreraSelect = document.getElementById('carrera');
-        const turnoSelect = document.getElementById('turno');
-
-        if (carreraSelect.value) {
-            turnoSelect.value = carreraSelect.value === '1' ? 'Mañana' : 'Tarde';
-            turnoSelect.disabled = true; // Bloquear el turno si ya se seleccionó una carrera previamente
-        }
-    };
 
         function validarDNI(input) {
             const regex = /^[0-9]{8}$/;
@@ -246,7 +235,7 @@
                         <input type="email" id="email" name="email" value="{{ session.get('datos_personales', {}).get('email', '') }}" required>
                     </div>
                     <div class="form-group">
-                        <label for="carrera">Carrera:</label>
+                        <label for="carrera">Carrera</label>
                         <select id="carrera" name="carrera" onchange="updateTurno()" required>
                             <option value="">Seleccione una carrera</option>
                             {% for carrera in lista_carreras %}
@@ -258,11 +247,11 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="turno">Turno:</label>
+                        <label for="turno">Turno</label>
                         <select id="turno" name="turno" required>
                             <option value="">Seleccione un turno</option>
-                            <!-- Opciones de turno dinámicas -->
-                        </select>
+                            <!-- Aquí se cargarán dinámicamente los turnos -->
+                        </select>                    
                     </div>
                 </div>
                 <div class="actions" id="boton-siguiente">
