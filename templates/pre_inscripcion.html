@@ -9,14 +9,6 @@
     <link href="bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
-        body{
-            justify-content: center;
-            display: flex;
-            align-items: center; /* Centrar verticalmente */
-            height: 100vh; /* Ocupa toda la altura de la ventana */
-        }
-    </style>
     <script>
         function updateTurno() {
             const carreraSelect = document.getElementById('carrera');
@@ -57,136 +49,154 @@
         }
     }
     </script>
+    <style>
+            html{
+                margin-left: 15%;
+            }
+            html, body{
+                height: 100%;
+                display: flex;
+                justify-content: center; /* Centra horizontalmente */
+                align-content: center; /* Centra verticalmente */
+            }
+                        
+    </style>
 </head>
 <body>
-    <div class="container-login" id="cont-insc">
-        {% include 'navbar.html' %}
-        
-        <div class="form-container" id="form-insc">
-            <h3>Datos Personales</h3>
-            <form method="POST" action="/pre_inscripcion_2">
-                <div class="form-row" id="campos-form">
-                    <div class="form-group">
-                        <label for="nombre_apellido">Apellido y Nombres:</label>
-                        <input type="text" id="nombre_apellido" name="nombre_apellido" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="id_sexo">Sexo:</label>
-                        <select id="id_sexo" name="id_sexo" required>
-                            <option value="">Seleccionar</option>
-                            <option value="1">Masculino</option>
-                            <option value="2">Femenino</option>
-                            <option value="3">Otro</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="dni">DNI:</label>
-                        <input type="number" id="dni" name="dni" maxlength="8" oninput="validarDNI(this)" required>
-                        <span id="error-dni" style="color: red;"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
-                        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="lugar_nacimiento">Lugar de Nacimiento:</label>
-                        <input type="text" id="lugar_nacimiento" name="lugar_nacimiento" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="id_estado_civil">Estado Civil:</label>
-                        <select id="id_estado_civil" name="id_estado_civil" required>
-                            <option value="">Seleccione</option>
-                            <option value="1">Soltero/a</option>
-                            <option value="2">Casado/a</option>
-                            <option value="3">Divorciado/a</option>
-                            <option value="4">Viudo/a</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="cantidad_hijos">Cantidad de Hijos:</label>
-                        <input type="number" id="cantidad_hijos" name="cantidad_hijos" min="0" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="familiares_a_cargo">Familiares a Cargo:</label>
-                        <input type="number" id="familiares_a_cargo" name="familiares_a_cargo" min="0" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="domicilio">Domicilio:</label>
-                        <input type="text" id="domicilio" name="domicilio" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="piso">Piso:</label>
-                        <input type="number" id="piso" name="piso">
-                    </div>
-                    <div class="form-group">
-                        <label for="id_pais">País:</label>
-                        <select id="id_pais" name="id_pais" required onchange="filterProvincias()">
-                            <option value="">Seleccionar un país</option>
-                            {% for pais in paises %}
-                                <option value="{{ pais[0] }}">{{ pais[1] }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="id_provincia">Provincia:</label>
-                        <select id="id_provincia" name="id_provincia" required>
-                            <option value="">Seleccionar una provincia</option>
-                            <!-- Aquí las provincias se cargarán dinámicamente -->
-                        </select>
-                    </div>
-                    
-                    <!-- Provincias ocultas en el DOM -->
-                    <div id="provincias-data" style="display: none;">
-                        {% for provincia in provincias %}
-                            <option value="{{ provincia[0] }}" data-pais="{{ provincia[2] }}">{{ provincia[1] }}</option>
-                        {% endfor %}
-                    </div>
-                    <div class="form-group">
-                        <label for="id_localidad">Localidad:</label>
-                        <input type="number" id="id_localidad" name="id_localidad" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="codigo_postal">Código Postal:</label>
-                        <input type="text" id="codigo_postal" name="codigo_postal" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="telefono">Teléfono:</label>
-                        <input type="number" id="telefono" name="telefono" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="telefono_alt">Teléfono Alternativo:</label>
-                        <input type="number" id="telefono_alt" name="telefono_alt"required>
-                    </div>
-                    <div class="form-group">
-                        <label for="telefono_alt_propietario">A quién pertenece el teléfono alternativo:</label>
-                        <input type="text" id="telefono_alt_propietario" name="telefono_alt_propietario" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email:</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="carrera">Carrera:</label>
-                        <select id="carrera" name="carrera" onchange="updateTurno()" required>
-                            <option value="">Seleccione una carrera</option>
-                            <option value="1">Analista de Sistemas</option>
-                            <option value="2">Profesorado de Matemáticas</option>
-                            <option value="3">Profesorado de Economía</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="turno">Turno:</label>
-                        <select id="turno" name="turno" required>
-                            <option value="Mañana">Mañana</option>
-                            <option value="Tarde">Tarde</option>
-                        </select>
-                    </div>
+    <div class="container">
+        <div class="container rounded-sm" id="cont-insc">
+            {% include 'navbar.html' %}
+
+            
+                <div class="form-container">
+                    <h4 class="text-primary text-center mt-3">Datos Personales</h4>
+                    <form method="POST" action="/pre_inscripcion_2">
+                        <div class="form-row">
+                            <div class="col col-md-3 form-group">
+                          
+                                    <label for="nombre_apellido">Apellido y Nombres:</label>
+                                    <input class="form-control form-control-sm" type="text" id="nombre_apellido" name="nombre_apellido" required>
+                                
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                      
+                                <label for="id_sexo">Sexo:</label>
+                                <select class="form-control form-control-sm" id="id_sexo" name="id_sexo" required>
+                                    <option value="">Seleccionar</option>
+                                    <option value="1">Masculino</option>
+                                    <option value="2">Femenino</option>
+                                    <option value="3">Otro</option>
+                                </select>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="dni">DNI:</label>
+                                <input class="form-control form-control-sm" type="number" id="dni" name="dni" maxlength="8" oninput="validarDNI(this)" required>
+                                <span id="error-dni" style="color: #a55772;"></span>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
+                                <input class="form-control form-control-sm" type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="lugar_nacimiento">Lugar de Nacimiento:</label>
+                                <input class="form-control form-control-sm" type="text" id="lugar_nacimiento" name="lugar_nacimiento" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="id_estado_civil">Estado Civil:</label>
+                                <select class="form-control form-control-sm" id="id_estado_civil" name="id_estado_civil" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="1">Soltero/a</option>
+                                    <option value="2">Casado/a</option>
+                                    <option value="3">Divorciado/a</option>
+                                    <option value="4">Viudo/a</option>
+                                </select>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="cantidad_hijos">Cantidad de Hijos:</label>
+                                <input class="form-control form-control-sm" type="number" id="cantidad_hijos" name="cantidad_hijos" min="0" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="familiares_a_cargo">Familiares a Cargo:</label>
+                                <input class="form-control form-control-sm" type="number" id="familiares_a_cargo" name="familiares_a_cargo" min="0" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="domicilio">Domicilio:</label>
+                                <input class="form-control form-control-sm" type="text" id="domicilio" name="domicilio" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="piso">Piso:</label>
+                                <input class="form-control form-control-sm" type="number" id="piso" name="piso">
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="id_pais">País:</label>
+                                <select class="form-control form-control-sm" id="id_pais" name="id_pais" required onchange="filterProvincias()">
+                                    <option value="">Seleccionar un país</option>
+                                    {% for pais in paises %}
+                                        <option value="{{ pais[0] }}">{{ pais[1] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col col col-md-3 form-group">
+                                <label for="id_provincia">Provincia:</label>
+                                <select class="form-control form-control-sm" id="id_provincia" name="id_provincia" required>
+                                    <option value="">Seleccionar una provincia</option>
+                                    <!-- Aquí las provincias se cargarán dinámicamente -->
+                                </select>
+                            </div>
+                            
+                            <!-- Provincias ocultas en el DOM -->
+                            <div id="provincias-data" style="display: none;">
+                                {% for provincia in provincias %}
+                                    <option value="{{ provincia[0] }}" data-pais="{{ provincia[2] }}">{{ provincia[1] }}</option>
+                                {% endfor %}
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="id_localidad">Localidad:</label>
+                                <input class="form-control form-control-sm" type="number" id="id_localidad" name="id_localidad" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="codigo_postal">Código Postal:</label>
+                                <input class="form-control form-control-sm" type="text" id="codigo_postal" name="codigo_postal" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="telefono">Teléfono:</label>
+                                <input class="form-control form-control-sm" type="number" id="telefono" name="telefono" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="telefono_alt">Teléfono Alternativo:</label>
+                                <input class="form-control form-control-sm" type="number" id="telefono_alt" name="telefono_alt"required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="telefono_alt_propietario">A quién pertenece el teléfono alternativo:</label>
+                                <input class="form-control form-control-sm" type="text" id="telefono_alt_propietario" name="telefono_alt_propietario" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="email">Email:</label>
+                                <input class="form-control form-control-sm" type="email" id="email" name="email" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="carrera">Carrera:</label>
+                                <select class="form-control form-control-sm" id="carrera" name="carrera" onchange="updateTurno()" required>
+                                    <option value="">Seleccione una carrera</option>
+                                    <option value="1">Analista de Sistemas</option>
+                                    <option value="2">Profesorado de Matemáticas</option>
+                                    <option value="3">Profesorado de Economía</option>
+                                </select>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="turno">Turno:</label>
+                                <select class="form-control form-control-sm" id="turno" name="turno" required>
+                                    <option value="Mañana">Mañana</option>
+                                    <option value="Tarde">Tarde</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="actions" id="boton-siguiente">
+                                <button type="submit" class="btn-seguiente float-right mb-3">Siguiente</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="actions" id="boton-siguiente">
-                    <button type="submit" class="btn-primary" id="btn-siguiente">Siguiente</button>
-                </div>
-            </form>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

@@ -6,65 +6,67 @@
     <title>Iniciar Sesión</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="bootstrap.min.css" rel="stylesheet">
+    <!-- <link href="bootstrap.min.css" rel="stylesheet"> -->
     <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
+<style>
+  html, body{
+    height: 100%;
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+  }
+</style>
 
 <body>
-    <div class="container-login text-center flex-column justify-content-between align-items-end rounded shadow">
+    <div class="container container-login rounded-sm">
         <!--Parte Izquierda-->
-        <div class="row align-items-stretch">
-            <div class="col d-flex flex-column justify-content-center align-items-center bg text-center rounded">
+        <div class="row h-100 justify-content-center align-items-center">
+            <div class="col col-12 col-md-6 h-100 align-content-center justify-content-center align-items-center bg text-center rounded">
                 <h1 class="text-secundary">¡Bienvenido!</h1>
                 <img src="/static/img/LOGO-SIN-FONDO-1000x707-1.png" width="200px" alt="Logo de la institución">
                 <h3 class="text-secundary p-3">¿Sos Ingresante?</h3>
                 <a href="{{ url_for('inscribite') }}" class="text-secundary">¡Inscribite!</a>
             </div>
         <!--Parte Derecha-->
-            <div class="col d-flex flex-column justify-content-center align-items-center bg-primary text-center rounded">
-              <div class="position-absolute top-50 start-50 translate-middle">
-                <div class="text-end d-flex justify-content-center">
-                    <h2 class="text-center p-5 text-gris">Iniciar Sesión</h2>
-                </div>              
-                 <!-- LOGIN -->
-                <form method="POST" action="/login">
-                    <div class="md-4 mx-auto">
-                        <label for="dni" class="form-label text-gris">Usuario</label>
-                        <input type="number" class="form-control" name="dni" id= "dni" placeholder="Ingrese DNI" required>    
+            <div class="col col-12 col-md-6 px-5 h-100 align-content-center justify-content-center align-items-center bg-primary rounded">  
+              <h2 class="text-center p-3 text-gris">Iniciar Sesión</h2>      
+              <!-- LOGIN -->
+              <form method="POST" action="/login">
+                <div class="row mt-3">
+                  <div class="col-12">
+                    <label for="dni" class="form-label text-gris">Usuario</label>
+                    <input type="number" class="form-control form-control-sm" name="dni" id= "dni" placeholder="Ingrese DNI" required>  
+                  </div>
+                  <div class="col-12">
+                    <label for="password" class="form-label text-gris">Contraseña</label>
+                    <div class="position-relative">
+                            <input type="password" class="form-control form-control-sm" id="password" name="password" placeholder="Contraseña" required>   
+                            <span onclick="togglePasswordVisibility()" style="transform: translateY(-50%);">
+                                <i class="fas fa-eye" id="eyeIcon"></i>
+                            </span>
                     </div>
-
-                    <div class="md-4 mx-auto">
-                        <label for="password" class="form-label text-gris">Contraseña</label>
-                        <div class="input-group">
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
-                            <div class="input-group-append mx-auto">
-                                <span class="input-group-text" onclick="togglePasswordVisibility()">
-                                    <i class="fas fa-eye" id="eyeIcon"></i>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mx-auto p-5 text-center d-flex flex-column justify-content-center align-items-center">
-                      <button type="submit" class="btn-primary">Iniciar Sesión</button>
-                          <div class="recover-password mx-auto">
-                              <a href="recuperar_contraseña.html">¿Olvidaste la Contraseña?</a>
-                          </div>
-                    </div>
-                 </form>
-
-              </div>
-              <script src=".\static\js\login.js"></script>
+                  </div>
+                  </div>
+                  <div class="col-12 text-center justify-content-center">
+                    <button type="submit" class="btn-login mt-3 mx-auto">Iniciar Sesión</button>
+                      <div class="recover-password mx-auto">
+                        <a href="recuperar_contraseña.html">¿Olvidaste la Contraseña?</a>
+                      </div>
+                  </div>
+                </div>                  
+              </form>
+             
 
             </div>
         </div>
     </div>
-
+    <script src=".\static\js\login.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="bootstrap.bundle.min.js"></script>
+    <!-- <script src="bootstrap.bundle.min.js"></script> -->
 </body>
 </html>
 

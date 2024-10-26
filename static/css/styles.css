@@ -1,16 +1,4 @@
 /*Globales*/
-
-html, body {
-    /*Login*/
-    display: flex;
-    height: 100%;
-    margin: 0;
-    margin-top: 10px;
-    display: flex;
-    justify-content: center; /* Centra horizontalmente */
-    align-items: center; /* Centra verticalmente */
-}
-
 .bg{
     
     background-color: #5DB3B7;
@@ -21,19 +9,20 @@ html, body {
     background-color: rgba(242, 243, 246, 0.451) !important;
 }
 
-.btn-primary {
+.btn-login {
     
     background-color: #5DB3B7;
     border-radius: 10px;
     display: flex; 
-    width: 100px;
+    width: 120px;
     height: 40px;
     justify-content: center; /* Centra horizontalmente */
     align-items: center;
     border: none;
+    color: #fff;
     
 }
-.btn-primary:hover{
+.btn-login:hover{
     
     background-color: #468285;
 }
@@ -57,34 +46,15 @@ body{
 
 .container-login {
     /*Login*/
-    width: 800px;
-    height: 500px;
-    border-radius: 10px; 
-    box-shadow: 6px 10px 6px 6px rgba(0, 0, 0, 0.45);
+    height: 80%;
+    box-shadow: 6px 6px 8px 8px rgba(0, 0, 0, 0.45);
     justify-content: center;
-    align-content: center;
-    text-align: center;
-}
-
-.col{
-    /*Login*/
-    height: 500px;
-    justify-content: center;
-    align-content: center;
-    align-items: center;
-
+    align-content: center !important;
 }
 
 .text-end{
     /*Login*/
     height: 100%;
-}
-
-form .form-control {
-    /*Login*/
-    width: 100%; /* Asegura que los inputs ocupen todo el ancho disponible */
-    max-width: 400px; /* Puedes ajustar este valor según tus necesidades */
-    margin-bottom: 15px; /* Añade espacio entre los campos */
 }
 
 .text-primary {
@@ -99,25 +69,23 @@ form .form-control {
 .text-gris{
     /*Login*/
     color: #4E4E4E;
- }
+}
+
+#eyeIcon {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
 
  /*Pantalla de Permisos*/
 
- .info-container{
-    /*Imágen de usuario y texto 'Hola {usuario}'*/
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
+#contenedor-perfil{
+    height: 80%;
+    justify-content: none;
 }
 
-.info-container h2{
-    margin-left: 20px;
-}
-
-.info-container img{
-    margin-right: 20px;
-}
 
 /* Pantalla de Home*/
 
@@ -146,39 +114,22 @@ form .form-control {
 /* Formulario de inscripción*/
 
 #cont-insc {
-    margin-top: 70px;
     background-color: rgba(242, 243, 246, 0.451);
-    width: 80%;
-    height: 75%;
-    margin-right: 0;
-    margin-left: 250px;
-    position: relative;
-    padding: 20px;
-}
-
-#cont-insc h3{
-    color: #5DB3B7;
-    margin: 0; /* Elimina cualquier margen superior predeterminado */
-    padding-top: 0;
-    text-align: center;   /* Centra horizontalmente */
-    position: absolute;   /* Usa `position` para ajustar la ubicación */
-    left: 50%;            /* Mueve el elemento hacia la mitad horizontal */
-    transform: translateX(-50%); /* Centra el texto horizontalmente */
-    top: 0;               /* Coloca el h3 en la parte superior */
-    padding-top: 0;       /* Elimina cualquier relleno superior */
-    padding-bottom: 10px;
-}
-
-#form-insc{
-    margin-top: 60px; /* Ajusta el espacio debajo del h3 */
+    box-shadow: 6px 6px 8px 8px rgba(0, 0, 0, 0.45);
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%; /* Asegura que el formulario ocupe todo el contenedor */
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+
+}
+
+label{
+    font-size: 12px;
+    margin-bottom: 0;
+
 }
 
 
-.form-group{
+/*.form-group{
     display: flex;
     flex-direction: column;
     padding: 5px;
@@ -201,42 +152,52 @@ form .form-control {
 #form-insc #campos-form{
     
     color: #4E4E4E;
+}*/
+
+#boton-siguiente button{
+    background-color: #5DB3B7;
+    border-radius: 10px;
+    display: flex; 
+    width: 100px;
+    height: 40px;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;
+    border: none;
+    color: #fff;
 }
 
-#boton-siguiente{
-        text-align: right; /* Alinea el contenido del div a la derecha */
-        display: flex;
-        justify-content: flex-end; /* Alinea el botón a la derecha */
-        margin-right: 80px;    
+#boton-siguiente button:hover{
+    
+    background-color: #468285;
 }
 
 /*Módulo Alumnos*/
 
-.menu-interno{
+#menu #pills-tab{
     /* Menu para navegar dentro de los módulos*/
     background-color: #F0F0F0;
     border-radius: 18px;
     border: 0.3px solid #4E4E4E;
     display: flex;
-    justify-content: center;
-    margin-top: 20%;
-    align-self: center;
-    margin-left: 220px;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+
+
 }
 
-.menu-interno ul{
+#menu ul{
     list-style: none;
     display: flex;
     
 }
 
-.menu-interno ul a{
+#menu ul a{
     /* Menu para navegar dentro de los módulos*/
     color: #5DB3B7;
     font-weight: 500;
 }
 
-.menu-interno .nav-link.active {
+#menu .nav .nav-link.active {
     background-color: #5DB3B7; /* Cambia este valor al color que quieras */
     color: #fff; /* Cambiar el color del texto en el botón seleccionado */
     border-radius: 18px; /* Opcional: para redondear los bordes */
@@ -247,14 +208,26 @@ th{
 
 }
 
-.table-striped{
-    margin-left: 120px;
+#EditIcon{
+    /* Color a al ícono de 'editar'*/
+    color: #5DB3B7;
+}
+
+#clase-paginas #cuadrito .page-link{
+    background: #5DB3B7;
+    border-color: #F0F0F0;
+    color: #F0F0F0;
+}
+
+#clase-paginas #cuadrito .page-link:hover{
+    background: #f2f3f6;
+    color: #5DB3B7;
 }
 
 /*Navbar*/
 
 .sidebar {
-    width:  ;
+    width:  15%;
     padding: 10px;
     box-sizing: border-box;
     border-radius: 5px;
@@ -266,9 +239,9 @@ th{
 
 
 .sidebar img {
-    width: 150px;
-    height: 150px;
-    display: block;
+    width: 80%;
+    height: 22%;
+    display: flex;
     margin: 0 auto;
 }
 .sidebar ul {
@@ -276,6 +249,7 @@ th{
     padding: 0;
     margin-top: 20px;
 }
+
 .sidebar ul li {
     margin: 10px 0;
     color: white;
@@ -297,7 +271,6 @@ th{
     color: white;
     text-decoration: none;
     display: flex;
-    align-items: center;
     padding: 10px;
     border-radius: 5px;
 }
