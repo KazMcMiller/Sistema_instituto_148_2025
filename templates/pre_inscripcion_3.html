@@ -31,7 +31,8 @@
                 <hr>
                 <h4 class="text-primary">Datos Personales</h4>
                 <div class="form-row">
-                    <p class="col col col-md-4"><strong class="text-gris">Apellido y Nombres:</strong> {{ nombre_apellido }}</p>
+                    <p class="col col col-md-4"><strong class="text-gris">Nombres:</strong> {{ nombre}}</p>
+                    <p class="col col col-md-4"><strong class="text-gris">Apellido:</strong> {{ apellido}}</p>
                     <p class="col col col-md-4"><strong class="text-gris">Sexo:</strong> {{ id_sexo }}</p>
                     <p class="col col col-md-4"><strong class="text-gris">DNI:</strong> {{ dni }}</p>
                     <p class="col col col-md-4"><strong class="text-gris">Fecha de Nacimiento:</strong> {{ fecha_nacimiento }}</p>
@@ -79,7 +80,8 @@
 
                 <form method="POST" action="/guardar_pre_inscripcion">
                     <!-- Pasar los datos como inputs ocultos para ser enviados al servidor -->
-                    <input type="hidden" name="nombre_apellido" value="{{ nombre_apellido }}">
+                    <input type="hidden" name="nombre_apellido" value="{{ nombre }}">
+                    <input type="hidden" name="nombre_apellido" value="{{ apellido }}">
                     <input type="hidden" name="id_sexo" value="{{ id_sexo }}">
                     <input type="hidden" name="dni" value="{{ dni }}">
                     <input type="hidden" name="fecha_nacimiento" value="{{ fecha_nacimiento }}">

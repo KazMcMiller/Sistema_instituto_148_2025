@@ -3,132 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscripción</title>
+    <title>Pre-Inscripción</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        body{
+        body {
             justify-content: center;
             display: flex;
-            align-items: center; /* Centrar verticalmente */
-            height: 100vh; /* Ocupa toda la altura de la ventana */
+            align-items: center;
+            height: 100vh;
         }
     </style>
     <script>
-        function updateTurno() {
-            const carreraSelect = document.getElementById('carrera');
-            const turnoSelect = document.getElementById('turno');
-            if (carreraSelect.value) {
-                turnoSelect.value = carreraSelect.value === '1' ? 'Mañana' : 'Tarde';
-                turnoSelect.disabled = true;
+// Parsear la variable turnos_carreras a JSON
+const turnosCarreras = {{ turnos_carreras | tojson }};
+
+function updateTurno() {
+    const carreraSelect = document.getElementById('carrera');
+    const turnoSelect = document.getElementById('turno');
+    const idCarrera = carreraSelect.value;
+
+    // Limpiar el select de turno antes de agregar nuevas opciones
+    turnoSelect.innerHTML = '<option value="">Seleccione un turno</option>';
+
+    if (idCarrera) {
+        const turnosDisponibles = turnosCarreras.filter(turno => turno.id_carrera == idCarrera);
+
+        if (turnosDisponibles.length == 1) {
+            // Si solo hay un turno, seleccionarlo automáticamente
+            turnoSelect.innerHTML = `<option value="${turnosDisponibles[0].id_turno}" selected>${turnosDisponibles[0].descripcion}</option>`;
+            turnoSelect.disabled = false;  // No deshabilitar el select
+        } else if (turnosDisponibles.length > 1) {
+            // Si hay más de un turno, permitir que el usuario lo elija
+            turnosDisponibles.forEach(turno => {
+                const option = document.createElement('option');
+                option.value = turno.id_turno;
+                option.textContent = turno.descripcion;
+                turnoSelect.appendChild(option);
+            });
+            turnoSelect.disabled = false;  // Asegurarse de que el select esté habilitado
+        }
+    } else {
+        turnoSelect.disabled = false;  // Habilitar el select si no hay carrera seleccionada
+    }
+}
+
+// Mantener el turno seleccionado si ya estaba definido
+document.addEventListener("DOMContentLoaded", function() {
+    const turnoSeleccionado = "{{ session.get('datos_personales', {}).get('turno', '') }}";
+    const turnoSelect = document.getElementById('turno');
+    
+    if (turnoSeleccionado) {
+        turnoSelect.value = turnoSeleccionado;  // Setear el turno si ya fue seleccionado previamente
+    }
+});
+
+
+        function validarDNI(input) {
+            const regex = /^[0-9]{8}$/;
+            const errorElement = document.getElementById('error-dni');
+
+            if (!regex.test(input.value)) {
+                input.value = input.value.replace(/[^0-9]/g, '');
+                errorElement.textContent = 'Por favor, ingrese solo 8 números.';
             } else {
-                turnoSelect.disabled = false;
-                turnoSelect.value = '';
+                errorElement.textContent = '';
             }
         }
-        function validarDNI(input) {
-        const regex = /^[0-9]{8}$/;
-        const errorElement = document.getElementById('error-dni');
 
-        if (!regex.test(input.value)) {
-            input.value = input.value.replace(/[^0-9]/g, '');
-            errorElement.textContent = 'Por favor, ingrese solo 8 números.';
-        } else {
-            errorElement.textContent = '';
-        }
-        }
+        // Filtra las provincias en función del país seleccionado
         function filterProvincias() {
-        const id_pais = document.getElementById('id_pais').value;
-        const provinciaSelect = document.getElementById('id_provincia');
-        const provinciasData = document.getElementById('provincias-data').children;
+            const id_pais = document.getElementById('id_pais').value;
+            const provinciaSelect = document.getElementById('id_provincia');
+            const provinciasData = document.getElementById('provincias-data').children;
 
-        provinciaSelect.innerHTML = '<option value="">Seleccionar una provincia</option>'; // Reset del select de provincias
+            provinciaSelect.innerHTML = '<option value="">Seleccionar una provincia</option>';
 
-        if (id_pais) {
-            for (let i = 0; i < provinciasData.length; i++) {
-                const provinciaOption = provinciasData[i];
-                if (provinciaOption.getAttribute('data-pais') === id_pais) {
-                    provinciaSelect.appendChild(provinciaOption.cloneNode(true));
+            if (id_pais) {
+                for (let i = 0; i < provinciasData.length; i++) {
+                    const provinciaOption = provinciasData[i];
+                    if (provinciaOption.getAttribute('data-pais') === id_pais) {
+                        provinciaSelect.appendChild(provinciaOption.cloneNode(true));
+                    }
+                }
+            }
+
+            // Limpiar la selección de localidad cuando cambie la provincia
+            document.getElementById('id_localidad').innerHTML = '<option value="">Seleccione una localidad</option>';
+        }
+
+        function mostrarLocalidades() {
+            const id_provincia = document.getElementById('id_provincia').value;
+            const localidadSelect = document.getElementById('id_localidad');
+            const localidadesData = document.getElementById('localidades-data').children;
+
+            localidadSelect.innerHTML = '<option value="">Seleccione una localidad</option>';
+
+            if (id_provincia) {
+                for (let i = 0; i < localidadesData.length; i++) {
+                    const localidadOption = localidadesData[i];
+                    if (localidadOption.getAttribute('data-provincia') === id_provincia) {
+                        localidadSelect.appendChild(localidadOption.cloneNode(true));
+                    }
                 }
             }
         }
-    }
     </script>
 </head>
 <body>
-    <div class="container" id="cont-insc">
+    <div class="container-login" id="cont-insc">
+
         <div class="form-container" id="form-insc">
             <h3>Datos Personales</h3>
             <form method="POST" action="/inscribite_2">
                 <div class="form-row" id="campos-form">
                     <div class="form-group">
-                        <label for="nombre_apellido">Apellido y Nombres:</label>
-                        <input type="text" id="nombre_apellido" name="nombre_apellido" required>
+                        <label for="nombre">Nombres:</label>
+                        <input type="text" id="nombre" name="nombre" value="{{ session.get('datos_personales', {}).get('nombre', '') }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="apellido">Apellido:</label>
+                        <input type="text" id="apellido" name="apellido" value="{{ session.get('datos_personales', {}).get('apellido', '') }}" required>
                     </div>
                     <div class="form-group">
                         <label for="id_sexo">Sexo:</label>
                         <select id="id_sexo" name="id_sexo" required>
                             <option value="">Seleccionar</option>
-                            <option value="1">Masculino</option>
-                            <option value="2">Femenino</option>
-                            <option value="3">Otro</option>
+                            <option value="1" {% if session.get('datos_personales', {}).get('id_sexo') == '1' %}selected{% endif %}>Masculino</option>
+                            <option value="2" {% if session.get('datos_personales', {}).get('id_sexo') == '2' %}selected{% endif %}>Femenino</option>
+                            <option value="3" {% if session.get('datos_personales', {}).get('id_sexo') == '3' %}selected{% endif %}>Otro</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="dni">DNI:</label>
-                        <input type="number" id="dni" name="dni" maxlength="8" oninput="validarDNI(this)" required>
+                        <input type="number" id="dni" name="dni" maxlength="8" value="{{ session.get('datos_personales', {}).get('dni', '') }}" oninput="validarDNI(this)" required>
                         <span id="error-dni" style="color: red;"></span>
                     </div>
                     <div class="form-group">
                         <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
-                        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ session.get('datos_personales', {}).get('fecha_nacimiento', '') }}" required>
                     </div>
                     <div class="form-group">
                         <label for="lugar_nacimiento">Lugar de Nacimiento:</label>
-                        <input type="text" id="lugar_nacimiento" name="lugar_nacimiento" required>
+                        <input type="text" id="lugar_nacimiento" name="lugar_nacimiento" value="{{ session.get('datos_personales', {}).get('lugar_nacimiento', '') }}" required>
                     </div>
                     <div class="form-group">
                         <label for="id_estado_civil">Estado Civil:</label>
                         <select id="id_estado_civil" name="id_estado_civil" required>
                             <option value="">Seleccione</option>
-                            <option value="1">Soltero/a</option>
-                            <option value="2">Casado/a</option>
-                            <option value="3">Divorciado/a</option>
-                            <option value="4">Viudo/a</option>
+                            <option value="1" {% if session.get('datos_personales', {}).get('id_estado_civil') == '1' %}selected{% endif %}>Soltero/a</option>
+                            <option value="2" {% if session.get('datos_personales', {}).get('id_estado_civil') == '2' %}selected{% endif %}>Casado/a</option>
+                            <option value="3" {% if session.get('datos_personales', {}).get('id_estado_civil') == '3' %}selected{% endif %}>Divorciado/a</option>
+                            <option value="4" {% if session.get('datos_personales', {}).get('id_estado_civil') == '4' %}selected{% endif %}>Viudo/a</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="cantidad_hijos">Cantidad de Hijos:</label>
-                        <input type="number" id="cantidad_hijos" name="cantidad_hijos" min="0" required>
+                        <input type="number" id="cantidad_hijos" name="cantidad_hijos" min="0" value="{{ session.get('datos_personales', {}).get('cantidad_hijos', '') }}" required>
                     </div>
                     <div class="form-group">
                         <label for="familiares_a_cargo">Familiares a Cargo:</label>
-                        <input type="number" id="familiares_a_cargo" name="familiares_a_cargo" min="0" required>
+                        <input type="number" id="familiares_a_cargo" name="familiares_a_cargo" min="0" value="{{ session.get('datos_personales', {}).get('familiares_a_cargo', '') }}" required>
                     </div>
                     <div class="form-group">
                         <label for="domicilio">Domicilio:</label>
-                        <input type="text" id="domicilio" name="domicilio" required>
+                        <input type="text" id="domicilio" name="domicilio" value="{{ session.get('datos_personales', {}).get('domicilio', '') }}" required>
                     </div>
                     <div class="form-group">
                         <label for="piso">Piso:</label>
-                        <input type="number" id="piso" name="piso">
+                        <input type="number" id="piso" name="piso" value="{{ session.get('datos_personales', {}).get('piso', '') }}">
                     </div>
                     <div class="form-group">
                         <label for="id_pais">País:</label>
                         <select id="id_pais" name="id_pais" required onchange="filterProvincias()">
                             <option value="">Seleccionar un país</option>
                             {% for pais in paises %}
-                                <option value="{{ pais[0] }}">{{ pais[1] }}</option>
+                                <option value="{{ pais[0] }}" {% if session.get('datos_personales', {}).get('id_pais') == pais[0] %}selected{% endif %}>{{ pais[1] }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     
                     <div class="form-group">
                         <label for="id_provincia">Provincia:</label>
-                        <select id="id_provincia" name="id_provincia" required>
+                        <select id="id_provincia" name="id_provincia" required onchange="mostrarLocalidades()">
                             <option value="">Seleccionar una provincia</option>
                             <!-- Aquí las provincias se cargarán dinámicamente -->
                         </select>
@@ -140,45 +200,61 @@
                             <option value="{{ provincia[0] }}" data-pais="{{ provincia[2] }}">{{ provincia[1] }}</option>
                         {% endfor %}
                     </div>
+
                     <div class="form-group">
                         <label for="id_localidad">Localidad:</label>
-                        <input type="number" id="id_localidad" name="id_localidad" required>
+                        <select id="id_localidad" name="id_localidad" required>
+                            <option value="">Seleccione una localidad</option>
+                            {% for localidad in localidades %}
+                                <option value="{{ localidad[0] }}" data-provincia="{{ localidad[2] }}" {% if session.get('datos_personales', {}).get('id_localidad') == localidad[0] %}selected{% endif %}>{{ localidad[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Localidades ocultas en el DOM -->
+                    <div id="localidades-data" style="display: none;">
+                        {% for localidad in localidades %}
+                            <option value="{{ localidad[0] }}" data-provincia="{{ localidad[2] }}">{{ localidad[1] }}</option>
+                        {% endfor %}
                     </div>
                     <div class="form-group">
                         <label for="codigo_postal">Código Postal:</label>
-                        <input type="text" id="codigo_postal" name="codigo_postal" required>
+                        <input type="text" id="codigo_postal" name="codigo_postal" value="{{ session.get('datos_personales', {}).get('codigo_postal', '') }}" required>
                     </div>
                     <div class="form-group">
                         <label for="telefono">Teléfono:</label>
-                        <input type="number" id="telefono" name="telefono" required>
+                        <input type="number" id="telefono" name="telefono" value="{{ session.get('datos_personales', {}).get('telefono', '') }}" required>
                     </div>
                     <div class="form-group">
                         <label for="telefono_alt">Teléfono Alternativo:</label>
-                        <input type="number" id="telefono_alt" name="telefono_alt">
+                        <input type="number" id="telefono_alt" name="telefono_alt" value="{{ session.get('datos_personales', {}).get('telefono_alt', '') }}" required>
                     </div>
                     <div class="form-group">
                         <label for="telefono_alt_propietario">A quién pertenece el teléfono alternativo:</label>
-                        <input type="text" id="telefono_alt_propietario" name="telefono_alt_propietario">
+                        <input type="text" id="telefono_alt_propietario" name="telefono_alt_propietario" value="{{ session.get('datos_personales', {}).get('telefono_alt_propietario', '') }}" required>
                     </div>
                     <div class="form-group">
                         <label for="email">Email:</label>
-                        <input type="email" id="email" name="email" required>
+                        <input type="email" id="email" name="email" value="{{ session.get('datos_personales', {}).get('email', '') }}" required>
                     </div>
                     <div class="form-group">
-                        <label for="carrera">Carrera:</label>
+                        <label for="carrera">Carrera</label>
                         <select id="carrera" name="carrera" onchange="updateTurno()" required>
                             <option value="">Seleccione una carrera</option>
-                            <option value="1">Analista de Sistemas</option>
-                            <option value="2">Profesorado de Matemáticas</option>
-                            <option value="3">Profesorado de Economía</option>
+                            {% for carrera in lista_carreras %}
+                                <option value="{{ carrera[0] }}" {% if session.get('datos_personales', {}).get('carrera') == carrera[0] %}selected{% endif %}>
+                                    {{ carrera[1] }}
+                                </option>
+                            {% endfor %}
                         </select>
                     </div>
+                    
                     <div class="form-group">
-                        <label for="turno">Turno:</label>
+                        <label for="turno">Turno</label>
                         <select id="turno" name="turno" required>
-                            <option value="Mañana">Mañana</option>
-                            <option value="Tarde">Tarde</option>
-                        </select>
+                            <option value="">Seleccione un turno</option>
+                            <!-- Aquí se cargarán dinámicamente los turnos -->
+                        </select>                    
                     </div>
                 </div>
                 <div class="actions" id="boton-siguiente">

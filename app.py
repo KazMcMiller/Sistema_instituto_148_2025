@@ -2,6 +2,9 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from flask_session import Session
 from dotenv import load_dotenv
 from utils.db_utils import ejecutar_sql
+from functools import wraps
+from flask import jsonify
+from datetime import date
 
 load_dotenv()
 
@@ -42,19 +45,43 @@ def login():
         password = request.form['password']
         
         # Validar el usuario contra la base de datos
-        query = "SELECT id_usuario, nombre_apellido FROM usuarios WHERE dni = %s AND pass = %s AND activo = 1"
+        query = "SELECT id_usuario, nombre FROM usuarios_2 WHERE dni = %s AND pass = %s AND activo = 1"
         result = ejecutar_sql(query, (dni, password))
         
         if result:
             session['dni'] = dni
             session['nombre'] = result[0][1]  # Suponiendo que el nombre está en la segunda columna del resultado
             session['id_usuario'] = result[0][0]  # Suponiendo que el id_usuario está en la primera columna del resultado
-        
+            id_usuario = session['id_usuario']  # ID del usuario autenticado
+
+            # Consulta para obtener el instituto asociado al usuario
+            query_instituto_usuario = """
+                SELECT id_instituto
+                FROM instituto_usuario
+                WHERE id_usuario = %s
+            """
+            id_instituto = ejecutar_sql(query_instituto_usuario, (id_usuario,))[0][0]
+
+            # Guardar el ID de la institución en la sesión
+            session['id_instituto'] = id_instituto
+            
             return redirect(url_for('seleccionar_perfil'))
         else:
             flash('DNI o contraseña incorrectos', 'error')
             return redirect(url_for('login'))
     return render_template('login.html')
+
+def perfil_requerido(perfiles_permitidos):
+    def decorador(f):
+        @wraps(f)
+        def funcion_verificada(*args, **kwargs):
+            if 'perfil' not in session:
+                return redirect(url_for('seleccionar_perfil'))  # Si no ha seleccionado un perfil
+            if session['perfil'] not in perfiles_permitidos:
+                return redirect(url_for('home'))  # Si el perfil no está permitido, redirigir a home
+            return f(*args, **kwargs)
+        return funcion_verificada
+    return decorador
 
 @app.route('/seleccionar_perfil', methods=['GET', 'POST'])
 def seleccionar_perfil():
@@ -141,14 +168,14 @@ def alumnos():
     if table == 'alumnos':
         # Consulta paginada para la lista de alumnos
         query_alumnos = """
-            SELECT id_usuario, dni, nombre_apellido, id_localidad, telefono
-            FROM usuarios
+            SELECT id_usuario, dni, nombre, id_localidad, telefono
+            FROM usuarios_2
             LIMIT %s OFFSET %s
         """
         alumnos = ejecutar_sql(query_alumnos, (per_page, offset))
 
         # Consulta para contar el total de alumnos
-        query_total_alumnos = "SELECT COUNT(*) FROM usuarios"
+        query_total_alumnos = "SELECT COUNT(*) FROM usuarios_2"
         total_alumnos = ejecutar_sql(query_total_alumnos)[0][0]
 
         # Calcular el número total de páginas para alumnos
@@ -167,14 +194,14 @@ def alumnos():
     elif table == 'pre_inscripciones':
         # Consulta paginada para la lista de pre-inscripciones
         query_pre_inscripciones = """
-            SELECT id_usuario, dni, nombre_apellido, id_localidad, telefono
-            FROM pre_inscripciones
+            SELECT id_usuario, dni, nombre, id_localidad, telefono
+            FROM pre_inscripciones_2
             LIMIT %s OFFSET %s
         """
         pre_inscripciones = ejecutar_sql(query_pre_inscripciones, (per_page, offset))
 
         # Consulta para contar el total de pre-inscripciones
-        query_total_pre_inscripciones = "SELECT COUNT(*) FROM pre_inscripciones"
+        query_total_pre_inscripciones = "SELECT COUNT(*) FROM pre_inscripciones_2"
         total_pre_inscripciones = ejecutar_sql(query_total_pre_inscripciones)[0][0]
 
         # Calcular el número total de páginas para pre-inscripciones
@@ -199,20 +226,29 @@ def editar_alumno(id_usuario):
     if request.method == 'POST':
         # Recibir datos actualizados desde el formulario y actualizar en la base de datos
         datos = request.form.to_dict()
+
+        # Convertir los campos a enteros, si es necesario
+        datos['id_localidad'] = int(datos['id_localidad']) if datos['id_localidad'].isdigit() else None
+        datos['id_pais'] = int(datos['id_pais']) if datos['id_pais'].isdigit() else None
+        datos['id_provincia'] = int(datos['id_provincia']) if datos['id_provincia'].isdigit() else None
+        datos['carrera'] = int(datos['carrera']) if datos['carrera'].isdigit() else None
+        datos['turno'] = int(datos['turno']) if datos['turno'].isdigit() else None
+
         # Normalizar campos que pueden ser nulos
-        datos['lugar_nacimiento'] = datos['lugar_nacimiento'] if datos['lugar_nacimiento'] else None
-        datos['telefono_alt'] = datos['telefono_alt'] if datos['telefono_alt'] else None
-        datos['telefono_alt_propietario'] = datos['telefono_alt_propietario'] if datos['telefono_alt_propietario'] else None
-        datos['titulo_base'] = datos['titulo_base'] if datos['titulo_base'] else None
-        datos['anio_egreso_otros'] = datos['anio_egreso_otros'] if datos['anio_egreso_otros'] else None
-        datos['actividad'] = datos['actividad'] if datos['actividad'] else None
-        datos['horario_habitual'] = datos['horario_habitual'] if datos['horario_habitual'] else None
-        datos['obra_social'] = datos['obra_social'] if datos['obra_social'] else None
-        datos['piso'] = datos['piso'] if datos['piso'] and datos['piso'] != 'NULL' else None
-        
+        datos['lugar_nacimiento'] = datos.get('lugar_nacimiento') or None
+        datos['telefono_alt'] = datos.get('telefono_alt') or None
+        datos['telefono_alt_propietario'] = datos.get('telefono_alt_propietario') or None
+        datos['titulo_base'] = datos.get('titulo_base') or None
+        datos['anio_egreso_otros'] = datos.get('anio_egreso_otros') or None
+        datos['actividad'] = datos.get('actividad') or None
+        datos['horario_habitual'] = datos.get('horario_habitual') or None
+        datos['obra_social'] = datos.get('obra_social') or None
+        datos['piso'] = datos.get('piso') if datos.get('piso') and datos['piso'] != 'NULL' else None
+
+        # Consulta para actualizar los datos del alumno en usuarios_2
         query_update = """
-            UPDATE usuarios SET 
-                nombre_apellido = %s, id_sexo = %s, fecha_nacimiento = %s, lugar_nacimiento = %s, 
+            UPDATE usuarios_2 SET 
+                dni = %s, nombre = %s, apellido = %s, id_sexo = %s, fecha_nacimiento = %s, lugar_nacimiento = %s, 
                 id_estado_civil = %s, cantidad_hijos = %s, familiares_a_cargo = %s, domicilio = %s, 
                 piso = %s, id_localidad = %s, id_pais = %s, id_provincia = %s, codigo_postal = %s, 
                 telefono = %s, telefono_alt = %s, telefono_alt_propietario = %s, email = %s, 
@@ -221,9 +257,8 @@ def editar_alumno(id_usuario):
                 obra_social = %s
             WHERE id_usuario = %s
         """
-        
         ejecutar_sql(query_update, (
-            datos['nombre_apellido'], datos['id_sexo'], datos['fecha_nacimiento'], datos['lugar_nacimiento'],
+            datos['dni'], datos['nombre'], datos['apellido'], datos['id_sexo'], datos['fecha_nacimiento'], datos['lugar_nacimiento'],
             datos['id_estado_civil'], datos['cantidad_hijos'], datos['familiares_a_cargo'], datos['domicilio'],
             datos['piso'], datos['id_localidad'], datos['id_pais'], datos['id_provincia'], datos['codigo_postal'],
             datos['telefono'], datos['telefono_alt'], datos['telefono_alt_propietario'], datos['email'],
@@ -232,13 +267,73 @@ def editar_alumno(id_usuario):
             datos['obra_social'], id_usuario
         ))
 
+        # Obtener la inscripción actual
+        query_inscripcion = """
+            SELECT id_carrera, turno FROM inscripciones_carreras WHERE id_usuario = %s AND activo = 1
+        """
+        inscripcion_actual = ejecutar_sql(query_inscripcion, (id_usuario,))
+
+        # Actualizar la carrera y el turno en inscripciones_carreras y cambiar estado_alumno a 2
+        query_update_inscripcion = """
+            UPDATE inscripciones_carreras SET 
+                id_carrera = %s, turno = %s, estado_alumno = 'inscripto', fecha_inscripcion = %s
+            WHERE id_usuario = %s AND activo = 1
+        """
+        ejecutar_sql(query_update_inscripcion, (
+            datos['carrera'], datos['turno'], date.today(), id_usuario
+        ))
+
         return redirect(url_for('alumnos'))
 
-    # Si es una solicitud GET, obtener los datos del alumno para editar
-    query_alumno = "SELECT * FROM usuarios WHERE id_usuario = %s"
-    alumno = ejecutar_sql(query_alumno, (id_usuario,))[0]  # Obtener el primer resultado
-    print (alumno)
-    return render_template('editar_alumno.html', alumno=alumno)
+    # Si es GET, obtener los datos del alumno y preparar el formulario
+    query_ingresante = "SELECT * FROM usuarios_2 WHERE id_usuario = %s"
+    ingresante = ejecutar_sql(query_ingresante, (id_usuario,))[0]
+
+
+    # Obtener carrera y turno actuales del alumno en inscripciones_carreras
+    query_carrera_turno = """
+        SELECT id_carrera, turno FROM inscripciones_carreras WHERE id_usuario = %s AND activo = 1
+    """
+    resultado = ejecutar_sql(query_carrera_turno, (id_usuario,))
+    alumno_carrera_id = resultado[0][0] if resultado else None
+    alumno_turno = resultado[0][1] if resultado else None  # `id_turno` en vez de la descripción
+    print (alumno_carrera_id)
+    print (alumno_turno)
+
+    # Obtener los países
+    query_paises = "SELECT id_pais, nombre FROM paises"
+    paises = ejecutar_sql(query_paises)
+
+    # Obtener las provincias
+    query_provincias = "SELECT id_provincia, nombre, id_pais FROM provincias"
+    provincias = ejecutar_sql(query_provincias)
+
+    # Obtener las localidades
+    query_localidades = "SELECT id_localidad, nombre, id_provincia FROM localidades"
+    localidades = ejecutar_sql(query_localidades)
+
+    # Obtener las carreras y turnos
+    query_carreras = "SELECT id_carrera, nombre FROM lista_carreras WHERE estado = 1"
+    lista_carreras = ejecutar_sql(query_carreras)
+
+ # Obtener los turnos asociados a las carreras
+    query_turnos = """
+        SELECT id_turno, id_carrera, descripcion FROM turno_carrera WHERE estado = 1
+    """
+    turnos_carreras = ejecutar_sql(query_turnos)
+    turnos_carreras = [{"id_turno": turno[0], "id_carrera": turno[1], "descripcion": turno[2]} for turno in turnos_carreras]
+
+    return render_template(
+        'editar_alumno.html',
+        alumno=ingresante,
+        paises=paises,
+        provincias=provincias,
+        localidades=localidades,
+        lista_carreras=lista_carreras,
+        turnos_carreras=turnos_carreras,  # Enviar los turnos como contexto de JSON
+        alumno_carrera_id=alumno_carrera_id,
+        alumno_turno=alumno_turno
+    )
 
 
 @app.route('/alumno/<int:id_usuario>/borrar', methods=['POST'])
@@ -247,10 +342,11 @@ def borrar_alumno(id_usuario):
         return redirect(url_for('login'))
 
     # Consulta para eliminar al alumno de la base de datos
-    query_borrar = " UPDATE usuarios SET activo = 0 WHERE id_usuario = %s"
+    query_borrar = " UPDATE usuarios_2 SET activo = 0 WHERE id_usuario = %s"
     ejecutar_sql(query_borrar, (id_usuario,))
     
     return redirect(url_for('alumnos'))
+
 
 @app.route('/ingresante/<int:id_usuario>', methods=['GET', 'POST'])
 def editar_ingresante(id_usuario):
@@ -258,57 +354,103 @@ def editar_ingresante(id_usuario):
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        # Recibir datos actualizados desde el formulario y convertir a diccionario
+        # Recibir datos actualizados desde el formulario
         datos = request.form.to_dict()
-        # Normalizar campos que pueden ser nulos
-        datos['lugar_nacimiento'] = datos['lugar_nacimiento'] or None
-        datos['telefono_alt'] = datos['telefono_alt'] or None
-        datos['telefono_alt_propietario'] = datos['telefono_alt_propietario'] or None
-        datos['titulo_base'] = datos['titulo_base'] or None
-        datos['titulo_base'] = datos['titulo_base'] or None
-        datos['anio_egreso_otros'] = datos['anio_egreso_otros'] or None
-        datos['actividad'] = datos['actividad'] or None
-        datos['horario_habitual'] = datos['horario_habitual'] or None
-        datos['obra_social'] = datos['obra_social'] or None
-        datos['anio_egreso_otros'] = datos['anio_egreso_otros'] or None
-        datos['piso'] = datos['piso'] if datos['piso'] != 'NULL' else None
-        query_insert = """
-            INSERT INTO usuarios (
-                dni, nombre_apellido, id_sexo, fecha_nacimiento, lugar_nacimiento,
-                id_estado_civil, cantidad_hijos, familiares_a_cargo, domicilio, piso, id_localidad,
-                id_pais, id_provincia, codigo_postal, telefono, telefono_alt, telefono_alt_propietario,
-                email, titulo_base, anio_egreso, id_institucion, otros_estudios, anio_egreso_otros,
-                trabaja, actividad, horario_habitual, obra_social, pass, activo
-            ) VALUES (
-                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
-            )
-        """
 
-        # Ejecutar la consulta
-        ejecutar_sql(query_insert, (
-            datos['dni'], datos['nombre_apellido'], datos['id_sexo'], datos['fecha_nacimiento'],
+        # Normalizar campos que pueden ser nulos
+        datos['id_localidad'] = int(datos['id_localidad']) if datos['id_localidad'].isdigit() else None
+        datos['id_pais'] = int(datos['id_pais']) if datos['id_pais'].isdigit() else None
+        datos['id_provincia'] = int(datos['id_provincia']) if datos['id_provincia'].isdigit() else None
+        datos['carrera'] = int(datos['carrera']) if datos['carrera'].isdigit() else None
+        datos['turno'] = int(datos['turno']) if datos['turno'].isdigit() else None
+        datos['lugar_nacimiento'] = datos.get('lugar_nacimiento') or None
+        datos['telefono_alt'] = datos.get('telefono_alt') or None
+        datos['telefono_alt_propietario'] = datos.get('telefono_alt_propietario') or None
+        datos['titulo_base'] = datos.get('titulo_base') or None
+        datos['anio_egreso_otros'] = datos.get('anio_egreso_otros') or None
+        datos['actividad'] = datos.get('actividad') or None
+        datos['horario_habitual'] = datos.get('horario_habitual') or None
+        datos['obra_social'] = datos.get('obra_social') or None
+        datos['piso'] = datos.get('piso') if datos.get('piso') and datos['piso'] != 'NULL' else None
+
+        # Insertar en usuarios_2
+        query_insert_usuario = """
+            INSERT INTO usuarios_2 (
+                dni, nombre, apellido, id_sexo, fecha_nacimiento, lugar_nacimiento, id_estado_civil,
+                cantidad_hijos, familiares_a_cargo, domicilio, piso, id_localidad, id_pais, id_provincia,
+                codigo_postal, telefono, telefono_alt, telefono_alt_propietario, email, titulo_base,
+                anio_egreso, id_institucion, otros_estudios, anio_egreso_otros, trabaja, actividad,
+                horario_habitual, obra_social, pass, activo
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        values_usuario = (
+            datos['dni'], datos['nombre'], datos['apellido'], datos['id_sexo'], datos['fecha_nacimiento'],
             datos['lugar_nacimiento'], datos['id_estado_civil'], datos['cantidad_hijos'], datos['familiares_a_cargo'],
             datos['domicilio'], datos['piso'], datos['id_localidad'], datos['id_pais'], datos['id_provincia'],
             datos['codigo_postal'], datos['telefono'], datos['telefono_alt'], datos['telefono_alt_propietario'],
-            datos['email'], datos['titulo_base'], datos['anio_egreso'], datos['id_institucion'],
-            datos['otros_estudios'], datos['anio_egreso_otros'], datos['trabaja'], datos['actividad'],
-            datos['horario_habitual'], datos['obra_social'], 12345678, 1
-        ))
+            datos['email'], datos['titulo_base'], datos['anio_egreso'], datos['id_institucion'], datos['otros_estudios'],
+            datos['anio_egreso_otros'], datos['trabaja'], datos['actividad'], datos['horario_habitual'], datos['obra_social'],
+            datos['pass'], 1  # activo = 1
+        )
+        ejecutar_sql(query_insert_usuario, values_usuario)
 
-        # Consulta para eliminar el ingresante de la tabla `pre_inscripciones` después de ser trasladado
-        query_delete = "DELETE FROM pre_inscripciones WHERE id_usuario = %s"
-        ejecutar_sql(query_delete, (id_usuario,))
+
+        query_select_id = "SELECT id_usuario FROM usuarios_2 WHERE dni = %s"
+        id_usuario_inscripcion = ejecutar_sql(query_select_id, (datos['dni'],))[0][0]
+
+        # Actualizar la carrera y el turno en inscripciones_carreras con el nuevo id_usuario
+        query_insert_inscripcion = """
+            INSERT INTO inscripciones_carreras (
+                id_usuario, id_carrera, fecha_inscripcion, turno, estado_alumno, activo
+            ) VALUES (%s, %s, %s, %s, 'inscripto', %s)
+        """
+        values_inscripcion = (
+            id_usuario_inscripcion, datos['carrera'], date.today(), datos['turno'], 1  # estado_alumno = 2, activo = 1
+        )
+        ejecutar_sql(query_insert_inscripcion, values_inscripcion)
+
+        # Consulta para eliminar al ingresante de la base de datos
+        query_borrar = "DELETE FROM pre_inscripciones_2 WHERE id_usuario = %s"
+        ejecutar_sql(query_borrar, (id_usuario,))
 
         return redirect(url_for('alumnos'))
 
-    # Si es una solicitud GET, obtener los datos del ingresante para editar
-    query_ingresante = "SELECT * FROM pre_inscripciones WHERE id_usuario = %s"
-    ingresante = ejecutar_sql(query_ingresante, (id_usuario,))[0]  # Obtener el primer resultado
-    print (ingresante)
-    
-    return render_template('editar_ingresante.html', alumno=ingresante)
+    # Si es GET, obtener los datos del ingresante desde pre_inscripciones_2 y prepararlos para el formulario
+    query_ingresante = "SELECT * FROM pre_inscripciones_2 WHERE id_usuario = %s"
+    ingresante = ejecutar_sql(query_ingresante, (id_usuario,))[0]
 
+    # Obtener carrera y turno actuales en inscripciones_carreras
+    query_carrera_turno = """
+        SELECT id_carrera, turno FROM inscripciones_carreras WHERE id_usuario = %s AND activo = 1
+    """
+    resultado = ejecutar_sql(query_carrera_turno, (id_usuario,))
+    alumno_carrera_id = resultado[0][0] if resultado else None
+    alumno_turno = resultado[0][1] if resultado else None
+
+    # Obtener los países, provincias, localidades, carreras y turnos
+    query_paises = "SELECT id_pais, nombre FROM paises"
+    query_provincias = "SELECT id_provincia, nombre, id_pais FROM provincias"
+    query_localidades = "SELECT id_localidad, nombre, id_provincia FROM localidades"
+    query_carreras = "SELECT id_carrera, nombre FROM lista_carreras WHERE estado = 1"
+    query_turnos = "SELECT id_turno, id_carrera, descripcion FROM turno_carrera WHERE estado = 1"
+
+    paises = ejecutar_sql(query_paises)
+    provincias = ejecutar_sql(query_provincias)
+    localidades = ejecutar_sql(query_localidades)
+    lista_carreras = ejecutar_sql(query_carreras)
+    turnos_carreras = [{"id_turno": turno[0], "id_carrera": turno[1], "descripcion": turno[2]} for turno in ejecutar_sql(query_turnos)]
+
+    return render_template(
+        'editar_ingresante.html',
+        alumno=ingresante,
+        paises=paises,
+        provincias=provincias,
+        localidades=localidades,
+        lista_carreras=lista_carreras,
+        turnos_carreras=turnos_carreras,
+        alumno_carrera_id=alumno_carrera_id,
+        alumno_turno=alumno_turno
+    )
 
 
 @app.route('/ingresante/<int:id_usuario>/borrar', methods=['POST'])
@@ -317,13 +459,14 @@ def borrar_ingresante(id_usuario):
         return redirect(url_for('login'))
 
     # Consulta para eliminar al ingresante de la base de datos
-    query_borrar = "DELETE FROM pre_inscripciones WHERE id_usuario = %s"
+    query_borrar = "DELETE FROM pre_inscripciones_2 WHERE id_usuario = %s"
     ejecutar_sql(query_borrar, (id_usuario,))
     
     return redirect(url_for('alumnos'))
 
     
 @app.route('/profesores')
+@perfil_requerido(['1', '3'])  # Solo perfiles 1 (directivo) y 3 (profesor) pueden acceder
 def profesores():
     if 'nombre' not in session:
         return redirect(url_for('login'))
@@ -331,6 +474,7 @@ def profesores():
     return render_template('profesores.html')
 
 @app.route('/carreras')
+@perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 2 (preseptor) pueden acceder
 def carreras():
     if 'nombre' not in session:
         return redirect(url_for('login'))
@@ -338,6 +482,7 @@ def carreras():
     return render_template('carreras.html')
 
 @app.route('/horarios')
+@perfil_requerido(['1', '3', '4'])  # Solo perfiles 1 (directivo), 3 (profesor) y 4 (alumno) pueden acceder
 def horarios():
     if 'nombre' not in session:
         return redirect(url_for('login'))
@@ -345,6 +490,7 @@ def horarios():
     return render_template('horarios.html')
 
 @app.route('/secretaria')
+@perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 3 (profesor) pueden acceder
 def secretaria():
     if 'nombre' not in session:
         return redirect(url_for('login'))
@@ -352,36 +498,86 @@ def secretaria():
     return render_template('secretaria.html')
 
 @app.route('/reportes')
+@perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 3 (profesor) pueden acceder
 def reportes():
     if 'nombre' not in session:
         return redirect(url_for('login'))
     # Renderiza la página de generación de reportes
     return render_template('reportes.html')
 
-@app.route('/pre_inscripcion')
+@app.route('/pre_inscripcion', methods=['GET', 'POST'])
+@perfil_requerido(['1', '2'])
 def pre_inscripcion():
     if 'nombre' not in session:
         return redirect(url_for('login'))
-    
-    # Consultar los países y las provincias
+
+    if request.method == 'POST':
+        # Recibir los datos desde el formulario
+        datos_personales = request.form.to_dict()
+
+        # Guardar los datos en la sesión
+        session['datos_personales'] = datos_personales
+
+        # Redirigir a pre_inscripcion_2
+        return redirect(url_for('pre_inscripcion_2'))
+
+    # Obtener países, provincias, localidades, carreras y turnos
     query_paises = "SELECT id_pais, nombre FROM paises"
     paises = ejecutar_sql(query_paises)
 
+    # Consulta para obtener las provincias
     query_provincias = "SELECT id_provincia, nombre, id_pais FROM provincias"
     provincias = ejecutar_sql(query_provincias)
 
-    return render_template('pre_inscripcion.html', paises=paises, provincias=provincias)
+    # Consulta para obtener las localidades
+    query_localidades = "SELECT id_localidad, nombre, id_provincia FROM localidades"
+    localidades = ejecutar_sql(query_localidades)
+
+    id_instituto = session.get('id_instituto')
+
+    # Consulta para obtener las carreras vinculadas a esa institución
+    query_carreras = """
+        SELECT c.id_carrera, c.nombre
+        FROM lista_carreras c
+        WHERE c.id_instituto = %s
+    """
+    lista_carreras = ejecutar_sql(query_carreras, (id_instituto,))
+
+    # Consulta para obtener los turnos asociados a las carreras
+    query_turnos = """
+        SELECT tc.id_carrera, tc.descripcion, tc.id_turno
+        FROM turno_carrera tc
+        WHERE tc.estado = 1
+    """
+    turnos_carreras = ejecutar_sql(query_turnos)
+    print (turnos_carreras)
+    # Convertir los turnos a una lista de diccionarios
+    turnos_carreras_dict = [{"id_carrera": turno[0], "descripcion": turno[1], "id_turno": turno[2]} for turno in turnos_carreras]
+
+    return render_template(
+        'pre_inscripcion.html',
+        turnos_carreras=turnos_carreras_dict,  # Pasamos la lista de diccionarios
+        lista_carreras=lista_carreras,
+        paises=paises,
+        provincias=provincias,
+        localidades=localidades
+    )
+
 
 
 
 @app.route('/pre_inscripcion_2', methods=['POST'])
+@perfil_requerido(['1', '2'])
 def pre_inscripcion_2():
     if 'nombre' not in session:
         return redirect(url_for('login'))
 
     # Recibir los datos del formulario anterior
     datos_personales = request.form.to_dict()
-    
+
+    # Imprimir para ver qué datos llegan
+    print("Datos recibidos desde pre_inscripcion:", datos_personales)
+
     # Guardar en la sesión para usarlos más adelante
     session['datos_personales'] = datos_personales
 
@@ -390,17 +586,16 @@ def pre_inscripcion_2():
 
     query_provincias = "SELECT id_provincia, id_pais, nombre FROM provincias"
     provincias = ejecutar_sql(query_provincias)
-    # Pasar el ID del país al template de pre_inscripcion_2
+
     return render_template('pre_inscripcion_2.html', id_pais_estudio=id_pais_estudio, provincias=provincias)
+
 
 
 @app.route('/guardar_pre_inscripcion', methods=['POST'])
 def guardar_pre_inscripcion():
-    # Verificar si el usuario está autenticado
-
- # Obtener todos los datos desde la sesión
+    # Obtener todos los datos desde la sesión
     datos = session.get('datos_completos', {})
-    
+
     # Ajustar campos que pueden no estar presentes
     datos['lugar_nacimiento'] = datos.get('lugar_nacimiento') or None
     datos['telefono_alt'] = datos.get('telefono_alt') or None
@@ -410,78 +605,179 @@ def guardar_pre_inscripcion():
     datos['piso'] = datos.get('piso') if datos.get('piso') != 'NULL' else None
 
     # Ajustar los campos relacionados con el trabajo
-    trabaja = datos.get('trabaja')  # Asumimos que '2' significa que no trabaja si no está presente
+    trabaja = datos.get('trabaja')
     actividad = datos.get('actividad', '') if trabaja == 'si' else None
     horario_habitual = datos.get('horario_habitual', '') if trabaja == 'si' else None
     obra_social = datos.get('obra_social', '') if trabaja == 'si' else None
 
-    # Consulta SQL para insertar en la tabla usuarios
+    # Usar los IDs originales para la inserción en inscripciones_carreras
+    id_carrera = datos.get('id_carrera_original')
+    id_turno = datos.get('id_turno_original')
+    id_pais = datos.get('id_pais_original')
+    id_provincia = datos.get('id_provincia_original')
+    id_localidad = datos.get('id_localidad_original')
+
+    # Insertar el usuario en la tabla pre_inscripciones_2 sin id_carrera ni id_turno
     query_usuario = """
-        INSERT INTO pre_inscripciones (
-            dni, nombre_apellido, id_sexo, fecha_nacimiento, lugar_nacimiento, id_estado_civil,
+        INSERT INTO pre_inscripciones_2 (
+            dni, nombre, apellido, id_sexo, fecha_nacimiento, lugar_nacimiento, id_estado_civil,
             cantidad_hijos, familiares_a_cargo, domicilio, piso, id_localidad, id_pais,
             id_provincia, codigo_postal, telefono, telefono_alt, telefono_alt_propietario, email,
             titulo_base, anio_egreso, id_institucion, otros_estudios, anio_egreso_otros,
             trabaja, actividad, horario_habitual, obra_social
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
-    
-    # Ejecutar la consulta
     ejecutar_sql(query_usuario, (
-        datos['dni'], datos['nombre_apellido'], datos['id_sexo'],
+        datos['dni'], datos['nombre'], datos['apellido'], datos['id_sexo'],
         datos['fecha_nacimiento'], datos['lugar_nacimiento'], datos['id_estado_civil'],
         datos['cantidad_hijos'], datos['familiares_a_cargo'], datos['domicilio'],
-        datos['piso'], datos['id_localidad'], datos['id_pais'],
-        datos['id_provincia'], datos['codigo_postal'], datos['telefono'],
+        datos['piso'], id_localidad, id_pais,
+        id_provincia, datos['codigo_postal'], datos['telefono'],
         datos['telefono_alt'], datos['telefono_alt_propietario'], datos['email'],
         datos['titulo_base'], datos['anio_egreso'], datos['id_institucion'],
         datos['otros_estudios'], datos['anio_egreso_otros'], trabaja,
         actividad, horario_habitual, obra_social
     ))
 
+    # Recuperar id_usuario usando el DNI
+    query_select_id = "SELECT id_usuario FROM pre_inscripciones_2 WHERE dni = %s"
+    id_usuario = ejecutar_sql(query_select_id, (datos['dni'],))[0][0]
+    print (id_usuario)
+    # Insertar en inscripciones_carreras con el id_usuario obtenido
+    query_inscripcion = """
+        INSERT INTO inscripciones_carreras (
+            id_carrera, id_usuario, fecha_inscripcion, turno, estado_alumno, activo
+        ) VALUES (%s, %s, NOW(), %s, 'pre_inscripto', 1)
+    """
+    ejecutar_sql(query_inscripcion, (id_carrera, id_usuario, id_turno))
     # Redirigir al home una vez completada la inscripción
     return redirect(url_for('home'))
 
 
 
 
+
+
 @app.route('/pre_inscripcion_3', methods=['POST'])
+@perfil_requerido(['1', '2'])
 def pre_inscripcion_3():
-    # Verificar si el usuario está autenticado
     if 'nombre' not in session:
         return redirect(url_for('login'))
 
     # Obtener los datos personales desde la sesión
     datos_personales = session.get('datos_personales', {})
-    print(session.get('datos_personales'))
+
     # Recibir los datos de estudios y laborales del formulario de pre_inscripcion_2
     datos_estudios_y_laborales = request.form.to_dict()
 
     # Combinar todos los datos
     datos_completos = {**datos_personales, **datos_estudios_y_laborales}
+
+    # Guardar en la sesión
     session['datos_completos'] = datos_completos
 
-    # Renderizar pre_inscripcion_3.html con los datos combinados para la revisión
+    # Consultas SQL para obtener los nombres en lugar de IDs
+    query_pais = "SELECT nombre FROM paises WHERE id_pais = %s"
+    query_provincia = "SELECT nombre FROM provincias WHERE id_provincia = %s"
+    query_localidad = "SELECT nombre FROM localidades WHERE id_localidad = %s"
+    query_carrera = "SELECT nombre FROM lista_carreras WHERE id_carrera = %s"
+    query_turno = "SELECT descripcion FROM turno_carrera WHERE id_turno = %s"
+
+    # Mantener los IDs originales
+    id_pais_original = datos_completos.get('id_pais')
+    id_provincia_original = datos_completos.get('id_provincia')
+    id_localidad_original = datos_completos.get('id_localidad')
+    id_carrera_original = datos_completos.get('carrera')
+    id_turno_original = datos_completos.get('turno')
+
+    # Obtener los nombres basados en los IDs
+    pais_nombre = ejecutar_sql(query_pais, (id_pais_original,))[0][0] if id_pais_original else None
+    provincia_nombre = ejecutar_sql(query_provincia, (id_provincia_original,))[0][0] if id_provincia_original else None
+    localidad_nombre = ejecutar_sql(query_localidad, (id_localidad_original,))[0][0] if id_localidad_original else None
+    carrera_nombre = ejecutar_sql(query_carrera, (id_carrera_original,))[0][0] if id_carrera_original else None
+    turno_descripcion = ejecutar_sql(query_turno, (id_turno_original,))[0][0] if id_turno_original else None
+
+    # Guardar los valores originales junto con los nombres
+    datos_completos['id_pais_original'] = id_pais_original
+    datos_completos['id_provincia_original'] = id_provincia_original
+    datos_completos['id_localidad_original'] = id_localidad_original
+    datos_completos['id_carrera_original'] = id_carrera_original
+    datos_completos['id_turno_original'] = id_turno_original
+
+    # Reemplazar los IDs por sus nombres para mostrar en la vista
+    datos_completos['id_pais'] = pais_nombre
+    datos_completos['id_provincia'] = provincia_nombre
+    datos_completos['id_localidad'] = localidad_nombre
+    datos_completos['carrera'] = carrera_nombre
+    datos_completos['turno'] = turno_descripcion
+
     return render_template('pre_inscripcion_3.html', **datos_completos)
 
-@app.route('/inscribite')
+
+@app.route('/inscribite', methods=['GET', 'POST'])
 def inscribite():
 
-    # Consultar los países y las provincias
+    if request.method == 'POST':
+        # Recibir los datos desde el formulario
+        datos_personales = request.form.to_dict()
+
+        # Guardar los datos en la sesión
+        session['datos_personales'] = datos_personales
+
+        # Redirigir a pre_inscripcion_2
+        return redirect(url_for('pre_inscripcion_2'))
+
+    # Obtener países, provincias, localidades, carreras y turnos
     query_paises = "SELECT id_pais, nombre FROM paises"
     paises = ejecutar_sql(query_paises)
 
+    # Consulta para obtener las provincias
     query_provincias = "SELECT id_provincia, nombre, id_pais FROM provincias"
     provincias = ejecutar_sql(query_provincias)
 
-    return render_template('inscribite.html', paises=paises, provincias=provincias)
+    # Consulta para obtener las localidades
+    query_localidades = "SELECT id_localidad, nombre, id_provincia FROM localidades"
+    localidades = ejecutar_sql(query_localidades)
 
+    id_instituto = session.get('id_instituto')
+
+    # Consulta para obtener las carreras vinculadas a esa institución
+    query_carreras = """
+        SELECT c.id_carrera, c.nombre
+        FROM lista_carreras c
+        WHERE c.id_instituto = %s
+    """
+    lista_carreras = ejecutar_sql(query_carreras, (id_instituto,))
+
+    # Consulta para obtener los turnos asociados a las carreras
+    query_turnos = """
+        SELECT tc.id_carrera, tc.descripcion, tc.id_turno
+        FROM turno_carrera tc
+        WHERE tc.estado = 1
+    """
+    turnos_carreras = ejecutar_sql(query_turnos)
+    print (turnos_carreras)
+    # Convertir los turnos a una lista de diccionarios
+    turnos_carreras_dict = [{"id_carrera": turno[0], "descripcion": turno[1], "id_turno": turno[2]} for turno in turnos_carreras]
+
+    return render_template(
+        'inscribite.html',
+        turnos_carreras=turnos_carreras_dict,  # Pasamos la lista de diccionarios
+        lista_carreras=lista_carreras,
+        paises=paises,
+        provincias=provincias,
+        localidades=localidades
+    )
 
 @app.route('/inscribite_2', methods=['POST'])
 def inscribite_2():
+
     # Recibir los datos del formulario anterior
     datos_personales = request.form.to_dict()
-    
+
+    # Imprimir para ver qué datos llegan
+    print("Datos recibidos desde pre_inscripcion:", datos_personales)
+
     # Guardar en la sesión para usarlos más adelante
     session['datos_personales'] = datos_personales
 
@@ -490,7 +786,7 @@ def inscribite_2():
 
     query_provincias = "SELECT id_provincia, id_pais, nombre FROM provincias"
     provincias = ejecutar_sql(query_provincias)
-    # Pasar el ID del país al template de pre_inscripcion_2
+
     return render_template('inscribite_2.html', id_pais_estudio=id_pais_estudio, provincias=provincias)
 
 @app.route('/inscribite_3', methods=['POST'])
@@ -498,15 +794,51 @@ def inscribite_3():
 
     # Obtener los datos personales desde la sesión
     datos_personales = session.get('datos_personales', {})
-    print(session.get('datos_personales'))
+
     # Recibir los datos de estudios y laborales del formulario de pre_inscripcion_2
     datos_estudios_y_laborales = request.form.to_dict()
 
     # Combinar todos los datos
     datos_completos = {**datos_personales, **datos_estudios_y_laborales}
+
+    # Guardar en la sesión
     session['datos_completos'] = datos_completos
 
-    # Renderizar inscribite_3.html con los datos combinados para la revisión
+    # Consultas SQL para obtener los nombres en lugar de IDs
+    query_pais = "SELECT nombre FROM paises WHERE id_pais = %s"
+    query_provincia = "SELECT nombre FROM provincias WHERE id_provincia = %s"
+    query_localidad = "SELECT nombre FROM localidades WHERE id_localidad = %s"
+    query_carrera = "SELECT nombre FROM lista_carreras WHERE id_carrera = %s"
+    query_turno = "SELECT descripcion FROM turno_carrera WHERE id_turno = %s"
+
+    # Mantener los IDs originales
+    id_pais_original = datos_completos.get('id_pais')
+    id_provincia_original = datos_completos.get('id_provincia')
+    id_localidad_original = datos_completos.get('id_localidad')
+    id_carrera_original = datos_completos.get('carrera')
+    id_turno_original = datos_completos.get('turno')
+
+    # Obtener los nombres basados en los IDs
+    pais_nombre = ejecutar_sql(query_pais, (id_pais_original,))[0][0] if id_pais_original else None
+    provincia_nombre = ejecutar_sql(query_provincia, (id_provincia_original,))[0][0] if id_provincia_original else None
+    localidad_nombre = ejecutar_sql(query_localidad, (id_localidad_original,))[0][0] if id_localidad_original else None
+    carrera_nombre = ejecutar_sql(query_carrera, (id_carrera_original,))[0][0] if id_carrera_original else None
+    turno_descripcion = ejecutar_sql(query_turno, (id_turno_original,))[0][0] if id_turno_original else None
+
+    # Guardar los valores originales junto con los nombres
+    datos_completos['id_pais_original'] = id_pais_original
+    datos_completos['id_provincia_original'] = id_provincia_original
+    datos_completos['id_localidad_original'] = id_localidad_original
+    datos_completos['id_carrera_original'] = id_carrera_original
+    datos_completos['id_turno_original'] = id_turno_original
+
+    # Reemplazar los IDs por sus nombres para mostrar en la vista
+    datos_completos['id_pais'] = pais_nombre
+    datos_completos['id_provincia'] = provincia_nombre
+    datos_completos['id_localidad'] = localidad_nombre
+    datos_completos['carrera'] = carrera_nombre
+    datos_completos['turno'] = turno_descripcion
+
     return render_template('inscribite_3.html', **datos_completos)
 
 
