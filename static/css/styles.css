@@ -37,6 +37,59 @@
     align-items: center;
 }
 
+#boton-siguiente button{
+    background-color: #5382AA;
+    border-radius: 10px;
+    display: flex; 
+    width: 100px;
+    height: 40px;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;
+    border: none;
+    color: #fff;
+}
+
+#boton-siguiente button:hover{
+    
+    background-color: #318cdc;
+}
+
+#boton-atras button{
+
+    background-color: #a55772;
+    border-radius: 10px;
+    display: flex; 
+    width: 100px;
+    height: 40px;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;
+    border: none;
+    color: #fff;
+
+}
+
+#boton-atras button:hover{
+    
+    background-color: #e44c5b;
+}
+
+#boton-confirmar button{
+    
+    background-color: #5DB3B7;
+    border-radius: 10px;
+    display: flex; 
+    width: 100px;
+    height: 40px;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;
+    border: none;
+    color: #fff;
+}
+
+#boton-confirmar:hover{
+    background-color: #72d9de;
+}
+
 /*Login*/
 
 body{
@@ -129,47 +182,6 @@ label{
 }
 
 
-/*.form-group{
-    display: flex;
-    flex-direction: column;
-    padding: 5px;
-}
-
-.form-group input{
-    border-radius: 8px;
-    border-color: #f2f3f6;
-}
-
-.form-group select{
-    height: 30px;
-    border-radius: 8px;
-    border-color: #4E4E4E;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-}
-
-#form-insc #campos-form{
-    
-    color: #4E4E4E;
-}*/
-
-#boton-siguiente button{
-    background-color: #5DB3B7;
-    border-radius: 10px;
-    display: flex; 
-    width: 100px;
-    height: 40px;
-    justify-content: center; /* Centra horizontalmente */
-    align-items: center;
-    border: none;
-    color: #fff;
-}
-
-#boton-siguiente button:hover{
-    
-    background-color: #468285;
-}
 
 /*Módulo Alumnos*/
 
@@ -288,6 +300,32 @@ th{
     margin-right: 10px;
 }
 
+
+
+/*.form-group{
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+}
+
+.form-group input{
+    border-radius: 8px;
+    border-color: #f2f3f6;
+}
+
+.form-group select{
+    height: 30px;
+    border-radius: 8px;
+    border-color: #4E4E4E;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+#form-insc #campos-form{
+    
+    color: #4E4E4E;
+}*/
 /* estilos de lucas
 .content {
     flex-grow: 1;

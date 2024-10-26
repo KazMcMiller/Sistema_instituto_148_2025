@@ -10,13 +10,13 @@
     <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script>
-// Parsear la variable turnos_carreras a JSON
-const turnosCarreras = {{ turnos_carreras | tojson }};
+    // Parsear la variable turnos_carreras a JSON
+    const turnosCarreras = {{ turnos_carreras | tojson }};
 
-function updateTurno() {
-    const carreraSelect = document.getElementById('carrera');
-    const turnoSelect = document.getElementById('turno');
-    const idCarrera = carreraSelect.value;
+    function updateTurno() {
+        const carreraSelect = document.getElementById('carrera');
+        const turnoSelect = document.getElementById('turno');
+        const idCarrera = carreraSelect.value;
 
     // Limpiar el select de turno antes de agregar nuevas opciones
     turnoSelect.innerHTML = '<option value="">Seleccione un turno</option>';
@@ -129,11 +129,11 @@ document.addEventListener("DOMContentLoaded", function() {
                         <div class="form-row">
                             <div class="col col-md-3 form-group">
                                 <label for="nombre">Nombres:</label>
-                                <input type="text" id="nombre" name="nombre" value="{{ session.get('datos_personales', {}).get('nombre', '') }}" required>
+                                <input class="form-control form-control-sm" type="text" id="nombre" name="nombre" value="{{ session.get('datos_personales', {}).get('nombre', '') }}" required>
                             </div>
                             <div class="col col-md-3 form-group">
-                                <label for="apellido">apellido:</label>
-                                <input type="text" id="apellido" name="apellido" value="{{ session.get('datos_personales', {}).get('apellido', '') }}" required>
+                                <label for="apellido">Apellido:</label>
+                                <input class="form-control form-control-sm" type="text" id="apellido" name="apellido" value="{{ session.get('datos_personales', {}).get('apellido', '') }}" required>
                             </div>
                             <div class="col col col-md-3 form-group">
                       
@@ -147,16 +147,16 @@ document.addEventListener("DOMContentLoaded", function() {
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="dni">DNI:</label>
-                                <input type="number" id="dni" name="dni" maxlength="8" value="{{ session.get('datos_personales', {}).get('dni', '') }}" oninput="validarDNI(this)" required>
-                                <span id="error-dni" style="color: red;"></span>
+                                <input class="form-control form-control-sm" type="number" id="dni" name="dni" maxlength="8" value="{{ session.get('datos_personales', {}).get('dni', '') }}" oninput="validarDNI(this)" required>
+                                <span id="error-dni" style="color: #a55772;"></span>
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
-                                <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ session.get('datos_personales', {}).get('fecha_nacimiento', '') }}" required>
+                                <input class="form-control form-control-sm" type="date" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ session.get('datos_personales', {}).get('fecha_nacimiento', '') }}" required>
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="lugar_nacimiento">Lugar de Nacimiento:</label>
-                                <input type="text" id="lugar_nacimiento" name="lugar_nacimiento" value="{{ session.get('datos_personales', {}).get('lugar_nacimiento', '') }}" required>
+                                <input class="form-control form-control-sm" type="text" id="lugar_nacimiento" name="lugar_nacimiento" value="{{ session.get('datos_personales', {}).get('lugar_nacimiento', '') }}" required>
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="id_estado_civil">Estado Civil:</label>
@@ -170,23 +170,23 @@ document.addEventListener("DOMContentLoaded", function() {
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="cantidad_hijos">Cantidad de Hijos:</label>
-                                <input type="number" id="cantidad_hijos" name="cantidad_hijos" min="0" value="{{ session.get('datos_personales', {}).get('cantidad_hijos', '') }}" required>
+                                <input class="form-control form-control-sm" type="number" id="cantidad_hijos" name="cantidad_hijos" min="0" value="{{ session.get('datos_personales', {}).get('cantidad_hijos', '') }}" required>
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="familiares_a_cargo">Familiares a Cargo:</label>
-                                <input type="number" id="familiares_a_cargo" name="familiares_a_cargo" min="0" value="{{ session.get('datos_personales', {}).get('familiares_a_cargo', '') }}" required>
+                                <input class="form-control form-control-sm" type="number" id="familiares_a_cargo" name="familiares_a_cargo" min="0" value="{{ session.get('datos_personales', {}).get('familiares_a_cargo', '') }}" required>
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="domicilio">Domicilio:</label>
-                                <input type="text" id="domicilio" name="domicilio" value="{{ session.get('datos_personales', {}).get('domicilio', '') }}" required>
+                                <input class="form-control form-control-sm" type="text" id="domicilio" name="domicilio" value="{{ session.get('datos_personales', {}).get('domicilio', '') }}" required>
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="piso">Piso:</label>
-                                <input type="number" id="piso" name="piso" value="{{ session.get('datos_personales', {}).get('piso', '') }}">
+                                <input class="form-control form-control-sm" type="number" id="piso" name="piso" value="{{ session.get('datos_personales', {}).get('piso', '') }}">
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="id_pais">País:</label>
-                                <select id="id_pais" name="id_pais" required onchange="filterProvincias()">
+                                <select class="form-control form-control-sm" id="id_pais" name="id_pais" required onchange="filterProvincias()">
                                     <option value="">Seleccionar un país</option>
                                     {% for pais in paises %}
                                         <option value="{{ pais[0] }}" {% if session.get('datos_personales', {}).get('id_pais') == pais[0] %}selected{% endif %}>{{ pais[1] }}</option>
@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             
                             <div class="col col col-md-3 form-group">
                                 <label for="id_provincia">Provincia:</label>
-                                <select id="id_provincia" name="id_provincia" required onchange="mostrarLocalidades()">
+                                <select class="form-control form-control-sm" id="id_provincia" name="id_provincia" required onchange="mostrarLocalidades()">
                                     <option value="">Seleccionar una provincia</option>
                                     <!-- Aquí las provincias se cargarán dinámicamente -->
                                 </select>
@@ -211,7 +211,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
                             <div class="col col col-md-3 form-group">
                                 <label for="id_localidad">Localidad:</label>
-                                <select id="id_localidad" name="id_localidad" required>
+                                <select class="form-control form-control-sm" id="id_localidad" name="id_localidad" required>
                                     <option value="">Seleccione una localidad</option>
                                     {% for localidad in localidades %}
                                         <option value="{{ localidad[0] }}" data-provincia="{{ localidad[2] }}" {% if session.get('datos_personales', {}).get('id_localidad') == localidad[0] %}selected{% endif %}>{{ localidad[1] }}</option>
@@ -227,28 +227,28 @@ document.addEventListener("DOMContentLoaded", function() {
 
                             <div class="col col col-md-3 form-group">
                                 <label for="codigo_postal">Código Postal:</label>
-                                <input type="text" id="codigo_postal" name="codigo_postal" value="{{ session.get('datos_personales', {}).get('codigo_postal', '') }}" required>
+                                <input class="form-control form-control-sm" type="text" id="codigo_postal" name="codigo_postal" value="{{ session.get('datos_personales', {}).get('codigo_postal', '') }}" required>
                             </div>
 
                             <div class="col col col-md-3 form-group">
                                 <label for="telefono">Teléfono:</label>
-                                <input type="number" id="telefono" name="telefono" value="{{ session.get('datos_personales', {}).get('telefono', '') }}" required>
+                                <input class="form-control form-control-sm" type="number" id="telefono" name="telefono" value="{{ session.get('datos_personales', {}).get('telefono', '') }}" required>
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="telefono_alt">Teléfono Alternativo:</label>
-                                <input type="number" id="telefono_alt" name="telefono_alt" value="{{ session.get('datos_personales', {}).get('telefono_alt', '') }}" required>
+                                <input class="form-control form-control-sm" type="number" id="telefono_alt" name="telefono_alt" value="{{ session.get('datos_personales', {}).get('telefono_alt', '') }}" required>
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="telefono_alt_propietario">A quién pertenece el teléfono alternativo:</label>
-                                <input type="text" id="telefono_alt_propietario" name="telefono_alt_propietario" value="{{ session.get('datos_personales', {}).get('telefono_alt_propietario', '') }}" required>
+                                <input class="form-control form-control-sm" type="text" id="telefono_alt_propietario" name="telefono_alt_propietario" value="{{ session.get('datos_personales', {}).get('telefono_alt_propietario', '') }}" required>
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="email">Email:</label>
-                                <input type="email" id="email" name="email" value="{{ session.get('datos_personales', {}).get('email', '') }}" required>
+                                <input class="form-control form-control-sm" type="email" id="email" name="email" value="{{ session.get('datos_personales', {}).get('email', '') }}" required>
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="carrera">Carrera:</label>
-                                <select id="carrera" name="carrera" onchange="updateTurno()" required>
+                                <select class="form-control form-control-sm" id="carrera" name="carrera" onchange="updateTurno()" required>
                                     <option value="">Seleccione una carrera</option>
                                     {% for carrera in lista_carreras %}
                                         <option value="{{ carrera[0] }}" {% if session.get('datos_personales', {}).get('carrera') == carrera[0] %}selected{% endif %}>
@@ -259,7 +259,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             </div>
                             <div class="form-group">
                                 <label for="turno">Turno</label>
-                                <select id="turno" name="turno" required>
+                                <select class="form-control form-control-sm" id="turno" name="turno" required>
                                     <option value="">Seleccione un turno</option>
                                     <!-- Aquí se cargarán dinámicamente los turnos -->
                                 </select>                    

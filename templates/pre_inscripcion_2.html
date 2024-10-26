@@ -70,7 +70,7 @@
                                         <option value="{{ provincia[0] }}" data-pais="{{ provincia[1] }}">{{ provincia[2] }}</option>
                                     {% endfor %}
                                 </select>
-                                <span id="mensaje-provincia" style="display: none; color: red;">*Seleccione una provincia solo si estudió en Argentina.</span>
+                                <span id="mensaje-provincia" style="display: none; color: #a55722;">*Seleccione una provincia solo si estudió en Argentina.</span>
                             </div>
                             <div class="col col-md-4 form-group">
                                 <label for="id_institucion">Institución:</label>
@@ -112,15 +112,16 @@
                     </div>
                 </div>
                 
-            <div class="actions">
-                <button type="submit">Siguiente</button>
+
+            <div class="actions" id="boton-siguiente">
+                <button type="submit" class="float-right mb-3">Siguiente</button>
             </div>
         </form>
-        <form method="GET" action="{{ url_for('pre_inscripcion') }}">
-            <button type="submit" class="btn btn-secondary">
-                Atrás
-            </button>
-        </form>
+        <div class="action" id="boton-atras">
+            <form method="GET" action="{{ url_for('pre_inscripcion') }}">
+                <button type="submit" class="float-left mb-3">Atrás</button>
+            </form>
+        </div>
         </div>
     </div>
     <script>

@@ -116,12 +116,12 @@
                     <input type="hidden" name="horario_habitual" value="{{ horario_habitual }}">
                     <input type="hidden" name="obra_social" value="{{ obra_social }}">
 
-                    <div class="actions">
-                        <button type="submit">Confirmar y Guardar</button>
+                    <div class="actions" id="boton-confirmar">
+                        <button type="submit" class="float-right mb-3">Guardar</button>
                     </div>
-                    <button type="submit" formaction="{{ url_for('pre_inscripcion_2') }}" class="btn btn-secondary">
-                        Atrás
-                    </button>
+                    <div class="action" id="boton-atras">
+                            <button type="submit" formaction="{{ url_for('pre_inscripcion_2') }}" class="float-left mb-3">Atrás</button>
+                    </div>
                 </form>
             </div>
         </div>
