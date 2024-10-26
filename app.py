@@ -231,7 +231,7 @@ def editar_alumno(id_usuario):
         datos['id_localidad'] = int(datos['id_localidad']) if datos['id_localidad'].isdigit() else None
         datos['id_pais'] = int(datos['id_pais']) if datos['id_pais'].isdigit() else None
         datos['id_provincia'] = int(datos['id_provincia']) if datos['id_provincia'].isdigit() else None
-        datos['id_carrera'] = int(datos['id_carrera']) if datos['id_carrera'].isdigit() else None
+        datos['carrera'] = int(datos['carrera']) if datos['carrera'].isdigit() else None
         datos['turno'] = int(datos['turno']) if datos['turno'].isdigit() else None
 
         # Normalizar campos que pueden ser nulos
@@ -248,7 +248,7 @@ def editar_alumno(id_usuario):
         # Consulta para actualizar los datos del alumno en usuarios_2
         query_update = """
             UPDATE usuarios_2 SET 
-                nombre = %s, apellido = %s, id_sexo = %s, fecha_nacimiento = %s, lugar_nacimiento = %s, 
+                dni = %s, nombre = %s, apellido = %s, id_sexo = %s, fecha_nacimiento = %s, lugar_nacimiento = %s, 
                 id_estado_civil = %s, cantidad_hijos = %s, familiares_a_cargo = %s, domicilio = %s, 
                 piso = %s, id_localidad = %s, id_pais = %s, id_provincia = %s, codigo_postal = %s, 
                 telefono = %s, telefono_alt = %s, telefono_alt_propietario = %s, email = %s, 
@@ -258,7 +258,7 @@ def editar_alumno(id_usuario):
             WHERE id_usuario = %s
         """
         ejecutar_sql(query_update, (
-            datos['nombre'], datos['apellido'], datos['id_sexo'], datos['fecha_nacimiento'], datos['lugar_nacimiento'],
+            datos['dni'], datos['nombre'], datos['apellido'], datos['id_sexo'], datos['fecha_nacimiento'], datos['lugar_nacimiento'],
             datos['id_estado_civil'], datos['cantidad_hijos'], datos['familiares_a_cargo'], datos['domicilio'],
             datos['piso'], datos['id_localidad'], datos['id_pais'], datos['id_provincia'], datos['codigo_postal'],
             datos['telefono'], datos['telefono_alt'], datos['telefono_alt_propietario'], datos['email'],
@@ -273,21 +273,15 @@ def editar_alumno(id_usuario):
         """
         inscripcion_actual = ejecutar_sql(query_inscripcion, (id_usuario,))
 
-        # Verificar si se ha cambiado la carrera o el turno
-        id_carrera_actual = inscripcion_actual[0][0] if inscripcion_actual else None
-        turno_actual = inscripcion_actual[0][1] if inscripcion_actual else None
-
-        if (datos['id_carrera'] and datos['id_carrera'] != id_carrera_actual) or \
-           (datos['turno'] and datos['turno'] != turno_actual):
-            # Actualizar la carrera y el turno en inscripciones_carreras y cambiar estado_alumno a 2
-            query_update_inscripcion = """
-                UPDATE inscripciones_carreras SET 
-                    id_carrera = %s, turno = %s, estado_alumno = inscripto, fecha_inscripcion = %s
-                WHERE id_usuario = %s AND activo = 1
-            """
-            ejecutar_sql(query_update_inscripcion, (
-                datos['id_carrera'], datos['turno'], date.today(), id_usuario
-            ))
+        # Actualizar la carrera y el turno en inscripciones_carreras y cambiar estado_alumno a 2
+        query_update_inscripcion = """
+            UPDATE inscripciones_carreras SET 
+                id_carrera = %s, turno = %s, estado_alumno = 'inscripto', fecha_inscripcion = %s
+            WHERE id_usuario = %s AND activo = 1
+        """
+        ejecutar_sql(query_update_inscripcion, (
+            datos['carrera'], datos['turno'], date.today(), id_usuario
+        ))
 
         return redirect(url_for('alumnos'))
 
@@ -360,17 +354,15 @@ def editar_ingresante(id_usuario):
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        # Recibir datos actualizados desde el formulario y actualizar en la base de datos
+        # Recibir datos actualizados desde el formulario
         datos = request.form.to_dict()
 
-        # Convertir los campos a enteros, si es necesario
+        # Normalizar campos que pueden ser nulos
         datos['id_localidad'] = int(datos['id_localidad']) if datos['id_localidad'].isdigit() else None
         datos['id_pais'] = int(datos['id_pais']) if datos['id_pais'].isdigit() else None
         datos['id_provincia'] = int(datos['id_provincia']) if datos['id_provincia'].isdigit() else None
-        datos['id_carrera'] = int(datos['id_carrera']) if datos['id_carrera'].isdigit() else None
+        datos['carrera'] = int(datos['carrera']) if datos['carrera'].isdigit() else None
         datos['turno'] = int(datos['turno']) if datos['turno'].isdigit() else None
-
-        # Normalizar campos que pueden ser nulos
         datos['lugar_nacimiento'] = datos.get('lugar_nacimiento') or None
         datos['telefono_alt'] = datos.get('telefono_alt') or None
         datos['telefono_alt_propietario'] = datos.get('telefono_alt_propietario') or None
@@ -381,89 +373,72 @@ def editar_ingresante(id_usuario):
         datos['obra_social'] = datos.get('obra_social') or None
         datos['piso'] = datos.get('piso') if datos.get('piso') and datos['piso'] != 'NULL' else None
 
-        # Consulta para actualizar los datos del alumno en usuarios_2
-        query_update = """
-            UPDATE pre_inscripciones_2 SET 
-                nombre = %s, apellido = %s, id_sexo = %s, fecha_nacimiento = %s, lugar_nacimiento = %s, 
-                id_estado_civil = %s, cantidad_hijos = %s, familiares_a_cargo = %s, domicilio = %s, 
-                piso = %s, id_localidad = %s, id_pais = %s, id_provincia = %s, codigo_postal = %s, 
-                telefono = %s, telefono_alt = %s, telefono_alt_propietario = %s, email = %s, 
-                titulo_base = %s, anio_egreso = %s, id_institucion = %s, otros_estudios = %s, 
-                anio_egreso_otros = %s, trabaja = %s, actividad = %s, horario_habitual = %s, 
-                obra_social = %s
-            WHERE id_usuario = %s
+        # Insertar en usuarios_2
+        query_insert_usuario = """
+            INSERT INTO usuarios_2 (
+                dni, nombre, apellido, id_sexo, fecha_nacimiento, lugar_nacimiento, id_estado_civil,
+                cantidad_hijos, familiares_a_cargo, domicilio, piso, id_localidad, id_pais, id_provincia,
+                codigo_postal, telefono, telefono_alt, telefono_alt_propietario, email, titulo_base,
+                anio_egreso, id_institucion, otros_estudios, anio_egreso_otros, trabaja, actividad,
+                horario_habitual, obra_social, pass, activo
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
-        ejecutar_sql(query_update, (
-            datos['nombre'], datos['apellido'], datos['id_sexo'], datos['fecha_nacimiento'], datos['lugar_nacimiento'],
-            datos['id_estado_civil'], datos['cantidad_hijos'], datos['familiares_a_cargo'], datos['domicilio'],
-            datos['piso'], datos['id_localidad'], datos['id_pais'], datos['id_provincia'], datos['codigo_postal'],
-            datos['telefono'], datos['telefono_alt'], datos['telefono_alt_propietario'], datos['email'],
-            datos['titulo_base'], datos['anio_egreso'], datos['id_institucion'], datos['otros_estudios'],
-            datos['anio_egreso_otros'], datos['trabaja'], datos['actividad'], datos['horario_habitual'],
-            datos['obra_social'], id_usuario
-        ))
+        values_usuario = (
+            datos['dni'], datos['nombre'], datos['apellido'], datos['id_sexo'], datos['fecha_nacimiento'],
+            datos['lugar_nacimiento'], datos['id_estado_civil'], datos['cantidad_hijos'], datos['familiares_a_cargo'],
+            datos['domicilio'], datos['piso'], datos['id_localidad'], datos['id_pais'], datos['id_provincia'],
+            datos['codigo_postal'], datos['telefono'], datos['telefono_alt'], datos['telefono_alt_propietario'],
+            datos['email'], datos['titulo_base'], datos['anio_egreso'], datos['id_institucion'], datos['otros_estudios'],
+            datos['anio_egreso_otros'], datos['trabaja'], datos['actividad'], datos['horario_habitual'], datos['obra_social'],
+            datos['pass'], 1  # activo = 1
+        )
+        ejecutar_sql(query_insert_usuario, values_usuario)
 
-        # Obtener la inscripción actual
-        query_inscripcion = """
-            SELECT id_carrera, turno FROM inscripciones_carreras WHERE id_usuario = %s AND activo = 1
+
+        query_select_id = "SELECT id_usuario FROM usuarios_2 WHERE dni = %s"
+        id_usuario_inscripcion = ejecutar_sql(query_select_id, (datos['dni'],))[0][0]
+
+        # Actualizar la carrera y el turno en inscripciones_carreras con el nuevo id_usuario
+        query_insert_inscripcion = """
+            INSERT INTO inscripciones_carreras (
+                id_usuario, id_carrera, fecha_inscripcion, turno, estado_alumno, activo
+            ) VALUES (%s, %s, %s, %s, 'inscripto', %s)
         """
-        inscripcion_actual = ejecutar_sql(query_inscripcion, (id_usuario,))
+        values_inscripcion = (
+            id_usuario_inscripcion, datos['carrera'], date.today(), datos['turno'], 1  # estado_alumno = 2, activo = 1
+        )
+        ejecutar_sql(query_insert_inscripcion, values_inscripcion)
 
-        # Verificar si se ha cambiado la carrera o el turno
-        id_carrera_actual = inscripcion_actual[0][0] if inscripcion_actual else None
-        turno_actual = inscripcion_actual[0][1] if inscripcion_actual else None
-
-        if (datos['id_carrera'] and datos['id_carrera'] != id_carrera_actual) or \
-           (datos['turno'] and datos['turno'] != turno_actual):
-            # Actualizar la carrera y el turno en inscripciones_carreras y cambiar estado_alumno a 2
-            query_update_inscripcion = """
-                UPDATE inscripciones_carreras SET 
-                    id_carrera = %s, turno = %s, estado_alumno = inscripto, fecha_inscripcion = %s
-                WHERE id_usuario = %s AND activo = 1
-            """
-            ejecutar_sql(query_update_inscripcion, (
-                datos['id_carrera'], datos['turno'], date.today(), id_usuario
-            ))
+        # Consulta para eliminar al ingresante de la base de datos
+        query_borrar = "DELETE FROM pre_inscripciones_2 WHERE id_usuario = %s"
+        ejecutar_sql(query_borrar, (id_usuario,))
 
         return redirect(url_for('alumnos'))
 
-    # Si es GET, obtener los datos del alumno y preparar el formulario
+    # Si es GET, obtener los datos del ingresante desde pre_inscripciones_2 y prepararlos para el formulario
     query_ingresante = "SELECT * FROM pre_inscripciones_2 WHERE id_usuario = %s"
     ingresante = ejecutar_sql(query_ingresante, (id_usuario,))[0]
 
-
-    # Obtener carrera y turno actuales del alumno en inscripciones_carreras
+    # Obtener carrera y turno actuales en inscripciones_carreras
     query_carrera_turno = """
         SELECT id_carrera, turno FROM inscripciones_carreras WHERE id_usuario = %s AND activo = 1
     """
     resultado = ejecutar_sql(query_carrera_turno, (id_usuario,))
     alumno_carrera_id = resultado[0][0] if resultado else None
-    alumno_turno = resultado[0][1] if resultado else None  # `id_turno` en vez de la descripción
-    print (alumno_carrera_id)
-    print (alumno_turno)
+    alumno_turno = resultado[0][1] if resultado else None
 
-    # Obtener los países
+    # Obtener los países, provincias, localidades, carreras y turnos
     query_paises = "SELECT id_pais, nombre FROM paises"
-    paises = ejecutar_sql(query_paises)
-
-    # Obtener las provincias
     query_provincias = "SELECT id_provincia, nombre, id_pais FROM provincias"
-    provincias = ejecutar_sql(query_provincias)
-
-    # Obtener las localidades
     query_localidades = "SELECT id_localidad, nombre, id_provincia FROM localidades"
-    localidades = ejecutar_sql(query_localidades)
-
-    # Obtener las carreras y turnos
     query_carreras = "SELECT id_carrera, nombre FROM lista_carreras WHERE estado = 1"
-    lista_carreras = ejecutar_sql(query_carreras)
+    query_turnos = "SELECT id_turno, id_carrera, descripcion FROM turno_carrera WHERE estado = 1"
 
- # Obtener los turnos asociados a las carreras
-    query_turnos = """
-        SELECT id_turno, id_carrera, descripcion FROM turno_carrera WHERE estado = 1
-    """
-    turnos_carreras = ejecutar_sql(query_turnos)
-    turnos_carreras = [{"id_turno": turno[0], "id_carrera": turno[1], "descripcion": turno[2]} for turno in turnos_carreras]
+    paises = ejecutar_sql(query_paises)
+    provincias = ejecutar_sql(query_provincias)
+    localidades = ejecutar_sql(query_localidades)
+    lista_carreras = ejecutar_sql(query_carreras)
+    turnos_carreras = [{"id_turno": turno[0], "id_carrera": turno[1], "descripcion": turno[2]} for turno in ejecutar_sql(query_turnos)]
 
     return render_template(
         'editar_ingresante.html',
@@ -472,11 +447,10 @@ def editar_ingresante(id_usuario):
         provincias=provincias,
         localidades=localidades,
         lista_carreras=lista_carreras,
-        turnos_carreras=turnos_carreras,  # Enviar los turnos como contexto de JSON
+        turnos_carreras=turnos_carreras,
         alumno_carrera_id=alumno_carrera_id,
         alumno_turno=alumno_turno
     )
-
 
 
 @app.route('/ingresante/<int:id_usuario>/borrar', methods=['POST'])
@@ -672,10 +646,10 @@ def guardar_pre_inscripcion():
     # Insertar en inscripciones_carreras con el id_usuario obtenido
     query_inscripcion = """
         INSERT INTO inscripciones_carreras (
-            id_usuario, id_carrera, fecha_inscripcion, turno, estado_alumno, activo
-        ) VALUES (%s, %s, NOW(), %s, pre_inscripto, 1)
+            id_carrera, id_usuario, fecha_inscripcion, turno, estado_alumno, activo
+        ) VALUES (%s, %s, NOW(), %s, 'pre_inscripto', 1)
     """
-    ejecutar_sql(query_inscripcion, (id_usuario, id_carrera, id_turno))
+    ejecutar_sql(query_inscripcion, (id_carrera, id_usuario, id_turno))
     # Redirigir al home una vez completada la inscripción
     return redirect(url_for('home'))
 
