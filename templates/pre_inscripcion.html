@@ -122,8 +122,12 @@ document.addEventListener("DOMContentLoaded", function() {
             <form method="POST" action="/pre_inscripcion_2">
                 <div class="form-row" id="campos-form">
                     <div class="form-group">
-                        <label for="nombre_apellido">Apellido y Nombres:</label>
-                        <input type="text" id="nombre_apellido" name="nombre_apellido" value="{{ session.get('datos_personales', {}).get('nombre_apellido', '') }}" required>
+                        <label for="nombre">Nombres:</label>
+                        <input type="text" id="nombre" name="nombre" value="{{ session.get('datos_personales', {}).get('nombre', '') }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="apellido">Apellido:</label>
+                        <input type="text" id="apellido" name="apellido" value="{{ session.get('datos_personales', {}).get('apellido', '') }}" required>
                     </div>
                     <div class="form-group">
                         <label for="id_sexo">Sexo:</label>

@@ -15,7 +15,8 @@
             <h2>Confirmar Pre-Inscripción</h2>
             <div class="data-summary">
                 <h3>Datos Personales</h3>
-                <p><strong>Apellido y Nombres:</strong> {{ nombre_apellido }}</p>
+                <p><strong>Nombres:</strong> {{ nombre }}</p>
+                <p><strong>Apellido:</strong> {{ apellido }}</p>
                 <p><strong>Sexo:</strong> {{ id_sexo }}</p>
                 <p><strong>DNI:</strong> {{ dni }}</p>
                 <p><strong>Fecha de Nacimiento:</strong> {{ fecha_nacimiento }}</p>
@@ -45,7 +46,8 @@
                 
                 
                 <!-- Mantener el resto de los inputs ocultos para enviar todos los datos -->
-                <input type="hidden" name="nombre_apellido" value="{{ nombre_apellido }}">
+                <input type="hidden" name="nombre" value="{{ nombre }}">
+                <input type="hidden" name="apellido" value="{{ apellido }}">
                 <input type="hidden" name="id_sexo" value="{{ id_sexo }}">
                 <input type="hidden" name="dni" value="{{ dni }}">
                 <input type="hidden" name="fecha_nacimiento" value="{{ fecha_nacimiento }}">
