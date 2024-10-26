@@ -714,24 +714,70 @@ def pre_inscripcion_3():
     return render_template('pre_inscripcion_3.html', **datos_completos)
 
 
-@app.route('/inscribite')
+@app.route('/inscribite', methods=['GET', 'POST'])
 def inscribite():
 
-    # Consultar los países y las provincias
+    if request.method == 'POST':
+        # Recibir los datos desde el formulario
+        datos_personales = request.form.to_dict()
+
+        # Guardar los datos en la sesión
+        session['datos_personales'] = datos_personales
+
+        # Redirigir a pre_inscripcion_2
+        return redirect(url_for('pre_inscripcion_2'))
+
+    # Obtener países, provincias, localidades, carreras y turnos
     query_paises = "SELECT id_pais, nombre FROM paises"
     paises = ejecutar_sql(query_paises)
 
+    # Consulta para obtener las provincias
     query_provincias = "SELECT id_provincia, nombre, id_pais FROM provincias"
     provincias = ejecutar_sql(query_provincias)
 
-    return render_template('inscribite.html', paises=paises, provincias=provincias)
+    # Consulta para obtener las localidades
+    query_localidades = "SELECT id_localidad, nombre, id_provincia FROM localidades"
+    localidades = ejecutar_sql(query_localidades)
 
+    id_instituto = session.get('id_instituto')
+
+    # Consulta para obtener las carreras vinculadas a esa institución
+    query_carreras = """
+        SELECT c.id_carrera, c.nombre
+        FROM lista_carreras c
+        WHERE c.id_instituto = %s
+    """
+    lista_carreras = ejecutar_sql(query_carreras, (id_instituto,))
+
+    # Consulta para obtener los turnos asociados a las carreras
+    query_turnos = """
+        SELECT tc.id_carrera, tc.descripcion, tc.id_turno
+        FROM turno_carrera tc
+        WHERE tc.estado = 1
+    """
+    turnos_carreras = ejecutar_sql(query_turnos)
+    print (turnos_carreras)
+    # Convertir los turnos a una lista de diccionarios
+    turnos_carreras_dict = [{"id_carrera": turno[0], "descripcion": turno[1], "id_turno": turno[2]} for turno in turnos_carreras]
+
+    return render_template(
+        'inscribite.html',
+        turnos_carreras=turnos_carreras_dict,  # Pasamos la lista de diccionarios
+        lista_carreras=lista_carreras,
+        paises=paises,
+        provincias=provincias,
+        localidades=localidades
+    )
 
 @app.route('/inscribite_2', methods=['POST'])
 def inscribite_2():
+
     # Recibir los datos del formulario anterior
     datos_personales = request.form.to_dict()
-    
+
+    # Imprimir para ver qué datos llegan
+    print("Datos recibidos desde pre_inscripcion:", datos_personales)
+
     # Guardar en la sesión para usarlos más adelante
     session['datos_personales'] = datos_personales
 
@@ -740,7 +786,7 @@ def inscribite_2():
 
     query_provincias = "SELECT id_provincia, id_pais, nombre FROM provincias"
     provincias = ejecutar_sql(query_provincias)
-    # Pasar el ID del país al template de pre_inscripcion_2
+
     return render_template('inscribite_2.html', id_pais_estudio=id_pais_estudio, provincias=provincias)
 
 @app.route('/inscribite_3', methods=['POST'])
@@ -748,15 +794,51 @@ def inscribite_3():
 
     # Obtener los datos personales desde la sesión
     datos_personales = session.get('datos_personales', {})
-    print(session.get('datos_personales'))
+
     # Recibir los datos de estudios y laborales del formulario de pre_inscripcion_2
     datos_estudios_y_laborales = request.form.to_dict()
 
     # Combinar todos los datos
     datos_completos = {**datos_personales, **datos_estudios_y_laborales}
+
+    # Guardar en la sesión
     session['datos_completos'] = datos_completos
 
-    # Renderizar inscribite_3.html con los datos combinados para la revisión
+    # Consultas SQL para obtener los nombres en lugar de IDs
+    query_pais = "SELECT nombre FROM paises WHERE id_pais = %s"
+    query_provincia = "SELECT nombre FROM provincias WHERE id_provincia = %s"
+    query_localidad = "SELECT nombre FROM localidades WHERE id_localidad = %s"
+    query_carrera = "SELECT nombre FROM lista_carreras WHERE id_carrera = %s"
+    query_turno = "SELECT descripcion FROM turno_carrera WHERE id_turno = %s"
+
+    # Mantener los IDs originales
+    id_pais_original = datos_completos.get('id_pais')
+    id_provincia_original = datos_completos.get('id_provincia')
+    id_localidad_original = datos_completos.get('id_localidad')
+    id_carrera_original = datos_completos.get('carrera')
+    id_turno_original = datos_completos.get('turno')
+
+    # Obtener los nombres basados en los IDs
+    pais_nombre = ejecutar_sql(query_pais, (id_pais_original,))[0][0] if id_pais_original else None
+    provincia_nombre = ejecutar_sql(query_provincia, (id_provincia_original,))[0][0] if id_provincia_original else None
+    localidad_nombre = ejecutar_sql(query_localidad, (id_localidad_original,))[0][0] if id_localidad_original else None
+    carrera_nombre = ejecutar_sql(query_carrera, (id_carrera_original,))[0][0] if id_carrera_original else None
+    turno_descripcion = ejecutar_sql(query_turno, (id_turno_original,))[0][0] if id_turno_original else None
+
+    # Guardar los valores originales junto con los nombres
+    datos_completos['id_pais_original'] = id_pais_original
+    datos_completos['id_provincia_original'] = id_provincia_original
+    datos_completos['id_localidad_original'] = id_localidad_original
+    datos_completos['id_carrera_original'] = id_carrera_original
+    datos_completos['id_turno_original'] = id_turno_original
+
+    # Reemplazar los IDs por sus nombres para mostrar en la vista
+    datos_completos['id_pais'] = pais_nombre
+    datos_completos['id_provincia'] = provincia_nombre
+    datos_completos['id_localidad'] = localidad_nombre
+    datos_completos['carrera'] = carrera_nombre
+    datos_completos['turno'] = turno_descripcion
+
     return render_template('inscribite_3.html', **datos_completos)
 
 
