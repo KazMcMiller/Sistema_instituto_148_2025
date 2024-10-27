@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function() {
             
                 <div class="form-container">
                     <h4 class="text-primary text-center mt-3">Datos Personales</h4>
-                    <form method="POST" action="/pre_inscripcion_2">
+                    <form method="POST" action="/pre_inscripcion">
                         <div class="form-row">
                             <div class="col col-md-3 form-group">
                                 <label for="nombre">Nombres:</label>
@@ -147,8 +147,14 @@ document.addEventListener("DOMContentLoaded", function() {
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="dni">DNI:</label>
-                                <input class="form-control form-control-sm" type="number" id="dni" name="dni" maxlength="8" value="{{ session.get('datos_personales', {}).get('dni', '') }}" oninput="validarDNI(this)" required>
-                                <span id="error-dni" style="color: #a55772;"></span>
+                                <input class="form-control form-control-sm" type="number" id="dni" name="dni" maxlength="8"
+                                       value="{{ datos_personales.get('dni', '') if error_dni else session.get('datos_personales', {}).get('dni', '') }}"
+                                       oninput="validarDNI(this)" required>
+                                <span id="error-dni" style="color: #a55772;">
+                                    {% if error_dni %}
+                                        Este DNI ya existe en el sistema.
+                                    {% endif %}
+                                </span>
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
