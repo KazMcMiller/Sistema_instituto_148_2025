@@ -409,6 +409,33 @@ def editar_ingresante(id_usuario):
         )
         ejecutar_sql(query_insert_inscripcion, values_inscripcion)
 
+        # consulta para insertar el perfil de alumno y el id_usuario en perfiles usuarios
+        query_ingresar_perfil = """
+            INSERT INTO perfiles_usuarios (
+                id_perfil, id_usuarios
+            ) VALUES (%s, %s)
+        """
+        # 4 = alumno y buscamos el id del usuario nuevo
+        values_ingresar_perfil = (
+            4, id_usuario_inscripcion
+        )
+        ejecutar_sql(query_ingresar_perfil,values_ingresar_perfil)
+
+        # consulta para insertar el id del instituto actual y el id_usuario en instituto usuario
+        query_ingresar_instituto = """
+            INSERT INTO instituto_usuario (
+                id_instituto, id_usuario
+            ) VALUES (%s, %s)
+        """
+        # buscamos el id que esta en la session
+        sesion = session['id_instituto']
+        # metemos en el value los datos
+        values_ingresar_instituto = (
+            sesion, id_usuario_inscripcion
+        )
+        ejecutar_sql(query_ingresar_instituto,values_ingresar_instituto)
+
+
         # Consulta para eliminar al ingresante de la base de datos
         query_borrar = "DELETE FROM pre_inscripciones WHERE id_usuario = %s"
         ejecutar_sql(query_borrar, (id_usuario,))
@@ -511,31 +538,18 @@ def pre_inscripcion():
     if 'nombre' not in session:
         return redirect(url_for('login'))
 
-    if request.method == 'POST':
-        # Recibir los datos desde el formulario
-        datos_personales = request.form.to_dict()
-
-        # Guardar los datos en la sesión
-        session['datos_personales'] = datos_personales
-
-        # Redirigir a pre_inscripcion_2
-        return redirect(url_for('pre_inscripcion_2'))
-
     # Obtener países, provincias, localidades, carreras y turnos
     query_paises = "SELECT id_pais, nombre FROM paises"
     paises = ejecutar_sql(query_paises)
 
-    # Consulta para obtener las provincias
     query_provincias = "SELECT id_provincia, nombre, id_pais FROM provincias"
     provincias = ejecutar_sql(query_provincias)
 
-    # Consulta para obtener las localidades
     query_localidades = "SELECT id_localidad, nombre, id_provincia FROM localidades"
     localidades = ejecutar_sql(query_localidades)
 
     id_instituto = session.get('id_instituto')
 
-    # Consulta para obtener las carreras vinculadas a esa institución
     query_carreras = """
         SELECT c.id_carrera, c.nombre
         FROM lista_carreras c
@@ -543,46 +557,71 @@ def pre_inscripcion():
     """
     lista_carreras = ejecutar_sql(query_carreras, (id_instituto,))
 
-    # Consulta para obtener los turnos asociados a las carreras
     query_turnos = """
         SELECT tc.id_carrera, tc.descripcion, tc.id_turno
         FROM turno_carrera tc
         WHERE tc.estado = 1
     """
     turnos_carreras = ejecutar_sql(query_turnos)
-    print (turnos_carreras)
-    # Convertir los turnos a una lista de diccionarios
     turnos_carreras_dict = [{"id_carrera": turno[0], "descripcion": turno[1], "id_turno": turno[2]} for turno in turnos_carreras]
 
+    if request.method == 'POST':
+        # Recibir los datos desde el formulario
+        datos_personales = request.form.to_dict()
+        
+        # Verificar si el DNI ya existe en la base de datos de usuarios
+        dni = datos_personales.get('dni')
+        query_verificar_dni = "SELECT COUNT(*) FROM usuarios WHERE dni = %s"
+        existe_dni = ejecutar_sql(query_verificar_dni, (dni,))[0][0]
+
+        if existe_dni > 0:
+            # Redirigir a la página de pre-inscripción con un mensaje de error
+            return render_template(
+                'pre_inscripcion.html',
+                turnos_carreras=turnos_carreras_dict,
+                lista_carreras=lista_carreras,
+                paises=paises,
+                provincias=provincias,
+                localidades=localidades,
+                error_dni=True,
+                datos_personales=datos_personales  # Para mantener los datos ingresados
+            )
+
+        # Guardar los datos en la sesión y continuar a la siguiente página
+        session['datos_personales'] = datos_personales
+        return redirect(url_for('pre_inscripcion_2'))
+
+    # Renderizar la página sin mensaje de error al cargar por primera vez (GET)
     return render_template(
         'pre_inscripcion.html',
-        turnos_carreras=turnos_carreras_dict,  # Pasamos la lista de diccionarios
+        turnos_carreras=turnos_carreras_dict,
         lista_carreras=lista_carreras,
         paises=paises,
         provincias=provincias,
-        localidades=localidades
+        localidades=localidades,
+        error_dni=False
     )
 
 
 
 
-@app.route('/pre_inscripcion_2', methods=['POST'])
+
+
+@app.route('/pre_inscripcion_2', methods=['GET', 'POST'])
 @perfil_requerido(['1', '2'])
 def pre_inscripcion_2():
     if 'nombre' not in session:
         return redirect(url_for('login'))
 
-    # Recibir los datos del formulario anterior
-    datos_personales = request.form.to_dict()
+    if request.method == 'POST':
+        # Recibir los datos del formulario anterior
+        datos_personales = request.form.to_dict()
 
-    # Imprimir para ver qué datos llegan
-    print("Datos recibidos desde pre_inscripcion:", datos_personales)
-
-    # Guardar en la sesión para usarlos más adelante
-    session['datos_personales'] = datos_personales
+        # Guardar en la sesión para usarlos más adelante
+        session['datos_personales'] = datos_personales
 
     # Aquí obtienes el país seleccionado previamente (lo que corresponde a Argentina o no)
-    id_pais_estudio = int(datos_personales['id_pais'])
+    id_pais_estudio = int(session['datos_personales'].get('id_pais', 0))  # Valor por defecto 0 si no está en sesión
 
     query_provincias = "SELECT id_provincia, id_pais, nombre FROM provincias"
     provincias = ejecutar_sql(query_provincias)
