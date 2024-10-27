@@ -102,8 +102,9 @@
                     <div class="form-group">
                         <label for="id_sexo">Sexo</label>
                         <select id="id_sexo" name="id_sexo" required>
-                            <option value=1 {% if alumno[4] == 1 %}selected{% endif %}>Masculino</option><!--3= sexo-->
-                            <option value=2 {% if alumno[4] == 2 %}selected{% endif %}>Femenino</option>
+                            <option value=1 {% if alumno[4] == 1 %}selected{% endif %}>Hombre</option><!--4= sexo-->
+                            <option value=2 {% if alumno[4] == 2 %}selected{% endif %}>Mujer</option>
+                            <option value=3 {% if alumno[4] == 3 %}selected{% endif %}>Otro</option>
                         </select>
                     </div>
                     <div class="form-group">
