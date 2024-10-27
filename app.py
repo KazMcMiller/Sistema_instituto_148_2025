@@ -629,13 +629,23 @@ def pre_inscripcion_2():
         # Guardar en la sesión para usarlos más adelante
         session['datos_personales'] = datos_personales
 
-    # Aquí obtienes el país seleccionado previamente (lo que corresponde a Argentina o no)
+    # Obtener el país seleccionado previamente (Argentina o no)
     id_pais_estudio = int(session['datos_personales'].get('id_pais', 0))  # Valor por defecto 0 si no está en sesión
 
+    # Consulta para obtener provincias
     query_provincias = "SELECT id_provincia, id_pais, nombre FROM provincias"
     provincias = ejecutar_sql(query_provincias)
 
-    return render_template('pre_inscripcion_2.html', id_pais_estudio=id_pais_estudio, provincias=provincias)
+    # Consulta para obtener institutos
+    query_institutos = "SELECT id_instituto, nombre_instituto FROM institutos"
+    institutos = ejecutar_sql(query_institutos)
+
+    return render_template(
+        'pre_inscripcion_2.html',
+        id_pais_estudio=id_pais_estudio,
+        provincias=provincias,
+        institutos=institutos  # Enviar lista de institutos al HTML
+    )
 
 
 
@@ -664,6 +674,7 @@ def guardar_pre_inscripcion():
     id_pais = datos.get('id_pais_original')
     id_provincia = datos.get('id_provincia_original')
     id_localidad = datos.get('id_localidad_original')
+    id_institucion = datos.get('id_institucion_original')
 
     # Insertar el usuario en la tabla pre_inscripciones sin id_carrera ni id_turno
     query_usuario = """
@@ -682,7 +693,7 @@ def guardar_pre_inscripcion():
         datos['piso'], id_localidad, id_pais,
         id_provincia, datos['codigo_postal'], datos['telefono'],
         datos['telefono_alt'], datos['telefono_alt_propietario'], datos['email'],
-        datos['titulo_base'], datos['anio_egreso'], datos['id_institucion'],
+        datos['titulo_base'], datos['anio_egreso'], id_institucion,
         datos['otros_estudios'], datos['anio_egreso_otros'], trabaja,
         actividad, horario_habitual, obra_social
     ))
@@ -730,6 +741,7 @@ def pre_inscripcion_3():
     query_localidad = "SELECT nombre FROM localidades WHERE id_localidad = %s"
     query_carrera = "SELECT nombre FROM lista_carreras WHERE id_carrera = %s"
     query_turno = "SELECT descripcion FROM turno_carrera WHERE id_turno = %s"
+    query_instituto = "SELECT nombre_instituto FROM institutos WHERE id_instituto = %s"
 
     # Mantener los IDs originales
     id_pais_original = datos_completos.get('id_pais')
@@ -737,6 +749,7 @@ def pre_inscripcion_3():
     id_localidad_original = datos_completos.get('id_localidad')
     id_carrera_original = datos_completos.get('carrera')
     id_turno_original = datos_completos.get('turno')
+    id_instituto_original = datos_completos.get('id_institucion')
 
     # Obtener los nombres basados en los IDs
     pais_nombre = ejecutar_sql(query_pais, (id_pais_original,))[0][0] if id_pais_original else None
@@ -744,6 +757,7 @@ def pre_inscripcion_3():
     localidad_nombre = ejecutar_sql(query_localidad, (id_localidad_original,))[0][0] if id_localidad_original else None
     carrera_nombre = ejecutar_sql(query_carrera, (id_carrera_original,))[0][0] if id_carrera_original else None
     turno_descripcion = ejecutar_sql(query_turno, (id_turno_original,))[0][0] if id_turno_original else None
+    instituto_nombre = ejecutar_sql(query_instituto, (id_instituto_original,))[0][0] if id_instituto_original else None
 
     # Guardar los valores originales junto con los nombres
     datos_completos['id_pais_original'] = id_pais_original
@@ -751,6 +765,7 @@ def pre_inscripcion_3():
     datos_completos['id_localidad_original'] = id_localidad_original
     datos_completos['id_carrera_original'] = id_carrera_original
     datos_completos['id_turno_original'] = id_turno_original
+    datos_completos['id_instituto_original'] = id_instituto_original
 
     # Reemplazar los IDs por sus nombres para mostrar en la vista
     datos_completos['id_pais'] = pais_nombre
@@ -758,6 +773,7 @@ def pre_inscripcion_3():
     datos_completos['id_localidad'] = localidad_nombre
     datos_completos['carrera'] = carrera_nombre
     datos_completos['turno'] = turno_descripcion
+    datos_completos['id_institucion'] = instituto_nombre
 
     return render_template('pre_inscripcion_3.html', **datos_completos)
 
