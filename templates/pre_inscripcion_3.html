@@ -119,10 +119,12 @@
                     <div class="actions" id="boton-confirmar">
                         <button type="submit" class="float-right mb-3">Guardar</button>
                     </div>
-                    <div class="action" id="boton-atras">
-                            <button type="submit" formaction="{{ url_for('pre_inscripcion_2') }}" class="float-left mb-3">Atrás</button>
-                    </div>
                 </form>
+                <div class="action" id="boton-atras">
+                    <form method="GET" action="{{ url_for('pre_inscripcion') }}">
+                        <button type="submit" class="float-left mb-3">Atrás</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
