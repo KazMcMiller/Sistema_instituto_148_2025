@@ -95,7 +95,7 @@
                 </div>
                 
                 <!-- Contenido de la pestaña de Pre-Inscripciones -->
-            <!--    <div id="pre_inscripciones" class="tab-inscripcion">
+                <div id="pre_inscripciones" class="tab-inscripcion">
                     <h5 class="text-primary">Listado de Pre-Inscripciones</h5>
                     <div class="table table-striped">
                             <table>
@@ -118,19 +118,19 @@
                                         <td>
                                             <a href="{{ url_for('editar_ingresante', id_usuario=pre_inscripcion[0]) }}">
                                                 <i class="fas fa-edit fa-lg" id="EditIcon"></i>
-                                            </a>-->
+                                            </a>
                                             <!--
                                             <form action="{{ url_for('borrar_ingresante', id_usuario=pre_inscripcion[0]) }}" method="POST" style="display:inline;">
                                                 <button type="submit" class="btn btn-danger">Borrar</button>
                                             </form>
                                             -->
-                                    <!--    </td>
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                         </div>
-                    </div>-->
+                    </div>
                 <!--     Paginación de Pre-Inscripciones -->
                     {% if total_paginas_pre_inscripciones %}
                     <div class="pagination" id="clase-paginas">

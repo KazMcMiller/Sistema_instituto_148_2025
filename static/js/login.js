@@ -1,3 +1,5 @@
+/* Funiconalidad para que el 'ojito' te muestre la contraseña*/
+
 function togglePasswordVisibility() {
     var passwordInput = document.getElementById("password");
     var eyeIcon = document.getElementById("eyeIcon");
