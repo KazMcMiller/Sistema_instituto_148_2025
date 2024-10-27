@@ -409,6 +409,16 @@ def editar_ingresante(id_usuario):
         )
         ejecutar_sql(query_insert_inscripcion, values_inscripcion)
 
+        query_ingresar_perfil = """
+            INSERT INTO perfiles_usuarios (
+                id_perfil, id_usuarios
+            ) VALUES (%s, %s)
+        """
+        values_ingresar_perfil = (
+            4, id_usuario_inscripcion
+        )
+        ejecutar_sql(query_ingresar_perfil,values_ingresar_perfil)
+
         # Consulta para eliminar al ingresante de la base de datos
         query_borrar = "DELETE FROM pre_inscripciones WHERE id_usuario = %s"
         ejecutar_sql(query_borrar, (id_usuario,))
