@@ -427,11 +427,20 @@ def editar_ingresante(id_usuario):
                 id_instituto, id_usuario
             ) VALUES (%s, %s)
         """
-        # buscamos el id que esta en la session
-        sesion = session['id_instituto']
+        # Buscar el id_instituto correspondiente al usuario
+        query_sesion = """
+            SELECT id_institucion FROM usuarios WHERE id_usuario = %s
+        """
+        # Ejecutar la consulta y obtener el resultado
+        instituto = ejecutar_sql(query_sesion, (id_usuario_inscripcion,))
+
+        # Acceder al valor de id_institucion si existe en el resultado
+        id_instituto = instituto[0][0]
+
         # metemos en el value los datos
+        print (instituto)
         values_ingresar_instituto = (
-            sesion, id_usuario_inscripcion
+            id_instituto, id_usuario_inscripcion
         )
         ejecutar_sql(query_ingresar_instituto,values_ingresar_instituto)
 
