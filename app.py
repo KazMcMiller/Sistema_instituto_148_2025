@@ -409,15 +409,32 @@ def editar_ingresante(id_usuario):
         )
         ejecutar_sql(query_insert_inscripcion, values_inscripcion)
 
+        # consulta para insertar el perfil de alumno y el id_usuario en perfiles usuarios
         query_ingresar_perfil = """
             INSERT INTO perfiles_usuarios (
                 id_perfil, id_usuarios
             ) VALUES (%s, %s)
         """
+        # 4 = alumno y buscamos el id del usuario nuevo
         values_ingresar_perfil = (
             4, id_usuario_inscripcion
         )
         ejecutar_sql(query_ingresar_perfil,values_ingresar_perfil)
+
+        # consulta para insertar el id del instituto actual y el id_usuario en instituto usuario
+        query_ingresar_instituto = """
+            INSERT INTO instituto_usuario (
+                id_instituto, id_usuario
+            ) VALUES (%s, %s)
+        """
+        # buscamos el id que esta en la session
+        sesion = session['id_instituto']
+        # metemos en el value los datos
+        values_ingresar_instituto = (
+            sesion, id_usuario_inscripcion
+        )
+        ejecutar_sql(query_ingresar_instituto,values_ingresar_instituto)
+
 
         # Consulta para eliminar al ingresante de la base de datos
         query_borrar = "DELETE FROM pre_inscripciones WHERE id_usuario = %s"
