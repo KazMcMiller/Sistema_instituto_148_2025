@@ -557,14 +557,13 @@ def pre_inscripcion():
     query_localidades = "SELECT id_localidad, nombre, id_provincia FROM localidades"
     localidades = ejecutar_sql(query_localidades)
 
-    id_instituto = session.get('id_instituto')
-
+    # Incluir el ID de la institución en cada carrera
     query_carreras = """
-        SELECT c.id_carrera, c.nombre
+        SELECT c.id_carrera, c.nombre, c.id_instituto
         FROM lista_carreras c
-        WHERE c.id_instituto = %s
     """
-    lista_carreras = ejecutar_sql(query_carreras, (id_instituto,))
+    lista_carreras = ejecutar_sql(query_carreras)
+    carreras_dict = [{"id_carrera": carrera[0], "nombre": carrera[1], "id_instituto": carrera[2]} for carrera in lista_carreras]
 
     query_turnos = """
         SELECT tc.id_carrera, tc.descripcion, tc.id_turno
@@ -578,6 +577,9 @@ def pre_inscripcion():
     query_sexo = "SELECT id_sexo, descripcion FROM sexos"
     sexos = ejecutar_sql(query_sexo)
 
+    query_institutos = "SELECT id_instituto, nombre_instituto FROM institutos"
+    institutos = ejecutar_sql(query_institutos)   
+
     if request.method == 'POST':
         # Recibir los datos desde el formulario
         datos_personales = request.form.to_dict()
@@ -588,11 +590,10 @@ def pre_inscripcion():
         existe_dni = ejecutar_sql(query_verificar_dni, (dni,))[0][0]
 
         if existe_dni > 0:
-            # Redirigir a la página de pre-inscripción con un mensaje de error
             return render_template(
                 'pre_inscripcion.html',
                 turnos_carreras=turnos_carreras_dict,
-                lista_carreras=lista_carreras,
+                lista_carreras=carreras_dict,
                 paises=paises,
                 provincias=provincias,
                 localidades=localidades,
@@ -608,13 +609,15 @@ def pre_inscripcion():
     return render_template(
         'pre_inscripcion.html',
         turnos_carreras=turnos_carreras_dict,
-        lista_carreras=lista_carreras,
+        lista_carreras=carreras_dict,
         paises=paises,
         provincias=provincias,
         localidades=localidades,
         error_dni=False,
-        sexos=sexos
+        sexos=sexos,
+        institutos=institutos
     )
+
 
 
 
@@ -641,15 +644,11 @@ def pre_inscripcion_2():
     query_provincias = "SELECT id_provincia, id_pais, nombre FROM provincias"
     provincias = ejecutar_sql(query_provincias)
 
-    # Consulta para obtener institutos
-    query_institutos = "SELECT id_instituto, nombre_instituto FROM institutos"
-    institutos = ejecutar_sql(query_institutos)
 
     return render_template(
         'pre_inscripcion_2.html',
         id_pais_estudio=id_pais_estudio,
         provincias=provincias,
-        institutos=institutos  # Enviar lista de institutos al HTML
     )
 
 

@@ -71,15 +71,6 @@
                             <span id="mensaje-provincia" style="display: none; color: #a55722;">*Seleccione una provincia solo si estudió en Argentina.</span>
                         </div>
                         <div class="col col-md-4 form-group">
-                            <label for="id_institucion">Institución:</label>
-                            <select class="form-control form-control-sm" id="id_institucion" name="id_institucion" required>
-                                <option value="">Seleccione una institución</option>
-                                {% for instituto in institutos %}
-                                    <option value="{{ instituto[0] }}">{{ instituto[1] }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col col-md-4 form-group">
                             <label for="otros_estudios">Otros Estudios:</label>
                             <input class="form-control form-control-sm" type="text" id="otros_estudios" name="otros_estudios">
                         </div>

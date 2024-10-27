@@ -12,47 +12,65 @@
     <script>
     // Parsear la variable turnos_carreras a JSON
     const turnosCarreras = {{ turnos_carreras | tojson }};
+    const carreras = {{ lista_carreras | tojson }};
+    
+    function updateCarreras() {
+        const institucionSelect = document.getElementById('id_institucion');
+        const carreraSelect = document.getElementById('carrera');
+        const idInstitucion = institucionSelect.value;
+
+        carreraSelect.innerHTML = '<option value="">Seleccione una carrera</option>';
+
+        if (idInstitucion) {
+            const carrerasDisponibles = carreras.filter(carrera => carrera.id_instituto == idInstitucion);
+
+            carrerasDisponibles.forEach(carrera => {
+                const option = document.createElement('option');
+                option.value = carrera.id_carrera;
+                option.textContent = carrera.nombre;
+                carreraSelect.appendChild(option);
+            });
+        }
+    }
 
     function updateTurno() {
         const carreraSelect = document.getElementById('carrera');
         const turnoSelect = document.getElementById('turno');
         const idCarrera = carreraSelect.value;
 
-    // Limpiar el select de turno antes de agregar nuevas opciones
-    turnoSelect.innerHTML = '<option value="">Seleccione un turno</option>';
+        turnoSelect.innerHTML = '<option value="">Seleccione un turno</option>';
 
-    if (idCarrera) {
-        const turnosDisponibles = turnosCarreras.filter(turno => turno.id_carrera == idCarrera);
+        if (idCarrera) {
+            const turnosDisponibles = turnosCarreras.filter(turno => turno.id_carrera == idCarrera);
 
-        if (turnosDisponibles.length == 1) {
-            // Si solo hay un turno, seleccionarlo automáticamente
-            turnoSelect.innerHTML = `<option value="${turnosDisponibles[0].id_turno}" selected>${turnosDisponibles[0].descripcion}</option>`;
-            turnoSelect.disabled = false;  // No deshabilitar el select
-        } else if (turnosDisponibles.length > 1) {
-            // Si hay más de un turno, permitir que el usuario lo elija
-            turnosDisponibles.forEach(turno => {
-                const option = document.createElement('option');
-                option.value = turno.id_turno;
-                option.textContent = turno.descripcion;
-                turnoSelect.appendChild(option);
-            });
-            turnoSelect.disabled = false;  // Asegurarse de que el select esté habilitado
+            if (turnosDisponibles.length == 1) {
+                turnoSelect.innerHTML = `<option value="${turnosDisponibles[0].id_turno}" selected>${turnosDisponibles[0].descripcion}</option>`;
+                turnoSelect.disabled = false;
+            } else if (turnosDisponibles.length > 1) {
+                turnosDisponibles.forEach(turno => {
+                    const option = document.createElement('option');
+                    option.value = turno.id_turno;
+                    option.textContent = turno.descripcion;
+                    turnoSelect.appendChild(option);
+                });
+                turnoSelect.disabled = false;
+            }
+        } else {
+            turnoSelect.disabled = false;
         }
-    } else {
-        turnoSelect.disabled = false;  // Habilitar el select si no hay carrera seleccionada
     }
-}
 
-// Mantener el turno seleccionado si ya estaba definido
-document.addEventListener("DOMContentLoaded", function() {
-    const turnoSeleccionado = "{{ session.get('datos_personales', {}).get('turno', '') }}";
-    const turnoSelect = document.getElementById('turno');
-    
-    if (turnoSeleccionado) {
-        turnoSelect.value = turnoSeleccionado;  // Setear el turno si ya fue seleccionado previamente
-    }
-});
+    document.addEventListener("DOMContentLoaded", function() {
+        const institucionSelect = document.getElementById('id_institucion');
+        institucionSelect.addEventListener('change', updateCarreras);
 
+        const turnoSeleccionado = "{{ session.get('datos_personales', {}).get('turno', '') }}";
+        const turnoSelect = document.getElementById('turno');
+        
+        if (turnoSeleccionado) {
+            turnoSelect.value = turnoSeleccionado;
+        }
+    });
 
         function validarDNI(input) {
             const regex = /^[0-9]{8}$/;
@@ -252,17 +270,24 @@ document.addEventListener("DOMContentLoaded", function() {
                                 <label for="email">Email:</label>
                                 <input class="form-control form-control-sm" type="email" id="email" name="email" value="{{ session.get('datos_personales', {}).get('email', '') }}" required>
                             </div>
-                            <div class="col col col-md-3 form-group">
+                            <div class="col col-md-4 form-group">
+                                <label for="id_institucion">Institución:</label>
+                                <select class="form-control form-control-sm" id="id_institucion" name="id_institucion" required onchange="updateCarreras()">
+                                    <option value="">Seleccione una institución</option>
+                                    {% for instituto in institutos %}
+                                        <option value="{{ instituto[0] }}">{{ instituto[1] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col col-md-3 form-group">
                                 <label for="carrera">Carrera:</label>
                                 <select class="form-control form-control-sm" id="carrera" name="carrera" onchange="updateTurno()" required>
                                     <option value="">Seleccione una carrera</option>
                                     {% for carrera in lista_carreras %}
-                                        <option value="{{ carrera[0] }}" {% if session.get('datos_personales', {}).get('carrera') == carrera[0] %}selected{% endif %}>
-                                            {{ carrera[1] }}
-                                        </option>
+                                        <option value="{{ carrera['id_carrera'] }}">{{ carrera['nombre'] }}</option>
                                     {% endfor %}
                                 </select>
-                            </div>
+                            </div>                            
                             <div class="form-group">
                                 <label for="turno">Turno</label>
                                 <select class="form-control form-control-sm" id="turno" name="turno" required>
@@ -270,6 +295,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                     <!-- Aquí se cargarán dinámicamente los turnos -->
                                 </select>                    
                             </div>
+                        
                         </div>
                         <div class="actions" id="boton-siguiente">
                                 <button type="submit" class="float-right mb-3">Siguiente</button>
