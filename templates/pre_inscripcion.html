@@ -186,10 +186,9 @@
                                 <label for="id_estado_civil">Estado Civil:</label>
                                 <select class="form-control form-control-sm" id="id_estado_civil" name="id_estado_civil" required>
                                     <option value="">Seleccione</option>
-                                    <option value="1" {% if session.get('datos_personales', {}).get('id_estado_civil') == '1' %}selected{% endif %}>Soltero/a</option>
-                                    <option value="2" {% if session.get('datos_personales', {}).get('id_estado_civil') == '2' %}selected{% endif %}>Casado/a</option>
-                                    <option value="3" {% if session.get('datos_personales', {}).get('id_estado_civil') == '3' %}selected{% endif %}>Divorciado/a</option>
-                                    <option value="4" {% if session.get('datos_personales', {}).get('id_estado_civil') == '4' %}selected{% endif %}>Viudo/a</option>
+                                    {% for estado in estado_civil %}
+                                        <option value="{{ estado[0] }}">{{ estado[1] }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                             <div class="col col col-md-3 form-group">

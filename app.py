@@ -171,6 +171,7 @@ def alumnos():
             SELECT u.id_usuario, u.dni, u.nombre, l.nombre AS localidad, u.telefono
             FROM usuarios u
             LEFT JOIN localidades l ON u.id_localidad = l.id_localidad
+            ORDER BY u.id_usuario
             LIMIT %s OFFSET %s
         """
         alumnos = ejecutar_sql(query_alumnos, (per_page, offset))
@@ -195,9 +196,10 @@ def alumnos():
     elif table == 'pre_inscripciones':
         # Consulta paginada para la lista de pre-inscripciones con nombre de localidad
         query_pre_inscripciones = """
-            SELECT p.id_usuario, p.dni, p.nombre, l.nombre AS localidad, p.telefono
-            FROM pre_inscripciones p
-            LEFT JOIN localidades l ON p.id_localidad = l.id_localidad
+            SELECT u.id_usuario, u.dni, u.nombre, l.nombre AS localidad, u.telefono
+            FROM pre_inscripciones u
+            LEFT JOIN localidades l ON u.id_localidad = l.id_localidad
+            ORDER BY u.id_usuario
             LIMIT %s OFFSET %s
         """
         pre_inscripciones = ejecutar_sql(query_pre_inscripciones, (per_page, offset))
@@ -221,6 +223,7 @@ def alumnos():
 
 
 @app.route('/alumno/<int:id_usuario>', methods=['GET', 'POST'])
+@perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 2 (preseptor) pueden acceder
 def editar_alumno(id_usuario):
     if 'nombre' not in session:
         return redirect(url_for('login'))
@@ -339,6 +342,7 @@ def editar_alumno(id_usuario):
 
 
 @app.route('/alumno/<int:id_usuario>/borrar', methods=['POST'])
+@perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 2 (preseptor) pueden acceder
 def borrar_alumno(id_usuario):
     if 'nombre' not in session:
         return redirect(url_for('login'))
@@ -351,6 +355,7 @@ def borrar_alumno(id_usuario):
 
 
 @app.route('/ingresante/<int:id_usuario>', methods=['GET', 'POST'])
+@perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 2 (preseptor) pueden acceder
 def editar_ingresante(id_usuario):
     if 'nombre' not in session:
         return redirect(url_for('login'))
@@ -492,6 +497,7 @@ def editar_ingresante(id_usuario):
 
 
 @app.route('/ingresante/<int:id_usuario>/borrar', methods=['POST'])
+@perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 2 (preseptor) pueden acceder
 def borrar_ingresante(id_usuario):
     if 'nombre' not in session:
         return redirect(url_for('login'))
@@ -580,7 +586,10 @@ def pre_inscripcion():
     sexos = ejecutar_sql(query_sexo)
 
     query_institutos = "SELECT id_instituto, nombre_instituto FROM institutos"
-    institutos = ejecutar_sql(query_institutos)   
+    institutos = ejecutar_sql(query_institutos)  
+
+    query_estados = "SELECT id_estado_civil, nombre FROM estado_civil"
+    estado_civil = ejecutar_sql(query_estados)    
 
     if request.method == 'POST':
         # Recibir los datos desde el formulario
@@ -600,6 +609,9 @@ def pre_inscripcion():
                 provincias=provincias,
                 localidades=localidades,
                 error_dni=True,
+                sexos=sexos,
+                institutos=institutos,
+                estado_civil=estado_civil,
                 datos_personales=datos_personales  # Para mantener los datos ingresados
             )
 
@@ -617,7 +629,8 @@ def pre_inscripcion():
         localidades=localidades,
         error_dni=False,
         sexos=sexos,
-        institutos=institutos
+        institutos=institutos,
+        estado_civil=estado_civil
     )
 
 
@@ -682,6 +695,7 @@ def guardar_pre_inscripcion():
     id_localidad = datos.get('id_localidad_original')
     id_institucion = datos.get('id_instituto_original')
     id_sexo = datos.get('id_sexo_original')
+    id_estado_civil = datos.get('id_estado_civil_original')
 
     # Insertar el usuario en la tabla pre_inscripciones sin id_carrera ni id_turno
     query_usuario = """
@@ -695,7 +709,7 @@ def guardar_pre_inscripcion():
     """
     ejecutar_sql(query_usuario, (
         datos['dni'], datos['nombre'], datos['apellido'], id_sexo,
-        datos['fecha_nacimiento'], datos['lugar_nacimiento'], datos['id_estado_civil'],
+        datos['fecha_nacimiento'], datos['lugar_nacimiento'], id_estado_civil,
         datos['cantidad_hijos'], datos['familiares_a_cargo'], datos['domicilio'],
         datos['piso'], id_localidad, id_pais,
         id_provincia, datos['codigo_postal'], datos['telefono'],
@@ -750,6 +764,7 @@ def pre_inscripcion_3():
     query_turno = "SELECT descripcion FROM turno_carrera WHERE id_turno = %s"
     query_instituto = "SELECT nombre_instituto FROM institutos WHERE id_instituto = %s"
     query_sexo = "SELECT descripcion FROM sexos WHERE id_sexo = %s"
+    query_estado_civil = "SELECT nombre FROM estado_civil WHERE id_estado_civil = %s"
 
     # Mantener los IDs originales
     id_pais_original = datos_completos.get('id_pais')
@@ -759,6 +774,7 @@ def pre_inscripcion_3():
     id_turno_original = datos_completos.get('turno')
     id_instituto_original = datos_completos.get('id_institucion')
     id_sexo_original = datos_completos.get('id_sexo')
+    id_estado_civil_original = datos_completos.get('id_estado_civil')
 
     # Obtener los nombres basados en los IDs
     pais_nombre = ejecutar_sql(query_pais, (id_pais_original,))[0][0] if id_pais_original else None
@@ -768,6 +784,7 @@ def pre_inscripcion_3():
     turno_descripcion = ejecutar_sql(query_turno, (id_turno_original,))[0][0] if id_turno_original else None
     instituto_nombre = ejecutar_sql(query_instituto, (id_instituto_original,))[0][0] if id_instituto_original else None
     sexo_nombre = ejecutar_sql(query_sexo, (id_sexo_original,))[0][0] if id_sexo_original else None
+    estado_civil_nombre = ejecutar_sql(query_estado_civil, (id_estado_civil_original,))[0][0] if id_estado_civil_original else None
 
     # Guardar los valores originales junto con los nombres
     datos_completos['id_pais_original'] = id_pais_original
@@ -777,6 +794,7 @@ def pre_inscripcion_3():
     datos_completos['id_turno_original'] = id_turno_original
     datos_completos['id_instituto_original'] = id_instituto_original
     datos_completos['id_sexo_original'] = id_sexo_original
+    datos_completos['id_estado_civil_original'] = id_sexo_original
 
     # Reemplazar los IDs por sus nombres para mostrar en la vista
     datos_completos['id_pais'] = pais_nombre
@@ -786,6 +804,7 @@ def pre_inscripcion_3():
     datos_completos['turno'] = turno_descripcion
     datos_completos['id_institucion'] = instituto_nombre
     datos_completos['id_sexo'] = sexo_nombre
+    datos_completos['id_estado_civil'] = estado_civil_nombre
 
     return render_template('pre_inscripcion_3.html', **datos_completos)
 
