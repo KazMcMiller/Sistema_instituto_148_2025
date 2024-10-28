@@ -26,60 +26,78 @@
         window.onload = function() {
             toggleLaborFields();
         };
+                // Función para habilitar la selección de provincia si el país es Argentina
+                function toggleProvinciaOtros() {
+            const provinciaSelectOtros = document.getElementById('provincia_estudio_otros');
+            const mensajeProvincia = document.getElementById('mensaje-provincia');
+
+            {% if id_pais_estudio == 1 %} // 1 representa Argentina
+                provinciaSelectOtros.disabled = false;
+                mensajeProvincia.style.display = 'block';
+            {% else %}
+                provinciaSelectOtros.disabled = true;
+                mensajeProvincia.style.display = 'none';
+            {% endif %}
+        }
+
+        // Ejecutar funciones en la carga de la página
+        window.onload = function() {
+            toggleLaborFields();
+            toggleProvinciaOtros();
+        };
     </script>
     <style>
-        body {
-            justify-content: center;
-            display: flex;
-            align-items: center;
-            height: 100vh;
-        }
+            html{
+                margin-left: 15%;
+            }
+            html, body{
+                height: 100%;
+                display: flex;
+                justify-content: center; /* Centra horizontalmente */
+                align-content: center; /* Centra verticalmente */
+            }
+                        
     </style>
 </head>
 <body>
     <div class="container">
         <div class="container rounded-sm" id="cont-insc">
-        
-                <div class="form-container">
+
+            <div class="form-container">
                 <!-- Sección de Estudios Cursados -->
                     <h4 class="text-primary text-center mt-3">Estudios Cursados</h4>
-                    <form method="POST" action="/inscribite_3">
-                        <div class="form-row">
-                            <div class="col col-md-4 form-group">
-                                <label for="titulo_base">Título Base:</label>
-                                <input class="form-control form-control-sm" type="text" id="titulo_base" name="titulo_base" required>
-                            </div>
-                            <div class="col col-md-4 form-group">
-                                <label for="anio_egreso">Año de Egreso:</label>
-                                <input class="form-control form-control-sm" type="number" id="anio_egreso" name="anio_egreso" required>
-                            </div>
-                            <!-- Aquí controlamos la provincia si es Argentina -->
-                            <div class="col col-md-4 form-group">
-                                <label for="provincia_estudio_otros">Provincia (Solo si los otros estudios fueron en Argentina):</label>
-                                <select class="form-control form-control-sm" id="provincia_estudio_otros" name="provincia_estudio_otros" disabled>
-                                    <option value="">Seleccione una provincia</option>
-                                    {% for provincia in provincias %}
-                                        <option value="{{ provincia[0] }}" data-pais="{{ provincia[1] }}">{{ provincia[2] }}</option>
-                                    {% endfor %}
-                                </select>
-                                <span id="mensaje-provincia" style="display: none; color: #a55722; font-size: 10px;">Seleccione una provincia solo si estudió en Argentina.</span>
-                            </div>
-                            <div class="col col-md-4 form-group">
-                                <label for="id_institucion">Institución:</label>
-                                <input class="form-control form-control-sm" type="number" id="id_institucion" name="id_institucion" required>
-                            </div>
-                            <div class="col col-md-4 form-group">
-                                <label for="otros_estudios">Otros Estudios:</label>
-                                <input class="form-control form-control-sm" type="text" id="otros_estudios" name="otros_estudios">
-                            </div>
-                            <div class="col col-md-4 form-group">
-                                <label for="anio_egreso_otros">Año de Egreso (Otros Estudios):</label>
-                                <input class="form-control form-control-sm" type="number" id="anio_egreso_otros" name="anio_egreso_otros">
-                            </div>
+                    <form method="POST" action="/pre_inscripcion_3">
+                    <div class="form-row">
+                        <div class="col col-md-4 form-group">
+                            <label for="titulo_base">Título Base:</label>
+                            <input class="form-control form-control-sm" type="text" id="titulo_base" name="titulo_base" required>
                         </div>
-
+                        <div class="col col-md-4 form-group">
+                            <label for="anio_egreso">Año de Egreso:</label>
+                            <input class="form-control form-control-sm" type="number" id="anio_egreso" name="anio_egreso" required>
+                        </div>
+                        <!-- Selección de provincia en función de Argentina -->
+                        <div class="col col-md-4 form-group">
+                            <label for="provincia_estudio_otros">Provincia (Solo si los otros estudios fueron en Argentina):</label>
+                            <select class="form-control form-control-sm" id="provincia_estudio_otros" name="provincia_estudio_otros">
+                                <option value="">Seleccione una provincia</option>
+                                {% for provincia in provincias %}
+                                    <option value="{{ provincia[0] }}">{{ provincia[2] }}</option>
+                                {% endfor %}
+                            </select>
+                            <span id="mensaje-provincia" style="display: none; color: #a55722;">*Seleccione una provincia solo si estudió en Argentina.</span>
+                        </div>
+                        <div class="col col-md-4 form-group">
+                            <label for="otros_estudios">Otros Estudios:</label>
+                            <input class="form-control form-control-sm" type="text" id="otros_estudios" name="otros_estudios">
+                        </div>
+                        <div class="col col-md-4 form-group">
+                            <label for="anio_egreso_otros">Año de Egreso (Otros Estudios):</label>
+                            <input class="form-control form-control-sm" type="number" id="anio_egreso_otros" name="anio_egreso_otros">
+                        </div>
+                    </div>
                 <!-- Sección de Datos Laborales -->
-                <div class="form-container">
+            <div class="form-container">
                     <h4 class="text-primary text-center mt-3">Datos Laborales</h4>
                     <div class="form-row">
                         <div class="col col-md-4 form-radio">
@@ -91,7 +109,7 @@
                         </div>
                         <div class="col col-md-4 form-group">
                             <label for="actividad">Actividad:</label>
-                            <input class="labor-field form-control form-control-sm" type="text" id="actividad" name="actividad"  disabled>
+                            <input class="labor-field form-control form-control-sm" type="text" id="actividad" name="actividad" disabled>
                         </div>
                         <div class="col col-md-4 form-group">
                             <label for="horario_habitual">Horario Habitual:</label>
@@ -102,18 +120,18 @@
                             <input class="labor-field form-control form-control-sm" type="text" id="obra_social" name="obra_social" disabled>
                         </div>
                     </div>
-                </div>
+            </div>
                 
-                <div class="actions" id="boton-siguiente">
-                    <button type="submit" class="float-right mb-3">Siguiente</button>
-                </div>
+
+            <div class="actions" id="boton-siguiente">
+                <button type="submit" class="float-right mb-3">Siguiente</button>
+            </div>
+        </form>
+        <div class="action" id="boton-atras">
+            <form method="GET" action="{{ url_for('pre_inscripcion') }}">
+                <button type="submit" class="float-left mb-3">Atrás</button>
             </form>
-            <div class="action" id="boton-atras">
-                <form method="GET" action="{{ url_for('inscribite') }}">
-                    <button type="submit" class="float-left mb-3">Atrás</button>
-                </form>
-            </div>
-            </div>
+        </div>
         </div>
     </div>
     <script>
@@ -122,7 +140,7 @@
         const provinciaSelectOtros = document.getElementById('provincia_estudio_otros');
         const mensajeProvincia = document.getElementById('mensaje-provincia');
 
-        const paisEstudiosAnteriores = {{ id_pais_estudio }}; // ID del país previamente seleccionado, este valor viene de la base de datos.
+        const paisEstudiosAnteriores = { id_pais_estudio }; // ID del país previamente seleccionado, este valor viene de la base de datos.
 
         if (paisEstudiosAnteriores === 1) { // Si '1' es el ID de Argentina
             provinciaSelectOtros.disabled = false;
@@ -132,7 +150,7 @@
             provinciaSelectOtros.value = ''; // Limpiar la selección si no es Argentina
             mensajeProvincia.style.display = 'none';
         }
-    }
+        }
 
     // Ejecutar al cargar la página
     window.onload = function() {

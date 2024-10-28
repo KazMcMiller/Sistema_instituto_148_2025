@@ -9,58 +9,68 @@
     <link href="bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
-        body {
-            justify-content: center;
-            display: flex;
-            align-items: center;
-            height: 100vh;
-        }
-    </style>
     <script>
-// Parsear la variable turnos_carreras a JSON
-const turnosCarreras = {{ turnos_carreras | tojson }};
-
-function updateTurno() {
-    const carreraSelect = document.getElementById('carrera');
-    const turnoSelect = document.getElementById('turno');
-    const idCarrera = carreraSelect.value;
-
-    // Limpiar el select de turno antes de agregar nuevas opciones
-    turnoSelect.innerHTML = '<option value="">Seleccione un turno</option>';
-
-    if (idCarrera) {
-        const turnosDisponibles = turnosCarreras.filter(turno => turno.id_carrera == idCarrera);
-
-        if (turnosDisponibles.length == 1) {
-            // Si solo hay un turno, seleccionarlo automáticamente
-            turnoSelect.innerHTML = `<option value="${turnosDisponibles[0].id_turno}" selected>${turnosDisponibles[0].descripcion}</option>`;
-            turnoSelect.disabled = false;  // No deshabilitar el select
-        } else if (turnosDisponibles.length > 1) {
-            // Si hay más de un turno, permitir que el usuario lo elija
-            turnosDisponibles.forEach(turno => {
-                const option = document.createElement('option');
-                option.value = turno.id_turno;
-                option.textContent = turno.descripcion;
-                turnoSelect.appendChild(option);
-            });
-            turnoSelect.disabled = false;  // Asegurarse de que el select esté habilitado
-        }
-    } else {
-        turnoSelect.disabled = false;  // Habilitar el select si no hay carrera seleccionada
-    }
-}
-
-// Mantener el turno seleccionado si ya estaba definido
-document.addEventListener("DOMContentLoaded", function() {
-    const turnoSeleccionado = "{{ session.get('datos_personales', {}).get('turno', '') }}";
-    const turnoSelect = document.getElementById('turno');
+    // Parsear la variable turnos_carreras a JSON
+    const turnosCarreras = {{ turnos_carreras | tojson }};
+    const carreras = {{ lista_carreras | tojson }};
     
-    if (turnoSeleccionado) {
-        turnoSelect.value = turnoSeleccionado;  // Setear el turno si ya fue seleccionado previamente
-    }
-});
+    function updateCarreras() {
+        const institucionSelect = document.getElementById('id_institucion');
+        const carreraSelect = document.getElementById('carrera');
+        const idInstitucion = institucionSelect.value;
 
+        carreraSelect.innerHTML = '<option value="">Seleccione una carrera</option>';
+
+        if (idInstitucion) {
+            const carrerasDisponibles = carreras.filter(carrera => carrera.id_instituto == idInstitucion);
+
+            carrerasDisponibles.forEach(carrera => {
+                const option = document.createElement('option');
+                option.value = carrera.id_carrera;
+                option.textContent = carrera.nombre;
+                carreraSelect.appendChild(option);
+            });
+        }
+    }
+
+    function updateTurno() {
+        const carreraSelect = document.getElementById('carrera');
+        const turnoSelect = document.getElementById('turno');
+        const idCarrera = carreraSelect.value;
+
+        turnoSelect.innerHTML = '<option value="">Seleccione un turno</option>';
+
+        if (idCarrera) {
+            const turnosDisponibles = turnosCarreras.filter(turno => turno.id_carrera == idCarrera);
+
+            if (turnosDisponibles.length == 1) {
+                turnoSelect.innerHTML = `<option value="${turnosDisponibles[0].id_turno}" selected>${turnosDisponibles[0].descripcion}</option>`;
+                turnoSelect.disabled = false;
+            } else if (turnosDisponibles.length > 1) {
+                turnosDisponibles.forEach(turno => {
+                    const option = document.createElement('option');
+                    option.value = turno.id_turno;
+                    option.textContent = turno.descripcion;
+                    turnoSelect.appendChild(option);
+                });
+                turnoSelect.disabled = false;
+            }
+        } else {
+            turnoSelect.disabled = false;
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const institucionSelect = document.getElementById('id_institucion');
+        institucionSelect.addEventListener('change', updateCarreras);
+
+        const turnoSeleccionado = "{{ session.get('datos_personales', {}).get('turno', '') }}";
+        const turnoSelect = document.getElementById('turno');
+        
+        if (turnoSeleccionado) {
+            turnoSelect.value = turnoSeleccionado;
+        }
+    });
 
         function validarDNI(input) {
             const regex = /^[0-9]{8}$/;
@@ -112,157 +122,184 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
     </script>
+    <style>
+            html{
+                margin-left: 15%;
+            }
+            html, body{
+                height: 100%;
+                display: flex;
+                justify-content: center; /* Centra horizontalmente */
+                align-content: center; /* Centra verticalmente */
+            }
+                        
+    </style>
 </head>
 <body>
     <div class="container">
         <div class="container rounded-sm" id="cont-insc">
 
-            <div class="form-container">
-                <h4 class="text-primary text-center mt-3">Datos Personales</h4>
-                <form method="POST" action="/inscribite_2">
-                    <div class="form-row">
-                        <div class="col col-md-3 form-group">
-                            <label for="nombre">Nombres:</label>
-                            <input class="form-control form-control-sm" type="text" id="nombre" name="nombre" value="{{ session.get('datos_personales', {}).get('nombre', '') }}" required>
-                        </div>
-                        <div class="col col-md-3 form-group">
-                            <label for="apellido">Apellido:</label>
-                            <input class="form-control form-control-sm" type="text" id="apellido" name="apellido" value="{{ session.get('datos_personales', {}).get('apellido', '') }}" required>
-                        </div>
-                        <div class="col col-md-3 form-group">
-                            <label for="id_sexo">Sexo:</label>
-                            <select class="form-control form-control-sm" id="id_sexo" name="id_sexo" required>
-                                <option value="">Seleccionar</option>
-                                <option value="1" {% if session.get('datos_personales', {}).get('id_sexo') == '1' %}selected{% endif %}>Masculino</option>
-                                <option value="2" {% if session.get('datos_personales', {}).get('id_sexo') == '2' %}selected{% endif %}>Femenino</option>
-                                <option value="3" {% if session.get('datos_personales', {}).get('id_sexo') == '3' %}selected{% endif %}>Otro</option>
-                            </select>
-                        </div>
-                        <div class="col col-md-3 form-group">
-                            <label for="dni">DNI:</label>
-                            <input class="form-control form-control-sm" type="number" id="dni" name="dni" maxlength="8" value="{{ session.get('datos_personales', {}).get('dni', '') }}" oninput="validarDNI(this)" required>
-                            <span id="error-dni" style="color: #a55772;"></span>
-                        </div>
-                        <div class="col col-md-3 form-group">
-                            <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
-                            <input class="form-control form-control-sm" type="date" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ session.get('datos_personales', {}).get('fecha_nacimiento', '') }}" required>
-                        </div>
-                        <div class="col col-md-3 form-group">
-                            <label for="lugar_nacimiento">Lugar de Nacimiento:</label>
-                            <input class="form-control form-control-sm" type="text" id="lugar_nacimiento" name="lugar_nacimiento" value="{{ session.get('datos_personales', {}).get('lugar_nacimiento', '') }}" required>
-                        </div>
-                        <div class="col col-md-3 form-group">
-                            <label for="id_estado_civil">Estado Civil:</label>
-                            <select class="form-control form-control-sm" id="id_estado_civil" name="id_estado_civil" required>
-                                <option value="">Seleccione</option>
-                                <option value="1" {% if session.get('datos_personales', {}).get('id_estado_civil') == '1' %}selected{% endif %}>Soltero/a</option>
-                                <option value="2" {% if session.get('datos_personales', {}).get('id_estado_civil') == '2' %}selected{% endif %}>Casado/a</option>
-                                <option value="3" {% if session.get('datos_personales', {}).get('id_estado_civil') == '3' %}selected{% endif %}>Divorciado/a</option>
-                                <option value="4" {% if session.get('datos_personales', {}).get('id_estado_civil') == '4' %}selected{% endif %}>Viudo/a</option>
-                            </select>
-                        </div>
-                        <div class="col col-md-3 form-group">
-                            <label for="cantidad_hijos">Cantidad de Hijos:</label>
-                            <input class="form-control form-control-sm" type="number" id="cantidad_hijos" name="cantidad_hijos" min="0" value="{{ session.get('datos_personales', {}).get('cantidad_hijos', '') }}" required>
-                        </div>
-                        <div class="col col-md-3 form-group">
-                            <label for="familiares_a_cargo">Familiares a Cargo:</label>
-                            <input class="form-control form-control-sm" type="number" id="familiares_a_cargo" name="familiares_a_cargo" min="0" value="{{ session.get('datos_personales', {}).get('familiares_a_cargo', '') }}" required>
-                        </div>
-                        <div class="col col-md-3 form-group">
-                            <label for="domicilio">Domicilio:</label>
-                            <input class="form-control form-control-sm" type="text" id="domicilio" name="domicilio" value="{{ session.get('datos_personales', {}).get('domicilio', '') }}" required>
-                        </div>
-                        <div class="col col-md-3 form-group">
-                            <label for="piso">Piso:</label>
-                            <input class="form-control form-control-sm" type="number" id="piso" name="piso" value="{{ session.get('datos_personales', {}).get('piso', '') }}">
-                        </div>
-                        <div class="col col-md-3 form-group">
-                            <label for="id_pais">País:</label>
-                            <select class="form-control form-control-sm" id="id_pais" name="id_pais" required onchange="filterProvincias()">
-                                <option value="">Seleccionar un país</option>
-                                {% for pais in paises %}
-                                    <option value="{{ pais[0] }}" {% if session.get('datos_personales', {}).get('id_pais') == pais[0] %}selected{% endif %}>{{ pais[1] }}</option>
+            
+                <div class="form-container">
+                    <h4 class="text-primary text-center mt-3">Datos Personales</h4>
+                    <form method="POST" action="/pre_inscripcion">
+                        <div class="form-row">
+                            <div class="col col-md-3 form-group">
+                                <label for="nombre">Nombres:</label>
+                                <input class="form-control form-control-sm" type="text" id="nombre" name="nombre" value="{{ session.get('datos_personales', {}).get('nombre', '') }}" required>
+                            </div>
+                            <div class="col col-md-3 form-group">
+                                <label for="apellido">Apellido:</label>
+                                <input class="form-control form-control-sm" type="text" id="apellido" name="apellido" value="{{ session.get('datos_personales', {}).get('apellido', '') }}" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                      
+                                <label for="id_sexo">Sexo:</label>
+                                <select class="form-control form-control-sm" id="id_sexo" name="id_sexo" required>
+                                    <option value="">Seleccione sexo</option>
+                                    {% for sexo in sexos %}
+                                        <option value="{{ sexo[0] }}">{{ sexo[1] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="dni">DNI:</label>
+                                <input class="form-control form-control-sm" type="number" id="dni" name="dni" maxlength="8"
+                                       value="{{ datos_personales.get('dni', '') if error_dni else session.get('datos_personales', {}).get('dni', '') }}"
+                                       oninput="validarDNI(this)" required>
+                                <span id="error-dni" style="color: #a55772;">
+                                    {% if error_dni %}
+                                        Este DNI ya existe en el sistema.
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
+                                <input class="form-control form-control-sm" type="date" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ session.get('datos_personales', {}).get('fecha_nacimiento', '') }}" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="lugar_nacimiento">Lugar de Nacimiento:</label>
+                                <input class="form-control form-control-sm" type="text" id="lugar_nacimiento" name="lugar_nacimiento" value="{{ session.get('datos_personales', {}).get('lugar_nacimiento', '') }}" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="id_estado_civil">Estado Civil:</label>
+                                <select class="form-control form-control-sm" id="id_estado_civil" name="id_estado_civil" required>
+                                    <option value="">Seleccione</option>
+                                    {% for estado in estado_civil %}
+                                        <option value="{{ estado[0] }}">{{ estado[1] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="cantidad_hijos">Cantidad de Hijos:</label>
+                                <input class="form-control form-control-sm" type="number" id="cantidad_hijos" name="cantidad_hijos" min="0" value="{{ session.get('datos_personales', {}).get('cantidad_hijos', '') }}" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="familiares_a_cargo">Familiares a Cargo:</label>
+                                <input class="form-control form-control-sm" type="number" id="familiares_a_cargo" name="familiares_a_cargo" min="0" value="{{ session.get('datos_personales', {}).get('familiares_a_cargo', '') }}" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="domicilio">Domicilio:</label>
+                                <input class="form-control form-control-sm" type="text" id="domicilio" name="domicilio" value="{{ session.get('datos_personales', {}).get('domicilio', '') }}" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="piso">Piso:</label>
+                                <input class="form-control form-control-sm" type="number" id="piso" name="piso" value="{{ session.get('datos_personales', {}).get('piso', '') }}">
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="id_pais">País:</label>
+                                <select class="form-control form-control-sm" id="id_pais" name="id_pais" required onchange="filterProvincias()">
+                                    <option value="">Seleccionar un país</option>
+                                    {% for pais in paises %}
+                                        <option value="{{ pais[0] }}" {% if session.get('datos_personales', {}).get('id_pais') == pais[0] %}selected{% endif %}>{{ pais[1] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col col col-md-3 form-group">
+                                <label for="id_provincia">Provincia:</label>
+                                <select class="form-control form-control-sm" id="id_provincia" name="id_provincia" required onchange="mostrarLocalidades()">
+                                    <option value="">Seleccionar una provincia</option>
+                                    <!-- Aquí las provincias se cargarán dinámicamente -->
+                                </select>
+                            </div>
+                            
+                            <!-- Provincias ocultas en el DOM -->
+                            <div id="provincias-data" style="display: none;">
+                                {% for provincia in provincias %}
+                                    <option value="{{ provincia[0] }}" data-pais="{{ provincia[2] }}">{{ provincia[1] }}</option>
                                 {% endfor %}
-                            </select>
-                        </div>
-                        
-                        <div class="col col-md-3 form-group">
-                            <label for="id_provincia">Provincia:</label>
-                            <select class="form-control form-control-sm" id="id_provincia" name="id_provincia" required onchange="mostrarLocalidades()">
-                                <option value="">Seleccionar una provincia</option>
-                                <!-- Aquí las provincias se cargarán dinámicamente -->
-                            </select>
-                        </div>
-                        
-                        <!-- Provincias ocultas en el DOM -->
-                        <div id="provincias-data" style="display: none;">
-                            {% for provincia in provincias %}
-                                <option value="{{ provincia[0] }}" data-pais="{{ provincia[2] }}">{{ provincia[1] }}</option>
-                            {% endfor %}
-                        </div>
+                            </div>
 
-                        <div class="col col-md-3 form-group">
-                            <label for="id_localidad">Localidad:</label>
-                            <select class="form-control form-control-sm" id="id_localidad" name="id_localidad" required>
-                                <option value="">Seleccione una localidad</option>
+                            <div class="col col col-md-3 form-group">
+                                <label for="id_localidad">Localidad:</label>
+                                <select class="form-control form-control-sm" id="id_localidad" name="id_localidad" required>
+                                    <option value="">Seleccione una localidad</option>
+                                    {% for localidad in localidades %}
+                                        <option value="{{ localidad[0] }}" data-provincia="{{ localidad[2] }}" {% if session.get('datos_personales', {}).get('id_localidad') == localidad[0] %}selected{% endif %}>{{ localidad[1] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                                                <!-- Localidades ocultas en el DOM -->
+                            <div id="localidades-data" style="display: none;">
                                 {% for localidad in localidades %}
-                                    <option value="{{ localidad[0] }}" data-provincia="{{ localidad[2] }}" {% if session.get('datos_personales', {}).get('id_localidad') == localidad[0] %}selected{% endif %}>{{ localidad[1] }}</option>
+                                    <option value="{{ localidad[0] }}" data-provincia="{{ localidad[2] }}">{{ localidad[1] }}</option>
                                 {% endfor %}
-                            </select>
-                        </div>
+                            </div>
 
-                        <!-- Localidades ocultas en el DOM -->
-                        <div id="localidades-data" style="display: none;">
-                            {% for localidad in localidades %}
-                                <option value="{{ localidad[0] }}" data-provincia="{{ localidad[2] }}">{{ localidad[1] }}</option>
-                            {% endfor %}
-                        </div>
-                        <div class="col col-md-3 form-group">
-                            <label for="codigo_postal">Código Postal:</label>
-                            <input class="form-control form-control-sm" type="text" id="codigo_postal" name="codigo_postal" value="{{ session.get('datos_personales', {}).get('codigo_postal', '') }}" required>
-                        </div>
-                        <div class="col col-md-3 form-group">
-                            <label for="telefono">Teléfono:</label>
-                            <input class="form-control form-control-sm" type="number" id="telefono" name="telefono" value="{{ session.get('datos_personales', {}).get('telefono', '') }}" required>
-                        </div>
-                        <div class="col col-md-3 form-group">
-                            <label for="telefono_alt">Teléfono Alternativo:</label>
-                            <input class="form-control form-control-sm" type="number" id="telefono_alt" name="telefono_alt" value="{{ session.get('datos_personales', {}).get('telefono_alt', '') }}" required>
-                        </div>
-                        <div class="col col-md-3 form-group">
-                            <label for="telefono_alt_propietario">A quién pertenece el teléfono alternativo:</label>
-                            <input class="form-control form-control-sm" type="text" id="telefono_alt_propietario" name="telefono_alt_propietario" value="{{ session.get('datos_personales', {}).get('telefono_alt_propietario', '') }}" required>
-                        </div>
-                        <div class="col col-md-3 form-group">
-                            <label for="email">Email:</label>
-                            <input class="form-control form-control-sm" type="email" id="email" name="email" value="{{ session.get('datos_personales', {}).get('email', '') }}" required>
-                        </div>
-                        <div class="col col-md-3 form-group">
-                            <label for="carrera">Carrera</label>
-                            <select class="form-control form-control-sm" id="carrera" name="carrera" onchange="updateTurno()" required>
-                                <option value="">Seleccione una carrera</option>
-                                {% for carrera in lista_carreras %}
-                                    <option value="{{ carrera[0] }}" {% if session.get('datos_personales', {}).get('carrera') == carrera[0] %}selected{% endif %}>
-                                        {{ carrera[1] }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="codigo_postal">Código Postal:</label>
+                                <input class="form-control form-control-sm" type="text" id="codigo_postal" name="codigo_postal" value="{{ session.get('datos_personales', {}).get('codigo_postal', '') }}" required>
+                            </div>
+
+                            <div class="col col col-md-3 form-group">
+                                <label for="telefono">Teléfono:</label>
+                                <input class="form-control form-control-sm" type="number" id="telefono" name="telefono" value="{{ session.get('datos_personales', {}).get('telefono', '') }}" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="telefono_alt">Teléfono Alternativo:</label>
+                                <input class="form-control form-control-sm" type="number" id="telefono_alt" name="telefono_alt" value="{{ session.get('datos_personales', {}).get('telefono_alt', '') }}" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="telefono_alt_propietario">A quién pertenece el teléfono alternativo:</label>
+                                <input class="form-control form-control-sm" type="text" id="telefono_alt_propietario" name="telefono_alt_propietario" value="{{ session.get('datos_personales', {}).get('telefono_alt_propietario', '') }}" required>
+                            </div>
+                            <div class="col col col-md-3 form-group">
+                                <label for="email">Email:</label>
+                                <input class="form-control form-control-sm" type="email" id="email" name="email" value="{{ session.get('datos_personales', {}).get('email', '') }}" required>
+                            </div>
+                            <div class="col col-md-4 form-group">
+                                <label for="id_institucion">Institución:</label>
+                                <select class="form-control form-control-sm" id="id_institucion" name="id_institucion" required onchange="updateCarreras()">
+                                    <option value="">Seleccione una institución</option>
+                                    {% for instituto in institutos %}
+                                        <option value="{{ instituto[0] }}">{{ instituto[1] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col col-md-3 form-group">
+                                <label for="carrera">Carrera:</label>
+                                <select class="form-control form-control-sm" id="carrera" name="carrera" onchange="updateTurno()" required>
+                                    <option value="">Seleccione una carrera</option>
+                                    {% for carrera in lista_carreras %}
+                                        <option value="{{ carrera['id_carrera'] }}">{{ carrera['nombre'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>                            
+                            <div class="form-group">
+                                <label for="turno">Turno</label>
+                                <select class="form-control form-control-sm" id="turno" name="turno" required>
+                                    <option value="">Seleccione un turno</option>
+                                    <!-- Aquí se cargarán dinámicamente los turnos -->
+                                </select>                    
+                            </div>
                         
-                        <div class="col col-md-3 form-group">
-                            <label for="turno">Turno</label>
-                            <select class="form-control form-control-sm" id="turno" name="turno" required>
-                                <option value="">Seleccione un turno</option>
-                                <!-- Aquí se cargarán dinámicamente los turnos -->
-                            </select>                    
                         </div>
-                    </div>
-                    <div class="actions" id="boton-siguiente">
-                        <button type="submit" class="float-right mb-3">Siguiente</button>
-                    </div>
-                </form>
-            </div>
+                        <div class="actions" id="boton-siguiente">
+                                <button type="submit" class="float-right mb-3">Siguiente</button>
+                        </div>
+                    </form>
+                </div>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
