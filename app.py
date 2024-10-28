@@ -166,10 +166,11 @@ def alumnos():
     offset = (page - 1) * per_page
 
     if table == 'alumnos':
-        # Consulta paginada para la lista de alumnos
+        # Consulta paginada para la lista de alumnos con nombre de localidad
         query_alumnos = """
-            SELECT id_usuario, dni, nombre, id_localidad, telefono
-            FROM usuarios
+            SELECT u.id_usuario, u.dni, u.nombre, l.nombre AS localidad, u.telefono
+            FROM usuarios u
+            LEFT JOIN localidades l ON u.id_localidad = l.id_localidad
             LIMIT %s OFFSET %s
         """
         alumnos = ejecutar_sql(query_alumnos, (per_page, offset))
@@ -192,10 +193,11 @@ def alumnos():
         )
 
     elif table == 'pre_inscripciones':
-        # Consulta paginada para la lista de pre-inscripciones
+        # Consulta paginada para la lista de pre-inscripciones con nombre de localidad
         query_pre_inscripciones = """
-            SELECT id_usuario, dni, nombre, id_localidad, telefono
-            FROM pre_inscripciones
+            SELECT p.id_usuario, p.dni, p.nombre, l.nombre AS localidad, p.telefono
+            FROM pre_inscripciones p
+            LEFT JOIN localidades l ON p.id_localidad = l.id_localidad
             LIMIT %s OFFSET %s
         """
         pre_inscripciones = ejecutar_sql(query_pre_inscripciones, (per_page, offset))
