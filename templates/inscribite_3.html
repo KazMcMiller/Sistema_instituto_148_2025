@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirmar Pre-Inscripción</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="bootstrap.min.css" rel="stylesheet">
@@ -13,18 +14,17 @@
 </head>
 
 <style>
-    body {
-        justify-content: center;
+    html, body{
+        height: 100%;
         display: flex;
-        align-items: center;
-        height: 100vh;
-    }
-                
+        justify-content: center; /* Centra horizontalmente */
+        align-content: center; /* Centra verticalmente */
+    }         
 </style>
 
 <body>
-    <div class="container mt-3">
-        <div class="container rounded-sm" id="cont-insc">
+    <div class="container">
+        <div class="container rounded-sm mt-3" id="cont-insc">
         
             <div class="form-container">
                 <h4 class="text-primary text-center mt-3">Confirmar Pre-Inscripción</h4>
