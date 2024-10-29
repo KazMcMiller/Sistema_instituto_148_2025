@@ -123,15 +123,13 @@
         }
     </script>
     <style>
-            html{
-                margin-left: 15%;
-            }
-            html, body{
-                height: 100%;
-                display: flex;
-                justify-content: center; /* Centra horizontalmente */
-                align-content: center; /* Centra verticalmente */
-            }
+    body{
+            height: 100vh;
+            display: flex;
+            justify-content: center; /* Centra horizontalmente */
+            align-items: center; /* Centra verticalmente */
+            margin: 0;
+            }
                         
     </style>
 </head>
@@ -142,7 +140,7 @@
             
                 <div class="form-container">
                     <h4 class="text-primary text-center mt-3">Datos Personales</h4>
-                    <form method="POST" action="/pre_inscripcion">
+                    <form method="POST" action="/inscribite">
                         <div class="form-row">
                             <div class="col col-md-3 form-group">
                                 <label for="nombre">Nombres:</label>
@@ -300,6 +298,7 @@
                         </div>
                     </form>
                 </div>
+            </div>i
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

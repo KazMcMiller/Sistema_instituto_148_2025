@@ -31,10 +31,12 @@
     background-color: #a83335;
     border-radius: 10px;
     display: flex; 
-    width: 80px;
+    width: 100px;
     height: 40px;
     justify-content: center; /* Centra horizontalmente */
     align-items: center;
+    border: none;
+    color: #fff;
 }
 
 #boton-siguiente button{
@@ -217,7 +219,6 @@ label{
 
 th{
     color: #5DB3B7;
-
 }
 
 #EditIcon{
