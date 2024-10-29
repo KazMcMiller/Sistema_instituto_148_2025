@@ -48,7 +48,7 @@ def login():
         query = "SELECT id_usuario, nombre FROM usuarios WHERE dni = %s AND pass = %s AND activo = 1"
         result = ejecutar_sql(query, (dni, password))
         
-        if result:
+        if result: #meter en session (donde se guardan los datos)
             session['dni'] = dni
             session['nombre'] = result[0][1]  # Suponiendo que el nombre está en la segunda columna del resultado
             session['id_usuario'] = result[0][0]  # Suponiendo que el id_usuario está en la primera columna del resultado
