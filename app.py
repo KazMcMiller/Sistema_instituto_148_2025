@@ -510,7 +510,7 @@ def borrar_ingresante(id_usuario):
 
     
 @app.route('/profesores')
-@perfil_requerido(['1', '3'])  # Solo perfiles 1 (directivo) y 3 (profesor) pueden acceder
+@perfil_requerido(['1', '2', '3'])  # Solo perfiles 1 (directivo) y 3 (profesor) pueden acceder
 def profesores():
     if 'nombre' not in session:
         return redirect(url_for('login'))
@@ -526,7 +526,7 @@ def carreras():
     return render_template('carreras.html')
 
 @app.route('/horarios')
-@perfil_requerido(['1', '3', '4'])  # Solo perfiles 1 (directivo), 3 (profesor) y 4 (alumno) pueden acceder
+@perfil_requerido(['1','2', '3', '4'])  # todos los perfiles pueden acceder
 def horarios():
     if 'nombre' not in session:
         return redirect(url_for('login'))
