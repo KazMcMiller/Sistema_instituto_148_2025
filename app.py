@@ -31,7 +31,7 @@ def home():
         return redirect(url_for('login'))
 
     # Filtrar mensajes que hayan sido enviados en los últimos 7 días
-    fecha_limite = datetime.now() - timedelta(days=7)
+    fecha_limite = datetime.now() - timedelta(days=2)
     query_mensajes = """
         SELECT mensaje, dia FROM mensajes
         WHERE dia >= %s
