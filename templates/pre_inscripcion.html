@@ -83,6 +83,16 @@
                 errorElement.textContent = '';
             }
         }
+        function validar_numeros(input) {
+            const regex = /^[0-9]$/;
+
+            if (!regex.test(input.value)) {
+                input.value = input.value.replace(/[^0-9]/g, '');
+            } else {
+                errorElement.textContent = '';
+            }
+        }
+
 
         // Filtra las provincias en función del país seleccionado
         function filterProvincias() {
@@ -193,11 +203,11 @@
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="cantidad_hijos">Cantidad de Hijos:</label>
-                                <input class="form-control form-control-sm" type="number" id="cantidad_hijos" name="cantidad_hijos" min="0" value="{{ session.get('datos_personales', {}).get('cantidad_hijos', '') }}" required>
+                                <input class="form-control form-control-sm" type="number" id="cantidad_hijos" name="cantidad_hijos" min="0" value="{{ session.get('datos_personales', {}).get('cantidad_hijos', '') }}" oninput="validar_numeros(this)" required>
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="familiares_a_cargo">Familiares a Cargo:</label>
-                                <input class="form-control form-control-sm" type="number" id="familiares_a_cargo" name="familiares_a_cargo" min="0" value="{{ session.get('datos_personales', {}).get('familiares_a_cargo', '') }}" required>
+                                <input class="form-control form-control-sm" type="number" id="familiares_a_cargo" name="familiares_a_cargo" min="0" value="{{ session.get('datos_personales', {}).get('familiares_a_cargo', '') }}"  oninput="validar_numeros(this)" required>
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="domicilio">Domicilio:</label>
@@ -205,7 +215,7 @@
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="piso">Piso:</label>
-                                <input class="form-control form-control-sm" type="number" id="piso" name="piso" value="{{ session.get('datos_personales', {}).get('piso', '') }}">
+                                <input class="form-control form-control-sm" type="number" id="piso" name="piso" value="{{ session.get('datos_personales', {}).get('piso', '') }}" oninput="validar_numeros(this)">
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="id_pais">País:</label>
@@ -250,16 +260,16 @@
 
                             <div class="col col col-md-3 form-group">
                                 <label for="codigo_postal">Código Postal:</label>
-                                <input class="form-control form-control-sm" type="text" id="codigo_postal" name="codigo_postal" value="{{ session.get('datos_personales', {}).get('codigo_postal', '') }}" required>
+                                <input class="form-control form-control-sm" type="text" id="codigo_postal" name="codigo_postal" value="{{ session.get('datos_personales', {}).get('codigo_postal', '') }}" oninput="validar_numeros(this)" required>
                             </div>
 
                             <div class="col col col-md-3 form-group">
                                 <label for="telefono">Teléfono:</label>
-                                <input class="form-control form-control-sm" type="number" id="telefono" name="telefono" value="{{ session.get('datos_personales', {}).get('telefono', '') }}" required>
+                                <input class="form-control form-control-sm" type="number" id="telefono" name="telefono" value="{{ session.get('datos_personales', {}).get('telefono', '') }}" oninput="validar_numeros(this)" required>
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="telefono_alt">Teléfono Alternativo:</label>
-                                <input class="form-control form-control-sm" type="number" id="telefono_alt" name="telefono_alt" value="{{ session.get('datos_personales', {}).get('telefono_alt', '') }}" required>
+                                <input class="form-control form-control-sm" type="number" id="telefono_alt" name="telefono_alt" value="{{ session.get('datos_personales', {}).get('telefono_alt', '') }}" oninput="validar_numeros(this)" required>
                             </div>
                             <div class="col col col-md-3 form-group">
                                 <label for="telefono_alt_propietario">A quién pertenece el teléfono alternativo:</label>

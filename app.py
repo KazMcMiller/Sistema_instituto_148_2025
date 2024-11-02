@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 from utils.db_utils import ejecutar_sql
 from functools import wraps
 from flask import jsonify
-from datetime import date
+from datetime import date, datetime, timedelta
+
 
 load_dotenv()
 
@@ -23,17 +24,22 @@ def path_inicial():
     else:
         return redirect(url_for('login'))
 
+# Ruta para el home donde se mostrarán los mensajes
 @app.route('/home')
 def home():
-    # Verifica si el usuario está autenticado y ha seleccionado un perfil
-    if 'nombre' in session and 'perfil' in session:
-        perfil_id = session['perfil']
-        
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
 
-        # Renderizar la plantilla y pasar los permisos
-        return render_template('home.html', nombre=session['nombre'])
+    # Filtrar mensajes que hayan sido enviados en los últimos 7 días
+    fecha_limite = datetime.now() - timedelta(days=7)
+    query_mensajes = """
+        SELECT mensaje, dia FROM mensajes
+        WHERE dia >= %s
+        ORDER BY dia DESC
+    """
+    mensajes = ejecutar_sql(query_mensajes, (fecha_limite,))
 
-    return redirect(url_for('login'))
+    return render_template('home.html', mensajes=mensajes)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -159,67 +165,102 @@ def alumnos():
     if 'nombre' not in session:
         return redirect(url_for('login'))
 
-    # Obtener el número de página y la tabla seleccionada
+    # Obtener el nombre de búsqueda, número de página, estado activo y tabla seleccionada
+    nombre_busqueda = request.args.get('nombre', '').strip()  # Nombre a buscar
+    estado_activo = request.args.get('activo', 'todos')  # Estado activo: 'todos', 'activos' o 'inactivos'
     page = request.args.get('page', 1, type=int)
-    table = request.args.get('table', 'alumnos')  # Por defecto será alumnos
-    per_page = 5  # Número de registros por página
+    table = request.args.get('table', 'alumnos')
+    per_page = 5
     offset = (page - 1) * per_page
 
+    # Construir condiciones de búsqueda y filtro
+    nombre_filter = f"%{nombre_busqueda}%"
+    activo_filter = None if estado_activo == 'todos' else ('1' if estado_activo == 'activos' else '0')
+
     if table == 'alumnos':
-        # Consulta paginada para la lista de alumnos con nombre de localidad
+        # Consulta de alumnos con filtro de nombre y estado
         query_alumnos = """
             SELECT u.id_usuario, u.dni, u.nombre, l.nombre AS localidad, u.telefono
             FROM usuarios u
             LEFT JOIN localidades l ON u.id_localidad = l.id_localidad
-            ORDER BY u.id_usuario
-            LIMIT %s OFFSET %s
+            WHERE u.nombre LIKE %s
         """
-        alumnos = ejecutar_sql(query_alumnos, (per_page, offset))
+        params = [nombre_filter]
 
-        # Consulta para contar el total de alumnos
-        query_total_alumnos = "SELECT COUNT(*) FROM usuarios"
-        total_alumnos = ejecutar_sql(query_total_alumnos)[0][0]
+        if activo_filter is not None:
+            query_alumnos += " AND u.activo = %s"
+            params.append(activo_filter)
 
-        # Calcular el número total de páginas para alumnos
+        query_alumnos += " ORDER BY u.id_usuario LIMIT %s OFFSET %s"
+        params.extend([per_page, offset])
+
+        alumnos = ejecutar_sql(query_alumnos, tuple(params))
+
+        # Contar el total de alumnos según el filtro de búsqueda y estado
+        query_total_alumnos = "SELECT COUNT(*) FROM usuarios WHERE nombre LIKE %s"
+        total_params = [nombre_filter]
+
+        if activo_filter is not None:
+            query_total_alumnos += " AND activo = %s"
+            total_params.append(activo_filter)
+
+        total_alumnos = ejecutar_sql(query_total_alumnos, tuple(total_params))[0][0]
         total_paginas_alumnos = (total_alumnos + per_page - 1) // per_page
 
         return render_template(
             'alumnos.html', 
-            alumnos=alumnos, 
-            pre_inscripciones=[],  # No mostrar pre-inscripciones en esta vista
-            page=page, 
+            alumnos=alumnos,
+            pre_inscripciones=[],
+            page=page,
             table='alumnos',
-            total_paginas_alumnos=total_paginas_alumnos, 
-            total_paginas_pre_inscripciones=None  # No se necesitan para alumnos
+            nombre_busqueda=nombre_busqueda,
+            estado_activo=estado_activo,
+            total_paginas_alumnos=total_paginas_alumnos,
+            total_paginas_pre_inscripciones=None
         )
 
     elif table == 'pre_inscripciones':
-        # Consulta paginada para la lista de pre-inscripciones con nombre de localidad
+        # Consulta de pre-inscripciones con filtro de nombre y estado
         query_pre_inscripciones = """
             SELECT u.id_usuario, u.dni, u.nombre, l.nombre AS localidad, u.telefono
             FROM pre_inscripciones u
             LEFT JOIN localidades l ON u.id_localidad = l.id_localidad
-            ORDER BY u.id_usuario
-            LIMIT %s OFFSET %s
+            WHERE u.nombre LIKE %s
         """
-        pre_inscripciones = ejecutar_sql(query_pre_inscripciones, (per_page, offset))
+        params = [nombre_filter]
 
-        # Consulta para contar el total de pre-inscripciones
-        query_total_pre_inscripciones = "SELECT COUNT(*) FROM pre_inscripciones"
-        total_pre_inscripciones = ejecutar_sql(query_total_pre_inscripciones)[0][0]
+        if activo_filter is not None:
+            query_pre_inscripciones += " AND u.activo = %s"
+            params.append(activo_filter)
 
-        # Calcular el número total de páginas para pre-inscripciones
+        query_pre_inscripciones += " ORDER BY u.id_usuario LIMIT %s OFFSET %s"
+        params.extend([per_page, offset])
+
+        pre_inscripciones = ejecutar_sql(query_pre_inscripciones, tuple(params))
+
+        # Contar el total de pre-inscripciones según el filtro de búsqueda y estado
+        query_total_pre_inscripciones = "SELECT COUNT(*) FROM pre_inscripciones WHERE nombre LIKE %s"
+        total_params = [nombre_filter]
+
+        if activo_filter is not None:
+            query_total_pre_inscripciones += " AND activo = %s"
+            total_params.append(activo_filter)
+
+        total_pre_inscripciones = ejecutar_sql(query_total_pre_inscripciones, tuple(total_params))[0][0]
         total_paginas_pre_inscripciones = (total_pre_inscripciones + per_page - 1) // per_page
 
         return render_template(
-            'alumnos.html', 
-            alumnos=[],  # No mostrar alumnos en esta vista
+            'alumnos.html',
+            alumnos=[],
             pre_inscripciones=pre_inscripciones,
-            page=page, 
+            page=page,
             table='pre_inscripciones',
-            total_paginas_alumnos=None,  # No se necesitan para pre-inscripciones
+            nombre_busqueda=nombre_busqueda,
+            estado_activo=estado_activo,
+            total_paginas_alumnos=None,
             total_paginas_pre_inscripciones=total_paginas_pre_inscripciones
         )
+
 
 
 @app.route('/alumno/<int:id_usuario>', methods=['GET', 'POST'])
@@ -341,16 +382,23 @@ def editar_alumno(id_usuario):
     )
 
 
-@app.route('/alumno/<int:id_usuario>/borrar', methods=['POST'])
+@app.route('/alumno/<int:id_usuario>/borrar', methods=['POST']) #alternar entre activo o inactivo, no los borra
 @perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 2 (preseptor) pueden acceder
 def borrar_alumno(id_usuario):
     if 'nombre' not in session:
         return redirect(url_for('login'))
 
-    # Consulta para eliminar al alumno de la base de datos
-    query_borrar = " UPDATE usuarios SET activo = 0 WHERE id_usuario = %s"
-    ejecutar_sql(query_borrar, (id_usuario,))
-    
+    # Consulta para alternar el valor de 'activo' entre 0 y 1
+    query_toggle_activo = """
+        UPDATE usuarios
+        SET activo = CASE
+            WHEN activo = 1 THEN 0
+            ELSE 1
+        END
+        WHERE id_usuario = %s
+    """
+    ejecutar_sql(query_toggle_activo, (id_usuario,))
+
     return redirect(url_for('alumnos'))
 
 
@@ -533,13 +581,34 @@ def horarios():
     # Renderiza la página de gestión de horarios
     return render_template('horarios.html')
 
+# Ruta para la página de secretaria
 @app.route('/secretaria')
-@perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 3 (profesor) pueden acceder
+@perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 2 (secretaria) pueden acceder
 def secretaria():
     if 'nombre' not in session:
         return redirect(url_for('login'))
-    # Renderiza la página de gestión de la secretaría
     return render_template('secretaria.html')
+
+# Ruta para enviar un mensaje
+@app.route('/enviar_mensaje', methods=['POST'])
+@perfil_requerido(['1', '2'])
+def enviar_mensaje():
+    if 'nombre' not in session:
+        return redirect(url_for('login'))
+    
+    mensaje = request.form.get('mensaje')
+    id_usuario = session['id_usuario']
+    dia = datetime.now()
+
+    # Insertar el mensaje en la tabla mensajes
+    query_insertar_mensaje = """
+        INSERT INTO mensajes (mensaje, id_usuario, dia)
+        VALUES (%s, %s, %s)
+    """
+    ejecutar_sql(query_insertar_mensaje, (mensaje, id_usuario, dia))
+
+    flash("Mensaje enviado a todos los usuarios", "success")
+    return redirect(url_for('secretaria'))
 
 @app.route('/reportes')
 @perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 3 (profesor) pueden acceder

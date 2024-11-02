@@ -21,6 +21,20 @@
     
 </head>
 <body>
+    <div class="container">
+        {% include 'navbar.html' %}
+        
+        <!-- Mostrar mensajes de la secretaria -->
+        {% if mensajes %}
+            <div class="alert alert-info mt-4">
+                <ul>
+                    {% for mensaje, dia in mensajes %}
+                        <li> {{ mensaje }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
     <div class="header" id="bienvenido-usuario">
         Bienvenido, {{ nombre }}
     </div>
