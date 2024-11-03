@@ -112,12 +112,14 @@
             <div class="form-container">
                     <h4 class="text-primary text-center mt-3">Datos Laborales</h4>
                     <div class="form-row">
-                        <div class="col col-md-4 form-radio">
-                            <label>¿Trabaja?</label>
-                            <input class="form-control-sm" type="radio" id="trabaja_si" name="trabaja" value="si" onclick="toggleLaborFields()">
-                            <label for="trabaja_si">Sí</label>
-                            <input class="form-control-sm" type="radio" id="trabaja_no" name="trabaja" value="no" onclick="toggleLaborFields()" checked>
-                            <label for="trabaja_no">No</label>
+                        <div class="col col-md-4 mt-3">
+                            <label style="font-size: 12px;">¿Trabaja?</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input ml-2" type="radio" id="trabaja_si" name="trabaja" value="si" onclick="toggleLaborFields()">
+                                <label class="form-check-label" for="trabaja_si">Sí</label>
+                                <input class="form-check-input ml-2" type="radio" id="trabaja_no" name="trabaja" value="no" onclick="toggleLaborFields()" checked>
+                                <label class="form-check-label" for="trabaja_no">No</label>
+                            </div>
                         </div>
                         <div class="col col-md-4 form-group">
                             <label for="actividad">Actividad:</label>

@@ -92,6 +92,28 @@
     background-color: #72d9de;
 }
 
+.boton-buscar{
+    background-color: #399d95;
+    border-radius: 10px;
+    border: none;
+}
+
+#boton-enviar{
+    background-color: #399d95;
+    border-radius: 10px;
+    display: flex; 
+    width: 100px;
+    height: 40px;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;
+    border: none;
+    color: #fff;
+    display: flex;
+    justify-content: flex-end;
+    line-height: 18px;
+
+}
+
 /*Login*/
 
 body{
@@ -176,6 +198,8 @@ body{
     align-items: center; /* Centra verticalmente */
 
 }
+
+
 
 label{
     font-size: 12px;

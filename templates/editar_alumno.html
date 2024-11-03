@@ -89,6 +89,13 @@
         justify-content: center; /* Centra horizontalmente */
         align-content: center; /* Centra verticalmente */
     }
+   
+    #boton-act{
+
+        line-height: 18px;
+        background-color: #518ec3;
+    }
+    
                 
 </style>
 
@@ -247,6 +254,11 @@
                             <label for="pass">Contraseña:</label>
                             <input class="form-control form-control-sm" type="number" id="pass" name="pass" value="{{ alumno[29] or '' }}">
                         </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="obra_social">Estado actual</label>
+                            <input class="labor-field form-control form-control-sm" type="text" id="estado" name="estado" disabled>
+                        </div>
+
                     </div>
             <div class="form-container">
                 <hr>
@@ -310,7 +322,7 @@
                     </form>
                 </div>
                 <form action="{{ url_for('borrar_alumno', id_usuario=alumno[0]) }}" method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-danger mx-auto">Desactivar/activar</button>
+                    <button type="submit" class="btn btn-danger mx-auto" id="boton-act">Desactivar/ Activar</button>
                 </form>
 
             </div>

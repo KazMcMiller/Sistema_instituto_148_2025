@@ -11,22 +11,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <style>
-        body {
-            display: block;
-            text-align: left; /* Alinea el contenido a la izquierda */
-            margin: 0;
-            padding: 0;
-        }
+            html, body{
+                height: 100%;
+                display: flex;
+                justify-content: center; /* Centra horizontalmente */
+                align-content: center; /* Centra verticalmente */
+            }
+            .alert{
+                background-color: #5DB3B7 !important;
+                color: white !important;
+            }
     </style>
     
 </head>
 <body>
-    <div class="container">
+    <div class="container alert-container">
         {% include 'navbar.html' %}
         
         <!-- Mostrar mensajes de la secretaria -->
         {% if mensajes %}
-            <div class="alert alert-info mt-4">
+            <div class="alert alert-info">
                 <ul>
                     {% for mensaje, dia in mensajes %}
                         <li> {{ mensaje }}</li>
