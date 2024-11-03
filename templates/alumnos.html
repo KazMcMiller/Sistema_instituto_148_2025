@@ -122,22 +122,6 @@
             <form method="GET" action="{{ url_for('alumnos') }}" class="form-inline mb-3">
                 <input type="hidden" name="table" value="pre_inscripciones">
                 <input type="text" name="nombre" class="form-control mr-2" placeholder="Buscar por nombre" value="{{ nombre_busqueda or '' }}">
-
-                <!-- Filtro de estado -->
-                <label class="mr-2">Estado:</label>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="activo" value="todos" id="todos" {% if estado_activo == 'todos' %}checked{% endif %}>
-                    <label class="form-check-label" for="todos">Todos</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="activo" value="activos" id="activos" {% if estado_activo == 'activos' %}checked{% endif %}>
-                    <label class="form-check-label" for="activos">Activos</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="activo" value="inactivos" id="inactivos" {% if estado_activo == 'inactivos' %}checked{% endif %}>
-                    <label class="form-check-label" for="inactivos">Inactivos</label>
-                </div>
-
                 <button type="submit" class="btn btn-primary boton-buscar ml-2">Buscar</button>
             </form>
 

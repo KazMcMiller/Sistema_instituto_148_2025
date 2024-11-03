@@ -255,9 +255,10 @@
                             <input class="form-control form-control-sm" type="number" id="pass" name="pass" value="{{ alumno[29] or '' }}">
                         </div>
                         <div class="col col-md-3 form-group">
-                            <label for="obra_social">Estado actual</label>
-                            <input class="labor-field form-control form-control-sm" type="text" id="estado" name="estado" disabled>
+                            <label for="estado">Estado actual</label>
+                            <input class="labor-field form-control form-control-sm" type="text" id="estado" name="estado" value="{{ estado_actual }}" disabled>
                         </div>
+                        
 
                     </div>
             <div class="form-container">

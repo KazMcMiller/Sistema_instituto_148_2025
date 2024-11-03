@@ -30,6 +30,7 @@ def home():
     if 'nombre' not in session:
         return redirect(url_for('login'))
 
+    nombre = session['nombre']
     # Filtrar mensajes que hayan sido enviados en los últimos 7 días
     fecha_limite = datetime.now() - timedelta(days=2)
     query_mensajes = """
@@ -39,7 +40,7 @@ def home():
     """
     mensajes = ejecutar_sql(query_mensajes, (fecha_limite,))
 
-    return render_template('home.html', mensajes=mensajes)
+    return render_template('home.html',nombre=nombre, mensajes=mensajes)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -368,6 +369,8 @@ def editar_alumno(id_usuario):
     """
     turnos_carreras = ejecutar_sql(query_turnos)
     turnos_carreras = [{"id_turno": turno[0], "id_carrera": turno[1], "descripcion": turno[2]} for turno in turnos_carreras]
+    # Determina si el alumno está activo o inactivo basado en el valor de alumno[30]
+    estado_actual = "Activo" if ingresante[30] == 1 else "Inactivo"
 
     return render_template(
         'editar_alumno.html',
@@ -376,9 +379,10 @@ def editar_alumno(id_usuario):
         provincias=provincias,
         localidades=localidades,
         lista_carreras=lista_carreras,
-        turnos_carreras=turnos_carreras,  # Enviar los turnos como contexto de JSON
+        turnos_carreras=turnos_carreras,
         alumno_carrera_id=alumno_carrera_id,
-        alumno_turno=alumno_turno
+        alumno_turno=alumno_turno,
+        estado_actual=estado_actual  # Enviar el estado como texto
     )
 
 
