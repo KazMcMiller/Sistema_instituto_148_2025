@@ -5,9 +5,10 @@ from utils.db_utils import ejecutar_sql
 from functools import wraps
 from flask import jsonify
 from datetime import date, datetime, timedelta
+# Aca importamos todo lo que vayamos a usar, en el documento de requerimientos estan todas las librerias que se usan
+# en la consola usen el metodo pip para instalar cosas como flask
 
-
-load_dotenv()
+load_dotenv() #dotenv es una biblioteca de Nodejs que permite cargar las variables de entorno desde un archivo .env.
 
 app = Flask(__name__)
 
@@ -16,9 +17,10 @@ app.config['SECRET_KEY'] = 'tu_clave_secreta'
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 
+#para crear rutas en flask usamos esta estructura
 @app.route('/')
 def path_inicial():
-    # Verifica si el usuario está autenticado y ha seleccionado un perfil
+    # Verifica si el usuario está autenticado y ha seleccionado un perfil, esto se hara en cada ruta necesaria
     if 'nombre' in session:
         return redirect(url_for('seleccionar_perfil'))
     else:
@@ -38,16 +40,17 @@ def home():
         WHERE dia >= %s
         ORDER BY dia DESC
     """
-    mensajes = ejecutar_sql(query_mensajes, (fecha_limite,))
+    mensajes = ejecutar_sql(query_mensajes, (fecha_limite,)) #ejecutar_sql enviara una consulta sql a tu base de datos,
+                                                    #espera un parametro que es la query y mas de uno si usas %s, como en este caso
 
     return render_template('home.html',nombre=nombre, mensajes=mensajes)
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST']) #en las rutas, puedes definir que metodos usar para hacer una cosa dependiendo cada metodo
 def login():
     if 'nombre' in session:
         return redirect(url_for('seleccionar_perfil'))
 
-    if request.method == 'POST':
+    if request.method == 'POST': #por ejemplo, aqui, si el metodo es POST, haremos todo esto en el login
         dni = request.form['dni']
         password = request.form['password']
         
@@ -78,16 +81,30 @@ def login():
             return redirect(url_for('login'))
     return render_template('login.html')
 
+# Decorador personalizado para restringir el acceso a ciertas funciones según el perfil del usuario.
+# Acepta una lista de perfiles permitidos, y si el perfil del usuario no está en esa lista, redirige a la página de inicio.
 def perfil_requerido(perfiles_permitidos):
     def decorador(f):
+        # Preserva la información original de la función 'f' para que el decorador no afecte su nombre o documentación.
         @wraps(f)
         def funcion_verificada(*args, **kwargs):
+            # Verifica si el usuario ha seleccionado un perfil en la sesión.
             if 'perfil' not in session:
-                return redirect(url_for('seleccionar_perfil'))  # Si no ha seleccionado un perfil
+                # Si el perfil no está en la sesión, redirige al usuario a la página de selección de perfil.
+                return redirect(url_for('seleccionar_perfil'))
+            
+            # Verifica si el perfil del usuario está en la lista de perfiles permitidos.
             if session['perfil'] not in perfiles_permitidos:
-                return redirect(url_for('home'))  # Si el perfil no está permitido, redirigir a home
+                # Si el perfil no está en la lista de permitidos, redirige al usuario a la página de inicio.
+                return redirect(url_for('home'))
+            
+            # Si el perfil está permitido, se ejecuta la función original.
             return f(*args, **kwargs)
+        
+        # Retorna la función verificada que será ejecutada en lugar de la original.
         return funcion_verificada
+
+    # Retorna el decorador configurado con los perfiles permitidos.
     return decorador
 
 @app.route('/seleccionar_perfil', methods=['GET', 'POST'])
@@ -124,25 +141,33 @@ def seleccionar_perfil():
     
     return render_template('seleccionar_perfil.html', nombre=session['nombre'], perfiles=perfiles)
 
+# Función para inyectar datos específicos en el contexto de la plantilla, permitiendo que las plantillas 
+# tengan acceso a datos sobre permisos de usuario para mostrar u ocultar elementos de la barra de navegación (navbar.html).
 @app.context_processor
 def inject_navbar_data():
-    # Obtener los perfiles para la barra de navegación
+    # Obtener el ID del usuario desde la sesión
     id_usuario = session.get('id_usuario')
 
-
+    # Verifica si el usuario ha iniciado sesión (si id_usuario existe en la sesión)
     if id_usuario:
+        # Obtiene el perfil seleccionado por el usuario desde la sesión
         perfil_seleccionado = session.get('perfil')
 
+        # Consulta SQL para obtener los permisos asociados al perfil seleccionado
         query_perfil = """
             SELECT id_permisos FROM permisos_perfiles WHERE id_perfil = %s
         """
+        # Ejecuta la consulta para obtener los permisos del perfil
         permisos = ejecutar_sql(query_perfil, (perfil_seleccionado,))
 
+        # Convierte los permisos obtenidos en una lista simple de IDs
         permisos = [permiso[0] for permiso in permisos]
 
     else:
+        # Si no hay usuario en la sesión, asigna una lista vacía de permisos
         permisos = []
 
+    # Devuelve un diccionario con la lista de permisos que estará disponible en el contexto de las plantillas
     return dict(permisos=permisos)
 
 
@@ -161,6 +186,8 @@ def dashboard_admin():
     return redirect(url_for('login'))
 
 
+# esta funcion y ruta crea una tabla con un filtro de busqueda y un boton para activos e inactivos
+# tanto para alumnos como para pre-inscriptos, estos ultimos si los editas podras darlos de alta mas adelante
 @app.route('/alumnos', methods=['GET'])
 def alumnos():
     if 'nombre' not in session:
@@ -263,7 +290,8 @@ def alumnos():
         )
 
 
-
+# aqui entraremos cuando seleccionamos un usuario, primero hara un get para tomar todos sus datos y 
+# mostrarlos de la manera que queremos, despues, si cambiamos algo, hara un post para generar un update en la tabla usuarios
 @app.route('/alumno/<int:id_usuario>', methods=['GET', 'POST'])
 @perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 2 (preseptor) pueden acceder
 def editar_alumno(id_usuario):
@@ -405,7 +433,8 @@ def borrar_alumno(id_usuario):
 
     return redirect(url_for('alumnos'))
 
-
+#esta funcion toma todos los formularios llenados con datos de posibles estudiantes y si son correctos darlos de alta
+#lo mismo que hace con alumnos pero cuando hacemos un POST, sera para darlos de alta y poder llevarlos con un insert usuarios
 @app.route('/ingresante/<int:id_usuario>', methods=['GET', 'POST'])
 @perfil_requerido(['1', '2'])  # Solo perfiles 1 (directivo) y 2 (preseptor) pueden acceder
 def editar_ingresante(id_usuario):
@@ -593,7 +622,7 @@ def secretaria():
         return redirect(url_for('login'))
     return render_template('secretaria.html')
 
-# Ruta para enviar un mensaje
+# Ruta para enviar los mensajes
 @app.route('/enviar_mensaje', methods=['POST'])
 @perfil_requerido(['1', '2'])
 def enviar_mensaje():
@@ -622,6 +651,8 @@ def reportes():
     # Renderiza la página de generación de reportes
     return render_template('reportes.html')
 
+#ruta donde inscribiremos a las personas para que sean alumnos mas tarde
+#primero obtiene todos los datos para los selects y si hace un POST, hace validaciones y guarda los datos para pre_inscripcion_2
 @app.route('/pre_inscripcion', methods=['GET', 'POST'])
 @perfil_requerido(['1', '2'])
 def pre_inscripcion():
@@ -673,7 +704,7 @@ def pre_inscripcion():
         query_verificar_dni = "SELECT COUNT(*) FROM usuarios WHERE dni = %s"
         existe_dni = ejecutar_sql(query_verificar_dni, (dni,))[0][0]
 
-        if existe_dni > 0:
+        if existe_dni > 0: #si existe, volver a enviar los datos y recargar la pagina, dando un mensaje de error
             return render_template(
                 'pre_inscripcion.html',
                 turnos_carreras=turnos_carreras_dict,
@@ -711,7 +742,7 @@ def pre_inscripcion():
 
 
 
-
+#sigue el formulario y guarda todo para pre_inscripcion_3
 @app.route('/pre_inscripcion_2', methods=['GET', 'POST'])
 @perfil_requerido(['1', '2'])
 def pre_inscripcion_2():
@@ -740,7 +771,7 @@ def pre_inscripcion_2():
     )
 
 
-
+#una vez que esta completo el formulario, guardamos al ingresante en pre_inscripciones para mas adelante darlo de alta como alumno
 @app.route('/guardar_pre_inscripcion', methods=['POST'])
 def guardar_pre_inscripcion():
     # Obtener todos los datos desde la sesión
@@ -810,7 +841,8 @@ def guardar_pre_inscripcion():
 
 
 
-
+#siguiendo con el formulario, aqui primero cargara todos los datos, generara algunas inteligencias para mostrar nombres en vez de
+# ids y los mostrara en pantalla, si todo esta bien pasamos a guardar_pre_inscripcion
 @app.route('/pre_inscripcion_3', methods=['POST'])
 @perfil_requerido(['1', '2'])
 def pre_inscripcion_3():
@@ -881,7 +913,7 @@ def pre_inscripcion_3():
 
     return render_template('pre_inscripcion_3.html', **datos_completos)
 
-
+#estas rutas hacen lo mismo que pre_inscripcion pero estas funcionan para el que hace el formulario de afuera, no vera la navbar
 @app.route('/inscribite', methods=['GET', 'POST'])
 def inscribite():
 
@@ -963,6 +995,7 @@ def inscribite():
         estado_civil=estado_civil
     )
 
+#estas rutas hacen lo mismo que pre_inscripcion pero estas funcionan para el que hace el formulario de afuera, no vera la navbar
 @app.route('/inscribite_2', methods=['GET', 'POST'])
 def inscribite_2():
 
@@ -988,6 +1021,7 @@ def inscribite_2():
     )
 
 
+#estas rutas hacen lo mismo que pre_inscripcion pero estas funcionan para el que hace el formulario de afuera, no vera la navbar
 @app.route('/inscribite_3', methods=['POST'])
 def inscribite_3():
 
