@@ -165,7 +165,7 @@
                                 <input class="form-control form-control-sm" type="number" id="dni" name="dni" maxlength="8"
                                        value="{{ datos_personales.get('dni', '') if error_dni else session.get('datos_personales', {}).get('dni', '') }}"
                                        oninput="validarDNI(this)" required>
-                                <span id="error-dni" style="color: #a55772;">
+                                <span id="error-dni" style="color: #a55772; font-size: 12px">
                                     {% if error_dni %}
                                         Este DNI ya existe en el sistema.
                                     {% endif %}
