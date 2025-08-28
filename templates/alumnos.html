@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumnos - Sistema de Gestión Académica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script>
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.style.display = 'none');
+
+            const activeTab = document.getElementById(tabName);
+            if (activeTab) {
+                activeTab.style.display = 'block';
+            }
+
+            const tabButtons = document.querySelectorAll('.tabs button');
+            tabButtons.forEach(button => button.classList.remove('active'));
+            document.getElementById(tabName + '-btn').classList.add('active');
+        }
+
+        window.onload = function() {
+            const table = '{{ table }}';  // Saber qué tabla está seleccionada (alumnos o pre_inscripciones)
+            if (table === 'pre_inscripciones') {
+                showTab('pre_inscripciones');
+            } else {
+                showTab('alumnos');  // Por defecto mostramos alumnos
+            }
+        };
+    </script>
+    <style>
+        html{
+            margin-left: 15%;
+            height: 100%;
+            display: flex;
+            justify-content: center; /* Centra horizontalmente */
+            align-items: center; /* Centra verticalmente */
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    {% include 'nav.html' %}
+    <div class="container align-content-center align-items-center">
+
+        <!-- Contenido de la pestaña de Alumnos -->
+        <div id="alumnos" class="tab-content" style="display: none;">
+            <h5 class="text-primary mt-5">Listado de Alumnos</h5>
+
+            <!-- Formulario de búsqueda -->
+            <form method="GET" action="{{ url_for('alumnos') }}" class="form-inline mb-3">
+                <input type="hidden" name="table" value="alumnos">
+                <input type="text" name="nombre" class="form-control mr-2" placeholder="Buscar por nombre" value="{{ nombre_busqueda or '' }}">
+                
+                <!-- Filtro de estado -->
+                <label class="mr-2">Estado:</label>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="activo" value="todos" id="todos" {% if estado_activo == 'todos' %}checked{% endif %}>
+                    <label class="form-check-label" for="todos">Todos</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="activo" value="activos" id="activos" {% if estado_activo == 'activos' %}checked{% endif %}>
+                    <label class="form-check-label" for="activos">Activos</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="activo" value="inactivos" id="inactivos" {% if estado_activo == 'inactivos' %}checked{% endif %}>
+                    <label class="form-check-label" for="inactivos">Inactivos</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary boton-buscar ml-2">Buscar</button>
+            </form>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">DNI</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Ciudad</th>
+                        <th scope="col">Teléfono</th>
+                        <th scope="col">Editar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alumno in alumnos %}
+                    <tr>
+                        {% for campo in alumno %}
+                        <td>{{ campo or '' }}</td>
+                        {% endfor %}
+                        <td>
+                            <a href="{{ url_for('editar_alumno', id_usuario=alumno[0]) }}">
+                                <i class="fas fa-edit fa-lg" id="EditIcon"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Paginación de Alumnos -->
+            {% if total_paginas_alumnos %}
+            <div class="pagination" id="clase-paginas">
+                <ul class="pagination">
+                    {% for p in range(1, total_paginas_alumnos + 1) %}
+                    <li class="page-item {% if p == page %}active{% endif %}" id="cuadrito">
+                        <a class="page-link" href="{{ url_for('alumnos', page=p, table='alumnos', activo=estado_activo, nombre=nombre_busqueda) }}">{{ p }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Contenido de la pestaña de Pre-Inscripciones -->
+        <div id="pre_inscripciones" class="tab-content" style="display: none;">
+            <h5 class="text-primary mt-5">Listado de Pre-Inscripciones</h5>
+
+            <!-- Formulario de búsqueda -->
+            <form method="GET" action="{{ url_for('alumnos') }}" class="form-inline mb-3">
+                <input type="hidden" name="table" value="pre_inscripciones">
+                <input type="text" name="nombre" class="form-control mr-2" placeholder="Buscar por nombre" value="{{ nombre_busqueda or '' }}">
+                <button type="submit" class="btn btn-primary boton-buscar ml-2">Buscar</button>
+            </form>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">DNI</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Ciudad</th>
+                        <th scope="col">Teléfono</th>
+                        <th scope="col">Editar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pre_inscripcion in pre_inscripciones %}
+                    <tr>
+                        {% for campo in pre_inscripcion %}
+                        <td>{{ campo or '' }}</td>
+                        {% endfor %}
+                        <td>
+                            <a href="{{ url_for('editar_ingresante', id_usuario=pre_inscripcion[0]) }}">
+                                <i class="fas fa-edit fa-lg" id="EditIcon"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Paginación de Pre-Inscripciones -->
+            {% if total_paginas_pre_inscripciones %}
+            <div class="pagination" id="clase-paginas">
+                <ul class="pagination">
+                    {% for p in range(1, total_paginas_pre_inscripciones + 1) %}
+                    <li class="page-item {% if p == page %}active{% endif %}" id="cuadrito">
+                        <a class="page-link" href="{{ url_for('alumnos', page=p, table='pre_inscripciones', activo=estado_activo, nombre=nombre_busqueda) }}">{{ p }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    
+        
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="bootstrap.bundle.min.js"></script>
+</body>
+</html>

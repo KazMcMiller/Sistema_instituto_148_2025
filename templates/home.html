@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+            html, body{
+                height: 100%;
+                display: flex;
+                justify-content: center; /* Centra horizontalmente */
+                align-content: center; /* Centra verticalmente */
+            }
+            .alert{
+                background-color: #5DB3B7 !important;
+                color: white !important;
+            }
+    </style>
+    
+</head>
+<body>
+    <div class="container alert-container">
+        {% include 'navbar.html' %}
+        
+        <!-- Mostrar mensajes de la secretaria -->
+        {% if mensajes %}
+            <div class="alert alert-info">
+                <ul>
+                    {% for mensaje, dia in mensajes %}
+                        <li> {{ mensaje }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+    <div class="header" id="bienvenido-usuario">
+        Bienvenido/a, {{ nombre }}
+    </div>
+    {% include 'navbar.html' %}
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="bootstrap.bundle.min.js"></script>
+</body>
+</html>

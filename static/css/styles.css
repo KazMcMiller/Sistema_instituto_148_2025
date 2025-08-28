@@ -1,0 +1,492 @@
+/*Globales*/
+.bg{
+    
+    background-color: #5DB3B7;
+}
+
+.bg-primary{
+    
+    background-color: rgba(242, 243, 246, 0.451) !important;
+}
+
+.btn-login {
+    
+    background-color: #5DB3B7;
+    border-radius: 10px;
+    display: flex; 
+    width: 120px;
+    height: 40px;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;
+    border: none;
+    color: #fff;
+    
+}
+.btn-login:hover{
+    
+    background-color: #468285;
+}
+
+.btn-danger{
+    background-color: #a83335;
+    border-radius: 10px;
+    display: flex; 
+    width: 100px;
+    height: 40px;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;
+    border: none;
+    color: #fff;
+}
+
+#boton-siguiente button{
+    background-color: #5382AA;
+    border-radius: 10px;
+    display: flex; 
+    width: 100px;
+    height: 40px;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;
+    border: none;
+    color: #fff;
+}
+
+#boton-siguiente button:hover{
+    
+    background-color: #318cdc;
+}
+
+#boton-atras button{
+
+    background-color: #a55772;
+    border-radius: 10px;
+    display: flex; 
+    width: 100px;
+    height: 40px;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;
+    border: none;
+    color: #fff;
+
+}
+
+#boton-atras button:hover{
+    
+    background-color: #e44c5b;
+}
+
+#boton-confirmar button{
+    
+    background-color: #5DB3B7;
+    border-radius: 10px;
+    display: flex; 
+    width: 100px;
+    height: 40px;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;
+    border: none;
+    color: #fff;
+}
+
+#boton-confirmar:hover{
+    background-color: #72d9de;
+}
+
+.boton-buscar{
+    background-color: #399d95;
+    border-radius: 10px;
+    border: none;
+}
+
+#boton-enviar{
+    background-color: #399d95;
+    border-radius: 10px;
+    display: flex; 
+    width: 100px;
+    height: 40px;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;
+    border: none;
+    color: #fff;
+    display: flex;
+    justify-content: flex-end;
+    line-height: 18px;
+
+}
+
+/*Login*/
+
+body{
+    /*Login*/
+    background-color: #f2f3f6;
+}
+
+.container-login {
+    /*Login*/
+    height: 80%;
+    box-shadow: 6px 6px 8px 8px rgba(0, 0, 0, 0.45);
+    justify-content: center;
+    align-content: center !important;
+}
+
+.text-end{
+    /*Login*/
+    height: 100%;
+}
+
+.text-primary {
+    /*Login*/
+    color: #5DB3B7 !important;/* Color de Bootstrap para h2 */
+}
+
+.text-secundary {
+    /*Login*/
+    color: white !important;
+}
+.text-gris{
+    /*Login*/
+    color: #4E4E4E;
+}
+
+#eyeIcon {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+ /*Pantalla de Permisos*/
+
+#contenedor-perfil{
+    height: 80%;
+    justify-content: none;
+}
+
+
+/* Pantalla de Home*/
+
+.header{
+    /*Mensaje de bienvenida para el home*/
+    margin-left: 300px; /* Deja espacio para el sidebar */
+    padding: 10px 20px;
+    color: #4E4E4E;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Alinea el contenido a la izquierda */
+    border-bottom: 2px solid #ccc;
+    position: fixed;
+    top: 0;
+    left: 10px; /* Alineado con el sidebar */
+    height: 60px; /* Ajusta la altura del header */
+    box-sizing: border-box;
+    text-align: left;
+}
+
+
+/* Formulario de inscripción*/
+
+#cont-insc {
+    background-color: rgba(242, 243, 246, 0.451);
+    box-shadow: 6px 6px 8px 8px rgba(0, 0, 0, 0.45);
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+
+}
+
+
+
+label{
+    font-size: 12px;
+    margin-bottom: 0;
+
+}
+
+
+
+/*Módulo Alumnos*/
+
+#menu #pills-tab{
+    /* Menu para navegar dentro de los módulos*/
+    background-color: #F0F0F0;
+    border-radius: 18px;
+    border: 0.3px solid #4E4E4E;
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+
+
+}
+
+#menu ul{
+    list-style: none;
+    display: flex;
+    
+}
+
+#menu ul a{
+    /* Menu para navegar dentro de los módulos*/
+    color: #5DB3B7;
+    font-weight: 500;
+}
+
+#menu .nav .nav-link.active {
+    background-color: #5DB3B7; /* Cambia este valor al color que quieras */
+    color: #fff; /* Cambiar el color del texto en el botón seleccionado */
+    border-radius: 18px; /* Opcional: para redondear los bordes */
+}
+
+th{
+    color: #5DB3B7;
+}
+
+#EditIcon{
+    /* Color a al ícono de 'editar'*/
+    color: #5DB3B7;
+}
+
+#clase-paginas #cuadrito .page-link{
+    background: #5DB3B7;
+    border-color: #F0F0F0;
+    color: #F0F0F0;
+}
+
+#clase-paginas #cuadrito .page-link:hover{
+    background: #f2f3f6;
+    color: #5DB3B7;
+}
+
+/*Navbar*/
+
+.sidebar {
+    width:  15%;
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 5px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+
+.sidebar img {
+    width: 80%;
+    height: 22%;
+    display: flex;
+    margin: 0 auto;
+}
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.sidebar ul li {
+    margin: 10px 0;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+.sidebar ul li.active a {
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 20px;
+    width: 100%; /* El enlace ocupa todo el ancho del contenedor */
+    box-sizing: border-box;
+}
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    padding: 10px;
+    border-radius: 5px;
+}
+.sidebar ul li a:hover {
+    background-color: #399d95;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 20px;
+    width: 100%; /* El enlace ocupa todo el ancho del contenedor */
+    box-sizing: border-box;
+}
+.sidebar ul li a i {
+    margin-right: 10px;
+}
+
+
+
+/*.form-group{
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+}
+
+.form-group input{
+    border-radius: 8px;
+    border-color: #f2f3f6;
+}
+
+.form-group select{
+    height: 30px;
+    border-radius: 8px;
+    border-color: #4E4E4E;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+#form-insc #campos-form{
+    
+    color: #4E4E4E;
+}*/
+/* estilos de lucas
+.content {
+    flex-grow: 1;
+    padding: 20px;
+}
+.content .header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.content .header i {
+    margin-right: 10px;
+    font-size: 20px;
+}
+.content .tabs {
+    display: flex;
+    margin-bottom: 20px;
+}
+.content .tabs div {
+    margin-right: 20px;
+    padding: 10px 20px;
+    border-radius: 20px;
+    background-color: #e0f2f1;
+    color: #4db6ac;
+    cursor: pointer;
+}
+.content .tabs div.active {
+    background-color: #4db6ac;
+    color: white;
+}
+.content .welcome {
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: #4db6ac;
+}
+.content p {
+    color: #666;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.tabs button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4db6ac;
+    color: white;
+    cursor: pointer;
+}
+.tabs button.active {
+    background-color: #00796b;
+}
+.tabs button:hover {
+    background-color: #399d95;
+}
+.tab-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+table th {
+    background-color: #4db6ac;
+    color: white;
+}
+.form-container {
+    flex: 1;
+    margin: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    overflow-y: auto;
+}
+h2 {
+    text-align: center;
+    color: #4db6ac;
+    margin-bottom: 10px;
+}
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+}
+.form-group {
+    flex: 1 1 48%;
+    margin-bottom: 10px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+.form-group select:disabled {
+    background-color: #e9ecef;
+}
+.actions {
+    display: flex;
+    justify-content: flex-end;
+}
+.actions button {
+    background-color: #4db6ac;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.actions button:hover {
+    background-color: #399d95;
+}
+.form-radio {
+    margin-bottom: 15px;
+}
+.form-radio label {
+    margin-right: 15px;
+}
+    /*

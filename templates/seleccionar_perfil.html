@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccionar Perfil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        html, body{
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center; /* Centra horizontalmente */
+            align-items: center; /* Centra verticalmente */
+        }
+
+        .container-login button{
+            /*Botones para seleccionar perfil*/
+            width: 95%;
+            margin: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: lightgray;
+            color: #4e4e4e;
+            border: 2px solid rgba(78, 78, 78, 0.6);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        .container-login button:hover {
+            border-color: #000; /* Cambia el color del borde al pasar el mouse */
+            background-color: #f2f3f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container container-login bg rounded-sm" id="contenedor-perfil">
+        <div class="row justify-content-center align-content-center">
+            <!--*Imágen de usuario y texto 'Hola {usuario}'-->
+            <img src="/static/img/Imagen_usuario.png" width="200px" alt="Imágen Usuario">
+            <h2 class="text-secundary">Hola, {{ nombre }}</h2>
+        </div>
+        <h5 class="text-secundary p-3">Selecciona tu perfil para continuar</h5>
+        <form method="POST">
+            <!-- Iterar sobre los perfiles y mostrar un botón por cada uno -->
+            {% for perfil in perfiles %}
+                <button  class="btn-alumno" type="submit" name="seleccionar_perfil" value="{{ perfil[0] }}">
+                    {{ perfil[1] }}<i class="fas fa-sign-in-alt"></i>
+                </button>
+            {% endfor %}
+        </form>
+    </div>
+</body>
+</html>

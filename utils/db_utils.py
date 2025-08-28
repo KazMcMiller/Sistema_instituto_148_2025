@@ -2,7 +2,7 @@ import os
 import mysql.connector
 from mysql.connector import Error
 
-def ejecutar_sql(sentencia_sql):
+def ejecutar_sql(sentencia_sql, params=None):
     try:
         connection = mysql.connector.connect(
             host=os.getenv('DB_HOST'),
@@ -11,9 +11,8 @@ def ejecutar_sql(sentencia_sql):
             database=os.getenv('DB_DATABASE')
         )
         if connection.is_connected():
-            db_info = connection.get_server_info()
             cursor = connection.cursor()
-            cursor.execute(sentencia_sql)
+            cursor.execute(sentencia_sql, params)
             if sentencia_sql.strip().lower().startswith("select"):
                 resultado = cursor.fetchall()
                 return resultado
@@ -21,9 +20,10 @@ def ejecutar_sql(sentencia_sql):
                 connection.commit()
                 return None
     except Error as e:
-        print("Error al conectar a MySQL", e)
+        print("Error al conectar a MySQL:", e)
         return None
     finally:
-        if connection.is_connected():
+        # Verificar si 'connection' fue inicializada y está conectada antes de cerrarla
+        if connection and connection.is_connected():
             cursor.close()
             connection.close()

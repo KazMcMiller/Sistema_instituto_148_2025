@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Alumno</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script>
+    function filterProvincias() {
+        const id_pais = document.getElementById('id_pais').value;
+        const provinciaSelect = document.getElementById('id_provincia');
+        const provinciasData = document.getElementById('provincias-data').children;
+
+        provinciaSelect.innerHTML = '<option value="">Seleccionar una provincia</option>';
+
+        if (id_pais) {
+            for (let i = 0; i < provinciasData.length; i++) {
+                const provinciaOption = provinciasData[i];
+                if (provinciaOption.getAttribute('data-pais') === id_pais) {
+                    provinciaSelect.appendChild(provinciaOption.cloneNode(true));
+                }
+            }
+        }
+
+        document.getElementById('id_localidad').innerHTML = '<option value="">Seleccione una localidad</option>';
+    }
+
+    function mostrarLocalidades() {
+        const id_provincia = document.getElementById('id_provincia').value;
+        const localidadSelect = document.getElementById('id_localidad');
+        const localidadesData = document.getElementById('localidades-data').children;
+
+        localidadSelect.innerHTML = '<option value="">Seleccione una localidad</option>';
+
+        if (id_provincia) {
+            for (let i = 0; i < localidadesData.length; i++) {
+                const localidadOption = localidadesData[i];
+                if (localidadOption.getAttribute('data-provincia') === id_provincia) {
+                    localidadSelect.appendChild(localidadOption.cloneNode(true));
+                }
+            }
+        }
+    }
+
+     // Script para manejar la selección de carrera y turno
+     document.addEventListener("DOMContentLoaded", function() {
+            const turnosCarreras = {{ turnos_carreras | tojson }}; // Lista de turnos y carreras desde el backend
+            const carreraSelect = document.getElementById('carrera');
+            const turnoSelect = document.getElementById('turno');
+            const carreraSeleccionada = "{{ alumno_carrera_id }}";
+            const turnoSeleccionado = "{{ alumno_turno }}";
+
+            function updateTurno() {
+                const idCarrera = carreraSelect.value;
+                turnoSelect.innerHTML = '<option value="">Seleccione un turno</option>';
+
+                if (idCarrera) {
+                    const turnosDisponibles = turnosCarreras.filter(turno => turno.id_carrera == idCarrera);
+                    turnosDisponibles.forEach(turno => {
+                        const option = document.createElement('option');
+                        option.value = turno.id_turno;
+                        option.textContent = turno.descripcion;
+                        if (turno.id_turno == turnoSeleccionado) {
+                            option.selected = true;
+                        }
+                        turnoSelect.appendChild(option);
+                    });
+                }
+            }
+
+            // Seleccionar carrera y turno si ya existen valores previos
+            if (carreraSeleccionada) {
+                carreraSelect.value = carreraSeleccionada;
+                updateTurno();
+            }
+
+            carreraSelect.addEventListener('change', updateTurno);
+        });
+</script>
+
+<style>
+    html{
+        margin-left: 15%;
+    }
+    html, body{
+        height: 100%;
+        display: flex;
+        justify-content: center; /* Centra horizontalmente */
+        align-content: center; /* Centra verticalmente */
+    }
+   
+    #boton-act{
+
+        line-height: 18px;
+        background-color: #518ec3;
+    }
+    
+                
+</style>
+
+</head>
+<body>
+    <div class="container">
+        <div class="container rounded-sm mt-3" id="cont-insc">
+        {% include 'navbar.html' %}
+        
+            <div class="form-container">
+                <h4 class="text-primary text-center mt-3">Editar Alumno - {{ alumno[2] }}</h4>
+                <form method="POST">
+                    <hr>
+                    <h5 class="text-primary">Datos Personales</h5>
+                    <div class="form-row">
+                        <div class="col col-md-3 form-group">
+                            <label for="nombre">Nombre</label>
+                            <input class="form-control form-control-sm" type="text" id="nombre" name="nombre" value="{{ alumno[2] }}" required>
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="apellido">Apellido</label>
+                            <input class="form-control form-control-sm" type="text" id="apellido" name="apellido" value="{{ alumno[3] }}" required>
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="dni">DNI</label>
+                            <input class="form-control form-control-sm" type="text" id="dni" name="dni" value="{{ alumno[1] }}" required><!--1= dni-->
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="id_sexo">Sexo</label>
+                            <select class="form-control form-control-sm" id="id_sexo" name="id_sexo" required>
+                                <option value=1 {% if alumno[4] == 1 %}selected{% endif %}>Hombre</option><!--4= sexo-->
+                                <option value=2 {% if alumno[4] == 2 %}selected{% endif %}>Mujer</option>
+                                <option value=3 {% if alumno[4] == 3 %}selected{% endif %}>Otro</option>
+                            </select>
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="fecha_nacimiento">Fecha de Nacimiento</label>
+                            <input class="form-control form-control-sm" type="date" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ alumno[5] or '' }}" required>
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="lugar_nacimiento">Lugar de Nacimiento</label>
+                            <input class="form-control form-control-sm" type="text" id="lugar_nacimiento" name="lugar_nacimiento" value="{{ alumno[6] or '' }}">
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="id_estado_civil">Estado Civil</label>
+                            <select class="form-control form-control-sm" id="id_estado_civil" name="id_estado_civil" required>
+                                <option value=1 {% if alumno[7] == 1 %}selected{% endif %}>Soltero/a</option>
+                                <option value=2 {% if alumno[7] == 2 %}selected{% endif %}>Casado/a</option>
+                                <option value=3 {% if alumno[7] == 3 %}selected{% endif %}>Divorciado/a</option>
+                                <option value=4 {% if alumno[7] == 4 %}selected{% endif %}>Viudo/a</option>
+                            </select>
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="cantidad_hijos">Cantidad de Hijos</label>
+                            <input class="form-control form-control-sm" type="number" id="cantidad_hijos" name="cantidad_hijos" value="{{ alumno[8] }}">
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="familiares_a_cargo">Familiares a Cargo</label>
+                            <input class="form-control form-control-sm" type="number" id="familiares_a_cargo" name="familiares_a_cargo" value="{{ alumno[9] }}">
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="domicilio">Domicilio</label>
+                            <input class="form-control form-control-sm" type="text" id="domicilio" name="domicilio" value="{{ alumno[10] or '' }}">
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="piso">Piso</label>
+                            <input class="form-control form-control-sm" type="text" id="piso" name="piso" value="{{ alumno[11] or '' }}">
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="id_pais">País</label>
+                            <select class="form-control form-control-sm" id="id_pais" name="id_pais" required onchange="filterProvincias()">
+                                <option value="">Seleccionar un país</option>
+                                {% for pais in paises %}
+                                    <option value="{{ pais[0] }}" {% if alumno[13] == pais[0] %}selected{% endif %}>{{ pais[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col col-md-3 form-group">
+                            <label for="id_provincia">Provincia</label>
+                            <select class="form-control form-control-sm" id="id_provincia" name="id_provincia" required onchange="mostrarLocalidades()">
+                                <option value="">Seleccionar una provincia</option>
+                                {% for provincia in provincias %}
+                                    {% if provincia[2] == alumno[13] %} <!-- Mostrar solo las provincias del país seleccionado -->
+                                        <option value="{{ provincia[0] }}" {% if alumno[14] == provincia[0] %}selected{% endif %}>{{ provincia[1] }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Provincias ocultas en el DOM -->
+                        <div id="provincias-data" style="display: none;">
+                            {% for provincia in provincias %}
+                                <option value="{{ provincia[0] }}" data-pais="{{ provincia[2] }}">{{ provincia[1] }}</option>
+                            {% endfor %}
+                        </div>
+
+                        <div class="col col-md-3 form-group">
+                            <label for="id_localidad">Localidad</label>
+                            <select class="form-control form-control-sm" id="id_localidad" name="id_localidad" required>
+                                <option value="">Seleccione una localidad</option>
+                                {% for localidad in localidades %}
+                                    {% if localidad[2] == alumno[14] %} <!-- Mostrar solo las localidades de la provincia seleccionada -->
+                                        <option value="{{ localidad[0] }}" {% if alumno[12] == localidad[0] %}selected{% endif %}>{{ localidad[1] }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Localidades ocultas en el DOM -->
+                        <div id="localidades-data" style="display: none;">
+                            {% for localidad in localidades %}
+                                <option value="{{ localidad[0] }}" data-provincia="{{ localidad[2] }}">{{ localidad[1] }}</option>
+                            {% endfor %}
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="codigo_postal">Código Postal</label>
+                            <input class="form-control form-control-sm" type="text" id="codigo_postal" name="codigo_postal" value="{{ alumno[15] or '' }}">
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="telefono">Teléfono</label>
+                            <input class="form-control form-control-sm" type="text" id="telefono" name="telefono" value="{{ alumno[16] or '' }}">
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="telefono_alt">Teléfono Alternativo</label>
+                            <input class="form-control form-control-sm" type="text" id="telefono_alt" name="telefono_alt" value="{{ alumno[17] or '' }}">
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="telefono_alt_propietario">A quién pertenece ese teléfono</label>
+                            <input class="form-control form-control-sm" type="text" id="telefono_alt_propietario" name="telefono_alt_propietario" value="{{ alumno[18] or '' }}">
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="email">Email</label>
+                            <input class="form-control form-control-sm" type="email" id="email" name="email" value="{{ alumno[19] or '' }}">
+                        </div>
+                        <!-- Aquí va el contenido del formulario de editar_alumno con los selects -->
+                        <div class="col col-md-3 form-group">
+                            <label for="carrera">Carrera</label>
+                            <select class="form-control form-control-sm" id="carrera" name="carrera" required>
+                                <option value="">Seleccione una carrera</option>
+                                {% for carrera in lista_carreras %}
+                                    <option value="{{ carrera[0] }}" {% if alumno_carrera_id == carrera[0] %}selected{% endif %}>
+                                        {{ carrera[1] }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col col-md-3 form-group">
+                            <label for="turno">Turno</label>
+                            <select class="form-control form-control-sm" id="turno" name="turno" required>
+                                <option value="">Seleccione un turno</option>
+                            </select>
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="pass">Contraseña:</label>
+                            <input class="form-control form-control-sm" type="number" id="pass" name="pass" value="{{ alumno[29] or '' }}">
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="estado">Estado actual</label>
+                            <input class="labor-field form-control form-control-sm" type="text" id="estado" name="estado" value="{{ estado_actual }}" disabled>
+                        </div>
+                        
+
+                    </div>
+            <div class="form-container">
+                <hr>
+                <h5 class="text-primary">Estudios Cursados</h5>
+                <div class="form-row">
+                        <div class="col col-md-3 form-group">
+                            <label for="titulo_base">Título Base</label>
+                            <input class="form-control form-control-sm" type="text" id="titulo_base" name="titulo_base" value="{{ alumno[20] or '' }}">
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="anio_egreso">Año de Egreso</label>
+                            <input class="form-control form-control-sm" type="number" id="anio_egreso" name="anio_egreso" value="{{ alumno[21] or '' }}">
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="id_institucion">Institución</label>
+                            <input class="form-control form-control-sm" type="text" id="id_institucion" name="id_institucion" value="{{ alumno[22] or '' }}">
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="otros_estudios">Otros Estudios</label>
+                            <input class="form-control form-control-sm" type="text" id="otros_estudios" name="otros_estudios" value="{{ alumno[23] or '' }}">
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="anio_egreso_otros">Año de Egreso de Otros Estudios</label>
+                            <input class="form-control form-control-sm" type="number" id="anio_egreso_otros" name="anio_egreso_otros" value="{{ alumno[24] or '' }}">
+                        </div>
+                </div>
+            </div>
+
+            <div class="form-container"></div>
+                    <hr>
+                    <h5 class="text-primary">Datos Laborales</h5>
+                    <div class="form-row">
+                        
+                        <div class="col col-md-3 form-group">
+                            <label for="trabaja">Trabaja</label>
+                            <select class="form-control form-control-sm" id="trabaja" name="trabaja">
+                                <option value="si" {% if alumno[25] == "si" %}selected{% endif %}>Sí</option>
+                                <option value="no" {% if alumno[25] == "no" %}selected{% endif %}>No</option>
+                            </select>
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="actividad">Actividad</label>
+                            <input class="form-control form-control-sm" type="text" id="actividad" name="actividad" value="{{ alumno[26] or '' }}">
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="horario_habitual">Horario Habitual</label>
+                            <input class="form-control form-control-sm" type="text" id="horario_habitual" name="horario_habitual" value="{{ alumno[27] or '' }}">
+                        </div>
+                        <div class="col col-md-3 form-group">
+                            <label for="obra_social">Obra Social</label>
+                            <input class="form-control form-control-sm" type="text" id="obra_social" name="obra_social" value="{{ alumno[28] or '' }}">
+                        </div>
+                    </div>
+                    <div class="actions" id="boton-confirmar">
+                        <button type="submit" class="float-right mb-3">Guardar</button>
+                    </div>
+                </form>
+                <div class="action" id="boton-atras">
+                    <form method="GET" action="{{ url_for('alumnos') }}">
+                        <button type="submit" class="float-left mb-3">Volver</button>
+                    </form>
+                </div>
+                <form action="{{ url_for('borrar_alumno', id_usuario=alumno[0]) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger mx-auto" id="boton-act">Desactivar/ Activar</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<!--- 
+<a href="{{ url_for('alumnos') }}" class="btn btn-secondary">Volver</a>
+cada numero representa un indice de la tabla usuarios, como id_usuario es lo primero, le corresponde 0
+      aqui la lista de la tabla usuarios:
+id_usuario 0
+dni 1
+nombre 2
+apellido 3
+id_sexo 4
+fecha_nacimiento 5
+lugar_nacimiento 6
+id_estado_civil 7     
+cantidad_hijos 8
+familiares_a_cargo 9
+domicilio 10
+piso 11
+id_localidad 12
+id_pais 13
+id_provincia 14
+codigo_postal 15   
+telefono 16
+telefono_alt 17
+telefono_alt_propietario 18 
+email 19
+titulo_base 20
+anio_egreso 21
+id_institucion 22
+otros_estudios 23
+anio_egreso_otros 24
+trabaja 25
+actividad 26
+horario_habitual 27
+obra_social 28
+pass 29
+activo 30
+-->
