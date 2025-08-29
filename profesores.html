@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profesores - Sistema de Gestión Académica</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+
+    <style>
+        html{
+            margin-left: 15%;
+            height: 100%;
+            display: flex;
+           /* justify-content: center; /* Centra horizontalmente */
+            /*align-items: center; /* Centra verticalmente */
+        }
+    </style>
+
+
+
+</head>
+<body>
+    <div class="container">
+        {% include 'navbar.html' %}
+       
+        <style>
+        fieldset {
+            border: 2px solid black;   /* grosor y color del borde */
+            padding: 15px;             /* espacio interno */
+            margin: 20px;              /* separación con otros elementos */
+            border-radius: 8px;        /* esquinas redondeadas */
+            background-color: #f9f9f9;
+        }
+        
+        .button {
+            border: none;
+            color: #f8f9fa;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 100px 100px;
+            cursor: pointer;
+        }
+        .button1 {background-color: #5db3b7;} 
+        .button2 {background-color: #5db3b7;}
+        .button3 {background-color: #5db3b7;}
+        .containerr {
+            display: flex;  /*alinea los botones*/
+            justify-content: center;
+            gap: 30px; /*espacio entre botones*/
+            margin: 100px;
+        }
+        </style>
+        <div class= "containerr">
+            <a href="{{ url_for('alta_de_profesores') }}" class="button button1">Alta</a>
+            <button class="button button2">Baja</button>
+            <button class="button button3">Extras</button>
+        </div>
+
+                
+                
+
+
+
+                
+                
+                
+            
+    </div>
+</body>
+</html> 
