@@ -1089,7 +1089,9 @@ def inscribite_3():
 
     return render_template('inscribite_3.html', **datos_completos)
 
-
+@app.route('/alta_de_profesores')
+def alta_de_profesores():
+    return render_template('alta_de_profesores.html')  
 
 
 
