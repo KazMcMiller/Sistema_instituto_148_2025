@@ -1090,6 +1090,14 @@ def inscribite_3():
 
     return render_template('inscribite_3.html', **datos_completos)
 
+@app.route('/alta_de_profesores_original', methods=['GET','POST'])
+@perfil_requerido(['1', '2'])
+def alta_de_profesores_original():
+    query_sexo = "SELECT id_sexo, descripcion FROM sexos"
+    sexos = ejecutar_sql(query_sexo)
+    datos_personales = request.form.to_dict()
+    return render_template('alta_de_profesores_original.html', sexos=sexos, datos_personales=datos_personales)
+
 @app.route('/alta_de_profesores', methods=['GET','POST'])
 @perfil_requerido(['1', '2'])
 def alta_de_profesores():
