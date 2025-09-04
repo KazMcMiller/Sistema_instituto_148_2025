@@ -943,10 +943,11 @@ def inscribite():
     turnos_carreras = ejecutar_sql(query_turnos)
     turnos_carreras_dict = [{"id_carrera": turno[0], "descripcion": turno[1], "id_turno": turno[2]} for turno in turnos_carreras]
 
-        # Consulta para obtener sexos
+    # Consulta para obtener sexos
     query_sexo = "SELECT id_sexo, descripcion FROM sexos"
     sexos = ejecutar_sql(query_sexo)
 
+    # Consulta para obtener institutos (mejorar comentario)
     query_institutos = "SELECT id_instituto, nombre_instituto FROM institutos"
     institutos = ejecutar_sql(query_institutos)  
 
@@ -1089,10 +1090,87 @@ def inscribite_3():
 
     return render_template('inscribite_3.html', **datos_completos)
 
-@app.route('/alta_de_profesores')
+@app.route('/alta_de_profesores', methods=['GET','POST'])
+@perfil_requerido(['1', '2'])
 def alta_de_profesores():
-    return render_template('alta_de_profesores.html')  
+    
+    # Obtener países, provincias, localidades, carreras y turnos
+    query_paises = "SELECT id_pais, nombre FROM paises"
+    paises = ejecutar_sql(query_paises)
 
+    query_provincias = "SELECT id_provincia, nombre, id_pais FROM provincias"
+    provincias = ejecutar_sql(query_provincias)
+
+    query_localidades = "SELECT id_localidad, nombre, id_provincia FROM localidades"
+    localidades = ejecutar_sql(query_localidades)
+
+    # Incluir el ID de la institución en cada carrera
+    query_carreras = """
+        SELECT c.id_carrera, c.nombre, c.id_instituto
+        FROM lista_carreras c
+    """
+    lista_carreras = ejecutar_sql(query_carreras)
+    carreras_dict = [{"id_carrera": carrera[0], "nombre": carrera[1], "id_instituto": carrera[2]} for carrera in lista_carreras]
+
+    query_turnos = """
+        SELECT tc.id_carrera, tc.descripcion, tc.id_turno
+        FROM turno_carrera tc
+        WHERE tc.estado = 1
+    """
+    turnos_carreras = ejecutar_sql(query_turnos)
+    turnos_carreras_dict = [{"id_carrera": turno[0], "descripcion": turno[1], "id_turno": turno[2]} for turno in turnos_carreras]
+
+        # Consulta para obtener sexos
+    query_sexo = "SELECT id_sexo, descripcion FROM sexos"
+    sexos = ejecutar_sql(query_sexo)
+
+    query_institutos = "SELECT id_instituto, nombre_instituto FROM institutos"
+    institutos = ejecutar_sql(query_institutos)  
+
+    query_estados = "SELECT id_estado_civil, nombre FROM estado_civil"
+    estado_civil = ejecutar_sql(query_estados)    
+
+    if request.method == 'POST':
+        # Recibir los datos desde el formulario
+        datos_personales = request.form.to_dict()
+        
+        # Verificar si el DNI ya existe en la base de datos de usuarios
+        dni = datos_personales.get('dni')
+        query_verificar_dni = "SELECT COUNT(*) FROM usuarios WHERE dni = %s"
+        existe_dni = ejecutar_sql(query_verificar_dni, (dni,))[0][0]
+
+        if existe_dni > 0: #si existe, volver a enviar los datos y recargar la pagina, dando un mensaje de error
+            return render_template(
+                'pre_inscripcion.html',
+                turnos_carreras=turnos_carreras_dict,
+                lista_carreras=carreras_dict,
+                paises=paises,
+                provincias=provincias,
+                localidades=localidades,
+                error_dni=True,
+                sexos=sexos,
+                institutos=institutos,
+                estado_civil=estado_civil,
+                datos_personales=datos_personales  # Para mantener los datos ingresados
+            )
+
+        # Guardar los datos en la sesión y continuar a la siguiente página
+        session['datos_personales'] = datos_personales
+        return redirect(url_for('pre_inscripcion_2'))
+
+    # Renderizar la página sin mensaje de error al cargar por primera vez (GET)
+    return render_template(
+        'pre_inscripcion.html',
+        turnos_carreras=turnos_carreras_dict,
+        lista_carreras=carreras_dict,
+        paises=paises,
+        provincias=provincias,
+        localidades=localidades,
+        error_dni=False,
+        sexos=sexos,
+        institutos=institutos,
+        estado_civil=estado_civil
+    )
 
 
 @app.route('/logout')
