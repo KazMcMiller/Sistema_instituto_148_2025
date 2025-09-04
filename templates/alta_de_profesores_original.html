@@ -1,0 +1,67 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Alta de Profesores</title>
+    <style>
+        h1 {
+            text-decoration-color: darkmagenta;
+             text-align:center;
+        }
+        h2{
+            text-align:center;
+        }
+
+    </style>
+</head>
+<body>
+    <h1> Instituto superior de formacion docente y/o tecnica</h1>
+    <hr>
+    <h2>Legajo del personal docente</h2>
+    <hr>
+    <div class= "container">
+    {% include 'navbar.html' %}
+    <style>
+    fieldset {
+            border: 2px solid black; /* grosor y color del borde */
+            padding: 15px;             /* espacio interno */
+            margin: 50px;              /* separación con otros elementos */
+            border-radius: 8px;        /* esquinas redondeadas */
+            background-color: #f9f9f9;
+        }
+    </style>
+    <form>
+        <fieldset>
+            <legend>Datos Personales</legend>
+            <label for="profesor">Apellidos</label>
+            <input type="text" name="apellidos">
+            <label for="nombres">Nombres</label>
+            <input type="text" name="nombres">
+            <label for="dni" name="DNI">DNI</label>
+            <input type="numbers" name="dni"  onkeypress="return event.charCode >= 48 && event.charCode <= 57" /> <!--bloqueo de caracteres especiales y letras-->
+            <label for="sexo" name="sexo">Sexo</label>
+           <select class="form-control form-control-sm" id="id_sexo" name="id_sexo" required>
+                                    <option value="">Seleccione sexo</option>
+                                    {% for sexo in sexos %}
+                                        <option value="{{ sexo[0] }}">{{ sexo[1] }}</option>
+                                    {% endfor %}
+                                </select>
+            <br>
+            <br><label for="domicilio" name="domicilio">Domicilio</label>
+            <input type="text" name="domicilio">
+            
+            <label for="nro" name="numero">Nro</label>
+            <input type="numbers" name="numero">
+            <label for="piso" name="piso">Piso</label>
+            <input type="text" name="piso">
+            <label for="dpto" name="dpto">Dpto</label>
+            <input type="text" name="dpto">
+
+        </fieldset>
+    </form>
+
+</body>
+</div>
+</html>
+
+
