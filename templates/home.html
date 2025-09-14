@@ -11,19 +11,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <style>
-            html, body{
-                height: 100%;
-                display: flex;
-                justify-content: center; /* Centra horizontalmente */
-                align-content: center; /* Centra verticalmente */
+        html, body{
+            /*height: 100%;*/
+            display: flex;
+            justify-content: center; /* Centra horizontalmente */
+            align-content: center; /* Centra verticalmente */
             }
-            .alert{
-                background-color: #5DB3B7 !important;
-                color: white !important;
+        .alert{
+            background-color: #5DB3B7 !important;
+            color: white !important;
             }
     </style>
     
 </head>
+<!--Empieza el body-->
 <body>
     <div class="container alert-container">
         {% include 'navbar.html' %}
@@ -38,11 +39,19 @@
                 </ul>
             </div>
         {% endif %}
+        <!--                                           -->
     </div>
     <div class="header" id="bienvenido-usuario">
         Bienvenido/a, {{ nombre }}
     </div>
-    {% include 'navbar.html' %}
+    <div>
+        <style>
+            html, body{
+                height: 100%;
+            }
+        </style>
+        <img src="/static/img/chud.gif" width="800px" height="500px" alt="Billions must code">
+    </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

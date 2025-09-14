@@ -20,7 +20,9 @@ def ejecutar_sql(sentencia_sql, params=None):
                 connection.commit()
                 return None
     except Error as e:
-        print("Error al conectar a MySQL:", e)
+        print(f"Error al conectar a MySQL: {e}")
+        print(f"Query que falló: {sentencia_sql}")
+        print(f"Params: {params}")
         return None
     finally:
         # Verificar si 'connection' fue inicializada y está conectada antes de cerrarla

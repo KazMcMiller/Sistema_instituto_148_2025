@@ -67,7 +67,12 @@
                 <a href="{{ url_for('reportes') }}"><i class="fas fa-chart-bar"></i> Reportes</a>
             </li>
             {% endif %}
-    
+
+            {% if 28 in permisos %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('finales') }}">Finales</a>
+            </li>
+            {% endif %}
     
             <li class="{% if request.path == url_for('logout') %}active{% endif %}">
                 <a href="{{ url_for('logout') }}" class="logout"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>

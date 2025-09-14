@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finales Disponibles - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding-left: 250px; /* Ajusta según el ancho de navbar.html */
+        }
+        .container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Finales Disponibles</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% if finales %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Materia</th>
+                    <th>Fecha Examen</th>
+                    <th>Fecha Apertura</th>
+                    <th>Fecha Cierre</th>
+                    <th>Intentos Restantes</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for final in finales %}
+                <tr>
+                    <td>{{ final[1] }}</td>
+                    <td>{{ final[2] }}</td>
+                    <td>{{ final[3] }}</td>
+                    <td>{{ final[4] }}</td>
+                    <td>{{ final[5] }}</td>
+                    <td>
+                        <a href="{{ url_for('inscribir_final', id_final=final[0]) }}" class="btn btn-primary btn-sm">Inscribir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No hay finales disponibles.</p>
+        {% endif %}
+        <a href="{{ url_for('finales_inscriptos') }}" class="btn btn-secondary btn-sm">Ver Finales Inscriptos</a>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

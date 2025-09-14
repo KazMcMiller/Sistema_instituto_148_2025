@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finales Inscriptos - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding-left: 250px; /* Ajusta según el ancho de navbar.html */
+        }
+        .container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Finales Inscriptos</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% if inscriptos %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Materia</th>
+                    <th>Fecha Examen</th>
+                    <th>Estado</th>
+                    <th>Intentos Restantes</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for final in inscriptos %}
+                <tr>
+                    <td>{{ final[1] }}</td>
+                    <td>{{ final[2] }}</td>
+                    <td>{{ final[3] }}</td>
+                    <td>{{ final[4] }}</td>
+                    <td>
+                        {% if final[3] == 'inscripto' %}
+                        <form method="POST" action="{{ url_for('cancelar_final', id_inscripcion_final=final[5]) }}">
+                            <button type="submit" class="btn btn-danger btn-sm">Cancelar</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No estás inscripto en ningún final.</p>
+        {% endif %}
+        <a href="{{ url_for('finales_disponibles') }}" class="btn btn-secondary btn-sm">Volver a Finales Disponibles</a>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
