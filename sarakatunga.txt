@@ -1,0 +1,3 @@
+2000001 directivo
+2000002 secretaria
+1000003 alumno analista

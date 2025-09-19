@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscribirse a Mesa - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Inscribirse a Mesa</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="POST" action="{{ url_for('inscribir_mesa', id_mesa=id_mesa) }}">
+            <div class="form-group">
+                <label for="motivacion">Motivación para rendir esta mesa (opcional):</label>
+                <textarea class="form-control" id="motivacion" name="motivacion" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="confirmacion">¿Confirma que cumple con los requisitos para rendir?</label>
+                <select class="form-control" id="confirmacion" name="confirmacion" required>
+                    <option value="sí">Sí</option>
+                    <option value="no" selected>No</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">Confirmar Inscripción</button>
+            <a href="{{ url_for('mesas_disponibles') }}" class="btn btn-secondary btn-sm">Cancelar</a>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1082,104 +1082,9 @@ def inscribite_3():
 
     return render_template('inscribite_3.html', **datos_completos)
 
-@app.route('/alta_de_profesores_original', methods=['GET','POST'])
-@perfil_requerido(['1', '2'])
-def alta_de_profesores_original():
-    query_sexo = "SELECT id_sexo, descripcion FROM sexos"
-    sexos = ejecutar_sql(query_sexo)
-    datos_personales = request.form.to_dict()
-    return render_template('alta_de_profesores_original.html', sexos=sexos, datos_personales=datos_personales)
 
-@app.route('/alta_de_profesores', methods=['GET','POST'])
-@perfil_requerido(['1', '2'])
-def alta_de_profesores():
-    
-    # Obtener países, provincias, localidades, carreras y turnos
-    query_paises = "SELECT id_pais, nombre FROM paises"
-    paises = ejecutar_sql(query_paises)
-
-    query_provincias = "SELECT id_provincia, nombre, id_pais FROM provincias"
-    provincias = ejecutar_sql(query_provincias)
-
-    query_localidades = "SELECT id_localidad, nombre, id_provincia FROM localidades"
-    localidades = ejecutar_sql(query_localidades)
-
-    # Incluir el ID de la institución en cada carrera
-    query_carreras = """
-        SELECT c.id_carrera, c.nombre, c.id_instituto
-        FROM lista_carreras c
-    """
-    lista_carreras = ejecutar_sql(query_carreras)
-    carreras_dict = [{"id_carrera": carrera[0], "nombre": carrera[1], "id_instituto": carrera[2]} for carrera in lista_carreras]
-
-    query_turnos = """
-        SELECT tc.id_carrera, tc.descripcion, tc.id_turno
-        FROM turno_carrera tc
-        WHERE tc.estado = 1
-    """
-    turnos_carreras = ejecutar_sql(query_turnos)
-    turnos_carreras_dict = [{"id_carrera": turno[0], "descripcion": turno[1], "id_turno": turno[2]} for turno in turnos_carreras]
-
-        # Consulta para obtener sexos
-    query_sexo = "SELECT id_sexo, descripcion FROM sexos"
-    sexos = ejecutar_sql(query_sexo)
-
-    query_institutos = "SELECT id_instituto, nombre_instituto FROM institutos"
-    institutos = ejecutar_sql(query_institutos)  
-
-    query_estados = "SELECT id_estado_civil, nombre FROM estado_civil"
-    estado_civil = ejecutar_sql(query_estados)    
-
-    if request.method == 'POST':
-        # Recibir los datos desde el formulario
-        datos_personales = request.form.to_dict()
-        
-        # Verificar si el DNI ya existe en la base de datos de usuarios
-        dni = datos_personales.get('dni')
-        query_verificar_dni = "SELECT COUNT(*) FROM usuarios WHERE dni = %s"
-        existe_dni = ejecutar_sql(query_verificar_dni, (dni,))[0][0]
-
-        if existe_dni > 0: #si existe, volver a enviar los datos y recargar la pagina, dando un mensaje de error
-            return render_template(
-                'pre_inscripcion.html',
-                turnos_carreras=turnos_carreras_dict,
-                lista_carreras=carreras_dict,
-                paises=paises,
-                provincias=provincias,
-                localidades=localidades,
-                error_dni=True,
-                sexos=sexos,
-                institutos=institutos,
-                estado_civil=estado_civil,
-                datos_personales=datos_personales  # Para mantener los datos ingresados
-            )
-
-        # Guardar los datos en la sesión y continuar a la siguiente página
-        session['datos_personales'] = datos_personales
-        return redirect(url_for('pre_inscripcion_2'))
-
-    # Renderizar la página sin mensaje de error al cargar por primera vez (GET)
-    return render_template(
-        'pre_inscripcion.html',
-        turnos_carreras=turnos_carreras_dict,
-        lista_carreras=carreras_dict,
-        paises=paises,
-        provincias=provincias,
-        localidades=localidades,
-        error_dni=False,
-        sexos=sexos,
-        institutos=institutos,
-        estado_civil=estado_civil
-    )
-
-@app.route('/finales_alumnos', methods=['GET','POST'])
-@perfil_requerido(['4'])
-def finales_alumnos():
-    return render_template('finales_alumnos.html')
-
-
-@app.route('/finales')
-def finales():
+@app.route('/mesas')
+def mesas():
     if 'nombre' not in session:
         flash('Por favor, inicia sesión.', 'error')
         return redirect(url_for('login'))
@@ -1187,43 +1092,42 @@ def finales():
     perfil = session.get('perfil')
     
     if perfil == '4':
-        return redirect(url_for('finales_disponibles'))
+        return redirect(url_for('mesas_disponibles'))
     elif perfil in ['1', '2']:
-        flash('Gestión de finales para administradores aún no implementada.', 'info')
+        flash('Gestión de mesas para administradores aún no implementada.', 'info')
         return redirect(url_for('home'))
     else:
         flash('No tienes permiso para acceder a esta sección.', 'error')
         return redirect(url_for('home'))
     
-@app.route('/finales_disponibles', methods=['GET'])
+@app.route('/mesas_disponibles', methods=['GET'])
 @perfil_requerido(['4'])
-def finales_disponibles():
+def mesas_disponibles():
     if 'id_usuario' not in session:
-        print("Error: id_usuario no en sesión")
         flash('Error: Sesión no válida.', 'error')
         return redirect(url_for('login'))
     id_usuario = session['id_usuario']
-    print(f"ID usuario: {id_usuario}")
     query_carrera = """
         SELECT ic.id_carrera 
         FROM inscripciones_carreras ic
         WHERE ic.id_usuario = %s AND ic.activo = 1
     """
     result = ejecutar_sql(query_carrera, (id_usuario,))
-    print(f"Result carrera: {result}")
     if not result:
         flash('No estás inscripto en una carrera.', 'error')
-        return render_template('finales_disponibles.html', finales=[])
+        return redirect(url_for('home'))
     id_carrera = result[0][0]
+
     now = datetime.now()
-    query_finales = """
-        SELECT f.id_final, m.nombre, f.fecha_examen, f.fecha_apertura, f.fecha_cierre,
-               COALESCE(im.intentos_restantes, 4) AS intentos_restantes
-        FROM finales f
+    query_mesas = """
+        SELECT f.id_mesa, m.nombre, f.fecha_examen, f.fecha_apertura, f.fecha_cierre,
+               COALESCE(im.intentos_restantes, 4) AS intentos_restantes,
+               p.dni_profesor
+        FROM mesas_f f
         JOIN materias m ON f.id_materia = m.id_materia
+        JOIN profesores p ON f.dni_profesor = p.dni_profesor
         LEFT JOIN intentos_materia im ON m.id_materia = im.id_materia AND im.id_usuario = %s
         WHERE m.id_carrera = %s 
-        AND f.activo = 1 
         AND %s BETWEEN f.fecha_apertura AND f.fecha_cierre
         AND (
             SELECT COUNT(c.id_materia_correlativa) 
@@ -1234,43 +1138,42 @@ def finales_disponibles():
         ) = 0
         AND (COALESCE(im.intentos_restantes, 4) > 0)
     """
-    finales = ejecutar_sql(query_finales, (id_usuario, id_carrera, now, id_usuario))
-    print(f"Finales: {finales}")
-    if finales is None:
-        print("Error: Consulta SQL devolvió None")
-        flash('Error al cargar finales disponibles.', 'error')
-        return render_template('finales_disponibles.html', finales=[])
-    return render_template('finales_disponibles.html', finales=finales)
+    mesas = ejecutar_sql(query_mesas, (id_usuario, id_carrera, now, id_usuario))
+    print(f"Mesas disponibles: {mesas}")
+    if mesas is None:
+        print("Error: Consulta de mesas devolvió None")
+        flash('Error al cargar mesas disponibles.', 'error')
+        return redirect(url_for('home'))
+    return render_template('mesas_disponibles.html', mesas=mesas)
 
-@app.route('/inscribir_final/<int:id_final>', methods=['GET', 'POST'])
+@app.route('/inscribir_mesa/<int:id_mesa>', methods=['GET', 'POST'])
 @perfil_requerido(['4'])
-def inscribir_final(id_final):
+def inscribir_mesa(id_mesa):
     if 'id_usuario' not in session:
-        print("Error: id_usuario no en sesión")
         flash('Error: Sesión no válida.', 'error')
         return redirect(url_for('login'))
     id_usuario = session['id_usuario']
-    print(f"Accediendo a inscribir_final con id_final: {id_final}, id_usuario: {id_usuario}")
     now = datetime.now()
 
     # Verificar si ya está inscripto
     query_verificar_inscripcion = """
         SELECT id_inscripcion_final 
-        FROM inscripciones_finales 
-        WHERE id_usuario = %s AND id_final = %s AND estado = 'inscripto'
+        FROM inscripcion_f 
+        WHERE id_usuario = %s AND id_mesa = %s AND estado = 'inscripto'
     """
-    inscripcion_existente = ejecutar_sql(query_verificar_inscripcion, (id_usuario, id_final))
+    inscripcion_existente = ejecutar_sql(query_verificar_inscripcion, (id_usuario, id_mesa))
+    print(f"Verificación inscripción existente: {inscripcion_existente}")
     if inscripcion_existente:
-        flash('Ya estás inscripto en este final.', 'error')
-        return redirect(url_for('finales_disponibles'))
+        flash('Ya estás inscripto en esta mesa.', 'error')
+        return redirect(url_for('mesas_disponibles'))
 
-    # Validar final
+    # Validar mesa
     query_validar = """
         SELECT f.id_materia, f.fecha_apertura, f.fecha_cierre, 
                COALESCE(im.intentos_restantes, 4) AS intentos_restantes
-        FROM finales f
+        FROM mesas_f f
         LEFT JOIN intentos_materia im ON f.id_materia = im.id_materia AND im.id_usuario = %s
-        WHERE f.id_final = %s AND f.activo = 1 AND %s BETWEEN f.fecha_apertura AND f.fecha_cierre
+        WHERE f.id_mesa = %s AND %s BETWEEN f.fecha_apertura AND f.fecha_cierre
         AND (
             SELECT COUNT(c.id_materia_correlativa) 
             FROM correlativa c
@@ -1280,91 +1183,88 @@ def inscribir_final(id_final):
         ) = 0
         AND (COALESCE(im.intentos_restantes, 4) > 0)
     """
-    result = ejecutar_sql(query_validar, (id_usuario, id_final, now, id_usuario))
+    result = ejecutar_sql(query_validar, (id_usuario, id_mesa, now, id_usuario))
+    print(f"Validación mesa: {result}")
     if not result:
-        print("Error: Final no válido o no disponible")
-        flash('No puedes inscribirte a este final.', 'error')
-        return redirect(url_for('finales_disponibles'))
+        flash('No puedes inscribirte a esta mesa.', 'error')
+        return redirect(url_for('mesas_disponibles'))
     
     id_materia = result[0][0]
 
     if request.method == 'POST':
-        respuestas = {
-            'motivacion': request.form.get('motivacion', ''),
-            'confirmacion': request.form.get('confirmacion', 'no')
-        }
-        if respuestas['confirmacion'] != 'si':
-            flash('Debes confirmar que cumples los requisitos.', 'error')
-            return redirect(url_for('inscribir_final', id_final=id_final))
-        
-        respuestas_json = json.dumps(respuestas)
+        # Actualizar intentos
         query_intentos = """
             INSERT INTO intentos_materia (id_usuario, id_materia, intentos_restantes)
             VALUES (%s, %s, 3)
             ON DUPLICATE KEY UPDATE intentos_restantes = intentos_restantes - 1
         """
-        ejecutar_sql(query_intentos, (id_usuario, id_materia))
+        intentos_result = ejecutar_sql(query_intentos, (id_usuario, id_materia))
+        print(f"Resultado intentos_materia: {intentos_result}")  # None es normal para INSERT
+
+        # Inscribir
         query_inscripcion = """
-            INSERT INTO inscripciones_finales (id_usuario, id_final, respuestas_cuestionario, estado)
-            VALUES (%s, %s, %s, 'inscripto')
+            INSERT INTO inscripcion_f (id_usuario, id_mesa, fecha_inscripcion, estado)
+            VALUES (%s, %s, NOW(), 'inscripto')
         """
-        ejecutar_sql(query_inscripcion, (id_usuario, id_final, respuestas_json))
-        flash('Inscripto exitosamente al final.', 'success')
-        return redirect(url_for('finales_inscriptos'))
+        inscripcion_result = ejecutar_sql(query_inscripcion, (id_usuario, id_mesa))
+        print(f"Resultado inscripción: {inscripcion_result}")  # None es normal para INSERT
+        
+        # Para INSERTs, None es éxito (no hay error)
+        flash('Inscripto exitosamente a la mesa.', 'success')
+        return redirect(url_for('mesas_inscriptas'))
 
-    return render_template('inscribir_final.html', id_final=id_final)
+    # GET: Redirigir a POST para inscripción inmediata
+    return redirect(url_for('inscribir_mesa', id_mesa=id_mesa, _method='POST'))
 
-@app.route('/finales_inscriptos', methods=['GET'])
+
+@app.route('/mesas_inscriptas', methods=['GET'])
 @perfil_requerido(['4'])
-def finales_inscriptos():
+def mesas_inscriptas():
     if 'id_usuario' not in session:
-        print("Error: id_usuario no en sesión")
         flash('Error: Sesión no válida.', 'error')
         return redirect(url_for('login'))
     id_usuario = session['id_usuario']
-    print(f"ID usuario: {id_usuario}")
+
     query_inscriptos = """
-        SELECT f.id_final, m.nombre, f.fecha_examen, ins.estado, 
+        SELECT f.id_mesa, m.nombre, f.fecha_examen, ins.estado, 
                COALESCE(im.intentos_restantes, 4) AS intentos_restantes,
-               ins.id_inscripcion_final
-        FROM inscripciones_finales ins
-        JOIN finales f ON ins.id_final = f.id_final
+               ins.id_inscripcion_final,
+               p.dni_profesor
+        FROM inscripcion_f ins
+        JOIN mesas_f f ON ins.id_mesa = f.id_mesa
         JOIN materias m ON f.id_materia = m.id_materia
+        JOIN profesores p ON f.dni_profesor = p.dni_profesor
         LEFT JOIN intentos_materia im ON m.id_materia = im.id_materia AND im.id_usuario = %s
         WHERE ins.id_usuario = %s AND ins.estado = 'inscripto'
     """
     inscriptos = ejecutar_sql(query_inscriptos, (id_usuario, id_usuario))
     print(f"Inscriptos: {inscriptos}")
     if inscriptos is None:
-        print("Error: Consulta SQL devolvió None - verifica db_utils.py para errores de conexión")
-        flash('Error al cargar finales inscriptos.', 'error')
-        return render_template('finales_inscriptos.html', inscriptos=[])
-    return render_template('finales_inscriptos.html', inscriptos=inscriptos)
+        print("Error: Consulta de mesas inscriptas devolvió None")
+        flash('Error al cargar mesas inscriptas.', 'error')
+        inscriptos = []
+    return render_template('mesas_inscriptas.html', inscriptos=inscriptos)
 
-@app.route('/cancelar_final/<int:id_inscripcion_final>', methods=['POST'])
+@app.route('/cancelar_mesa/<int:id_inscripcion_final>', methods=['POST'])
 @perfil_requerido(['4'])
-def cancelar_final(id_inscripcion_final):
+def cancelar_mesa(id_inscripcion_final):
     if 'id_usuario' not in session:
-        print("Error: id_usuario no en sesión")
         flash('Error: Sesión no válida.', 'error')
         return redirect(url_for('login'))
     id_usuario = session['id_usuario']
-    print(f"Cancelando inscripción: id_inscripcion_final={id_inscripcion_final}, id_usuario={id_usuario}")
     now = datetime.now()
 
-    query_final = """
+    query_mesa = """
         SELECT f.fecha_examen, m.id_materia
-        FROM inscripciones_finales ins
-        JOIN finales f ON ins.id_final = f.id_final
+        FROM inscripcion_f ins
+        JOIN mesas_f f ON ins.id_mesa = f.id_mesa
         JOIN materias m ON f.id_materia = m.id_materia
         WHERE ins.id_inscripcion_final = %s AND ins.id_usuario = %s
     """
-    result = ejecutar_sql(query_final, (id_inscripcion_final, id_usuario))
-    print(f"Resultado consulta final: {result}")
+    result = ejecutar_sql(query_mesa, (id_inscripcion_final, id_usuario))
     if not result:
-        print("Error: Inscripción no encontrada")
         flash('Inscripción no encontrada.', 'error')
-        return redirect(url_for('finales_inscriptos'))
+        return redirect(url_for('mesas_inscriptas'))
 
     fecha_examen, id_materia = result[0]
     if now < fecha_examen - timedelta(hours=72):
@@ -1376,17 +1276,17 @@ def cancelar_final(id_inscripcion_final):
         ejecutar_sql(query_devolver, (id_usuario, id_materia))
 
     query_cancelar = """
-        UPDATE inscripciones_finales 
+        UPDATE inscripcion_f 
         SET estado = 'cancelado' 
         WHERE id_inscripcion_final = %s
     """
     ejecutar_sql(query_cancelar, (id_inscripcion_final,))
     flash('Inscripción cancelada.', 'success')
-    return redirect(url_for('finales_inscriptos'))
+    return redirect(url_for('mesas_inscriptas'))
 
-@app.route('/crear_final', methods=['GET', 'POST'])
+@app.route('/crear_mesa', methods=['GET', 'POST'])
 @perfil_requerido(['1', '2'])
-def crear_final():
+def crear_mesa():
     if 'id_usuario' not in session:
         print("Error: id_usuario no en sesión")
         flash('Error: Sesión no válida.', 'error')
@@ -1406,19 +1306,43 @@ def crear_final():
         flash('Error al cargar materias.', 'error')
         materias = []
 
+    query_profesores = """
+        SELECT dni_profesor, CONCAT(nombre, ' ', apellido, ' (DNI: ', dni_profesor, ')') AS nombre_completo 
+        FROM profesores
+        WHERE activo = 1
+    """
+    profesores = ejecutar_sql(query_profesores)
+    print(f"Profesores: {profesores}")
+    if profesores is None:
+        print("Error: Consulta de profesores devolvió None")
+        flash('Error al cargar profesores.', 'error')
+        profesores = []
+
     if request.method == 'POST':
         id_materia = request.form.get('id_materia')
+        dni_profesor = request.form.get('dni_profesor')
         fecha_examen = request.form.get('fecha_examen')
         fecha_apertura = request.form.get('fecha_apertura')
         fecha_cierre = request.form.get('fecha_cierre')
-        activo = request.form.get('activo', '1')
 
-        print(f"Datos form: id_materia={id_materia}, fecha_examen={fecha_examen}, fecha_apertura={fecha_apertura}, fecha_cierre={fecha_cierre}, activo={activo}")
+        print(f"Datos form: id_materia={id_materia}, dni_profesor={dni_profesor}, fecha_examen={fecha_examen}, fecha_apertura={fecha_apertura}, fecha_cierre={fecha_cierre}")
 
-        if not all([id_materia, fecha_examen, fecha_apertura, fecha_cierre]):
+        if not all([id_materia, dni_profesor, fecha_examen, fecha_apertura, fecha_cierre]):
             print("Error: Campos obligatorios vacíos")
             flash('Todos los campos son obligatorios.', 'error')
-            return render_template('crear_final.html', materias=materias)
+            return render_template('crear_mesa.html', materias=materias, profesores=profesores)
+
+        # Validar si ya existe una mesa para esta materia
+        query_check_duplicado = """
+            SELECT id_mesa 
+            FROM mesas_f 
+            WHERE id_materia = %s
+        """
+        duplicado = ejecutar_sql(query_check_duplicado, (id_materia,))
+        if duplicado:
+            print("Error: Mesa ya existe para esta materia")
+            flash('Ya existe una mesa para esta materia.', 'error')
+            return render_template('crear_mesa.html', materias=materias, profesores=profesores)
 
         try:
             fecha_examen_dt = datetime.strptime(fecha_examen, '%Y-%m-%dT%H:%M')
@@ -1427,28 +1351,111 @@ def crear_final():
             if fecha_apertura_dt >= fecha_cierre_dt or fecha_cierre_dt >= fecha_examen_dt:
                 print("Error: Fechas inválidas")
                 flash('Fechas inválidas: apertura < cierre < examen.', 'error')
-                return render_template('crear_final.html', materias=materias)
+                return render_template('crear_mesa.html', materias=materias, profesores=profesores)
         except ValueError as e:
             print(f"Error de formato de fecha: {e}")
             flash('Formato de fecha inválido.', 'error')
-            return render_template('crear_final.html', materias=materias)
+            return render_template('crear_mesa.html', materias=materias, profesores=profesores)
+
+        # Obtener próximo ID para mesa
+        query_next_id = "SELECT COALESCE(MAX(id_mesa), 0) + 1 AS next_id FROM mesas_f"
+        next_id_result = ejecutar_sql(query_next_id)
+        if next_id_result:
+            id_mesa = next_id_result[0][0]
+        else:
+            id_mesa = 1
+
+        print(f"ID mesa generado: {id_mesa}")
 
         query_insertar = """
-            INSERT INTO finales (id_materia, fecha_examen, fecha_apertura, fecha_cierre, activo)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO mesas_f (id_mesa, id_materia, fecha_examen, fecha_apertura, fecha_cierre, dni_profesor)
+            VALUES (%s, %s, %s, %s, %s, %s)
         """
-        result = ejecutar_sql(query_insertar, (id_materia, fecha_examen, fecha_apertura, fecha_cierre, activo))
-        print(f"Resultado INSERT: {result}")
-        if result == 0 or result is None:
-            print("Error: No se pudo insertar el final - verifica consulta SQL")
-            flash('Error al crear el final.', 'error')
-            return render_template('crear_final.html', materias=materias)
+        ejecutar_sql(query_insertar, (id_mesa, id_materia, fecha_examen, fecha_apertura, fecha_cierre, dni_profesor))
 
-        flash('Final creado exitosamente.', 'success')
-        return redirect(url_for('crear_final'))
+        # Verificar si se insertó
+        query_verificar = """
+            SELECT id_mesa FROM mesas_f WHERE id_mesa = %s
+        """
+        verificado = ejecutar_sql(query_verificar, (id_mesa,))
+        if verificado:
+            print("Mesa insertada correctamente")
+            flash('Mesa creada exitosamente.', 'success')
+        else:
+            print("Error: No se pudo insertar la mesa")
+            flash('Error al crear la mesa.', 'error')
+            return render_template('crear_mesa.html', materias=materias, profesores=profesores)
 
-    return render_template('crear_final.html', materias=materias)
+        return redirect(url_for('crear_mesa'))
 
+    return render_template('crear_mesa.html', materias=materias, profesores=profesores)
+
+@app.route('/listar_mesas', methods=['GET'])
+@perfil_requerido(['1', '2'])
+def listar_mesas():
+    if 'id_usuario' not in session:
+        print("Error: id_usuario no en sesión")
+        flash('Error: Sesión no válida.', 'error')
+        return redirect(url_for('login'))
+    id_usuario = session['id_usuario']
+    print(f"ID usuario: {id_usuario}")
+
+    query_mesas = """
+        SELECT f.id_mesa, m.nombre, f.fecha_examen, f.fecha_apertura, f.fecha_cierre, f.dni_profesor, p.nombre AS nombre_profesor
+        FROM mesas_f f
+        JOIN materias m ON f.id_materia = m.id_materia
+        LEFT JOIN profesores p ON f.dni_profesor = p.dni_profesor
+        WHERE m.id_carrera = %s
+        ORDER BY f.fecha_examen DESC
+    """
+    mesas = ejecutar_sql(query_mesas, (1,))
+    print(f"Mesas: {mesas}")
+    if mesas is None:
+        print("Error: Consulta de mesas devolvió None")
+        flash('Error al cargar mesas.', 'error')
+        mesas = []
+
+    return render_template('listar_mesas.html', mesas=mesas)
+
+@app.route('/eliminar_mesa/<int:id_mesa>', methods=['POST'])
+@perfil_requerido(['1', '2'])
+def eliminar_mesa(id_mesa):
+    if 'id_usuario' not in session:
+        print("Error: id_usuario no en sesión")
+        flash('Error: Sesión no válida.', 'error')
+        return redirect(url_for('login'))
+    id_usuario = session['id_usuario']
+    print(f"ID usuario: {id_usuario}")
+
+    query_check_inscripciones = """
+        SELECT id_inscripcion_final 
+        FROM inscripcion_f 
+        WHERE id_mesa = %s
+    """
+    inscripciones = ejecutar_sql(query_check_inscripciones, (id_mesa,))
+    if inscripciones:
+        print("Error: Mesa tiene inscripciones ligadas")
+        flash('No se puede eliminar: Hay inscripciones ligadas a esta mesa.', 'error')
+        return redirect(url_for('listar_mesas'))
+
+    query_eliminar = """
+        DELETE FROM mesas_f 
+        WHERE id_mesa = %s
+    """
+    ejecutar_sql(query_eliminar, (id_mesa,))
+
+    query_verificar = """
+        SELECT id_mesa FROM mesas_f WHERE id_mesa = %s
+    """
+    verificado = ejecutar_sql(query_verificar, (id_mesa,))
+    if not verificado:
+        print("Mesa eliminada correctamente")
+        flash('Mesa eliminada exitosamente.', 'success')
+    else:
+        print("Error: No se pudo eliminar la mesa")
+        flash('Error al eliminar la mesa.', 'error')
+
+    return redirect(url_for('listar_mesas'))
 
 
 @app.route('/logout')
