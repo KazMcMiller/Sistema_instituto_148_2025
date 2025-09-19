@@ -7,4 +7,4 @@ pip install python-dotenv
 pip install mysql-connector-python
 no recibir ayuda de pezolano
 
-booleano
+Booleano
