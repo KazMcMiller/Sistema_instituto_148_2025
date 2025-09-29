@@ -1,0 +1,70 @@
+<xaiArtifact artifact_id="2d038bc0-54ee-468d-85a7-fd8b009656a3" artifact_version_id="6bed6ef6-c69e-43d0-ab4c-268436993284" title="home.html" contentType="text/html">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container {
+            margin-top: 20px;
+        }
+        #easter-egg-img {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Bienvenido, {{ nombre }}</h2>
+        {% if mensajes %}
+        <h3>Mensajes Recientes</h3>
+        <ul>
+            {% for mensaje in mensajes %}
+            <li>{{ mensaje[0] }} - {{ mensaje[1] }}</li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>No hay mensajes recientes.</p>
+        {% endif %}
+    </div>
+
+    <!-- Easter Egg -->
+    <img id="easter-egg-img" src="/static/img/Untitled.png" alt="Easter Egg" width="1200px" height="500px">
+    <audio id="easter-egg-sound" src="/static/sounds/hl2.mp3"></audio>
+
+    <script>
+        function triggerEasterEgg() {
+            const chance = Math.floor(Math.random() * 10) + 1; // 1 a 10
+            console.log("Easter Egg chance: ", chance);
+            if (chance === 1) { // 1/10 probabilidad
+                const img = document.getElementById('easter-egg-img');
+                const sound = document.getElementById('easter-egg-sound');
+                img.style.display = 'block';
+                sound.play();
+                console.log("Easter Egg triggered!");
+                setTimeout(() => {
+                    img.style.display = 'none';
+                    sound.pause();
+                    sound.currentTime = 0; // Resetear audio
+                }, 1000); // 0.1 segundos
+            }
+        }
+
+        // Ejecutar cada segundo
+        setInterval(triggerEasterEgg, 1000);
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+</xaiArtifact>

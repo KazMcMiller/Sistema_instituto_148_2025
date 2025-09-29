@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 13-09-2025 a las 00:35:04
+-- Tiempo de generación: 29-09-2025 a las 18:58:11
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -32,15 +32,18 @@ CREATE TABLE `aprobaciones` (
   `id_usuario` int(11) NOT NULL,
   `id_materia` int(11) NOT NULL,
   `aprobada` int(1) NOT NULL DEFAULT 0,
-  `nota` decimal(4,2) DEFAULT NULL
+  `nota` decimal(4,2) DEFAULT 0.00,
+  `dni_profesor` int(12) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Volcado de datos para la tabla `aprobaciones`
 --
 
-INSERT INTO `aprobaciones` (`id_aprobacion`, `id_usuario`, `id_materia`, `aprobada`, `nota`) VALUES
-(3, 4, 1, 1, 7.50);
+INSERT INTO `aprobaciones` (`id_aprobacion`, `id_usuario`, `id_materia`, `aprobada`, `nota`, `dni_profesor`) VALUES
+(3, 4, 1, 1, 7.50, 0),
+(4, 4, 4, 1, 7.00, 3000001),
+(5, 4, 3, 1, 10.00, 3000001);
 
 -- --------------------------------------------------------
 
@@ -66,6 +69,43 @@ INSERT INTO `correlativa` (`id_correlativa`, `id_materia`, `id_carrera`, `id_mat
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `correlativas`
+--
+
+CREATE TABLE `correlativas` (
+  `id_materia` int(11) NOT NULL,
+  `id_materia_correlativa` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Volcado de datos para la tabla `correlativas`
+--
+
+INSERT INTO `correlativas` (`id_materia`, `id_materia_correlativa`) VALUES
+(9, 5),
+(9, 7),
+(10, 5),
+(10, 7),
+(11, 6),
+(11, 8),
+(12, 1),
+(13, 4),
+(14, 3),
+(15, 3),
+(16, 8),
+(17, 11),
+(17, 14),
+(17, 15),
+(17, 16),
+(18, 5),
+(18, 15),
+(19, 16),
+(21, 12),
+(23, 13);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `estado_civil`
 --
 
@@ -87,35 +127,6 @@ INSERT INTO `estado_civil` (`id_estado_civil`, `nombre`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `finales`
---
-
-CREATE TABLE `finales` (
-  `id_final` int(11) NOT NULL,
-  `id_materia` int(11) NOT NULL,
-  `fecha_examen` datetime NOT NULL,
-  `fecha_apertura` datetime NOT NULL,
-  `fecha_cierre` datetime NOT NULL,
-  `activo` int(1) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Volcado de datos para la tabla `finales`
---
-
-INSERT INTO `finales` (`id_final`, `id_materia`, `fecha_examen`, `fecha_apertura`, `fecha_cierre`, `activo`) VALUES
-(1, 1, '2025-12-01 10:00:00', '2025-09-07 00:00:00', '2025-11-30 23:59:59', 1),
-(3, 3, '2025-12-15 10:00:00', '2025-09-10 00:00:00', '2025-09-20 23:59:59', 1),
-(4, 4, '2025-11-13 00:00:00', '2025-09-12 19:06:00', '2025-11-05 20:07:00', 1),
-(5, 4, '2025-11-13 19:07:00', '2025-09-12 19:07:00', '2025-11-01 19:07:00', 0),
-(6, 4, '2025-11-13 19:11:00', '2025-09-12 19:11:00', '2025-10-22 19:11:00', 1),
-(7, 4, '2025-11-13 19:11:00', '2025-09-12 19:11:00', '2025-10-22 19:11:00', 1),
-(8, 4, '2025-11-13 19:18:00', '2025-09-12 19:18:00', '2025-11-01 19:18:00', 1),
-(9, 3, '2025-11-20 19:19:00', '2025-09-12 19:19:00', '2025-11-10 19:19:00', 1);
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `inscripciones_carreras`
 --
 
@@ -126,48 +137,45 @@ CREATE TABLE `inscripciones_carreras` (
   `fecha_inscripcion` date NOT NULL,
   `turno` int(11) NOT NULL,
   `estado_alumno` varchar(100) NOT NULL,
-  `activo` int(11) NOT NULL
+  `activo` int(11) NOT NULL,
+  `id_turno` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Volcado de datos para la tabla `inscripciones_carreras`
 --
 
-INSERT INTO `inscripciones_carreras` (`id_inscripcion`, `id_usuario`, `id_carrera`, `fecha_inscripcion`, `turno`, `estado_alumno`, `activo`) VALUES
-(1, 1, 7, '2024-10-26', 7, 'inscripto', 1),
-(58, 1, 1, '2025-09-07', 1, 'pre_inscripto', 1),
-(59, 26, 7, '2025-09-07', 7, 'inscripto', 1),
-(60, 2, 1, '2025-09-12', 1, 'pre_inscripto', 1),
-(61, 27, 1, '2025-09-12', 1, 'inscripto', 1),
-(62, 4, 1, '2025-09-12', 1, 'inscripto', 1);
+INSERT INTO `inscripciones_carreras` (`id_inscripcion`, `id_usuario`, `id_carrera`, `fecha_inscripcion`, `turno`, `estado_alumno`, `activo`, `id_turno`) VALUES
+(1, 1, 7, '2024-10-26', 7, 'inscripto', 1, NULL),
+(58, 1, 1, '2025-09-07', 1, 'pre_inscripto', 1, 1),
+(59, 26, 7, '2025-09-07', 7, 'inscripto', 1, NULL),
+(60, 2, 1, '2025-09-12', 1, 'pre_inscripto', 1, 1),
+(61, 27, 1, '2025-09-12', 1, 'inscripto', 1, 1),
+(62, 4, 1, '2025-09-12', 1, 'inscripto', 1, 1),
+(63, 3, 1, '2025-09-23', 1, 'pre_inscripto', 1, 1),
+(64, 28, 1, '2025-09-23', 1, 'inscripto', 1, 1);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `inscripciones_finales`
+-- Estructura de tabla para la tabla `inscripcion_f`
 --
 
-CREATE TABLE `inscripciones_finales` (
+CREATE TABLE `inscripcion_f` (
   `id_inscripcion_final` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL,
-  `id_final` int(11) NOT NULL,
+  `id_mesa` int(11) NOT NULL,
   `fecha_inscripcion` datetime NOT NULL DEFAULT current_timestamp(),
-  `estado` varchar(100) NOT NULL DEFAULT 'inscripto',
-  `respuestas_cuestionario` text DEFAULT NULL
+  `estado` varchar(100) NOT NULL DEFAULT 'inscripto'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
--- Volcado de datos para la tabla `inscripciones_finales`
+-- Volcado de datos para la tabla `inscripcion_f`
 --
 
-INSERT INTO `inscripciones_finales` (`id_inscripcion_final`, `id_usuario`, `id_final`, `fecha_inscripcion`, `estado`, `respuestas_cuestionario`) VALUES
-(1, 1, 1, '2025-09-07 20:39:24', 'inscripto', '{\"motivacion\": \"wdawda\", \"confirmacion\": \"si\"}'),
-(2, 26, 1, '2025-09-07 21:24:41', 'inscripto', '{\"motivacion\": \"ni idea\", \"confirmacion\": \"si\"}'),
-(3, 4, 3, '2025-09-12 18:42:57', 'cancelado', '{\"motivacion\": \"Quiero aprobar\", \"confirmacion\": \"si\"}'),
-(4, 4, 3, '2025-09-12 19:23:59', 'cancelado', '{\"motivacion\": \"dasd\", \"confirmacion\": \"si\"}'),
-(5, 4, 4, '2025-09-12 19:24:05', 'cancelado', '{\"motivacion\": \"dasdsadas\", \"confirmacion\": \"si\"}'),
-(6, 4, 6, '2025-09-12 19:24:09', 'cancelado', '{\"motivacion\": \"dasdasd\", \"confirmacion\": \"si\"}'),
-(7, 4, 9, '2025-09-12 19:24:14', 'cancelado', '{\"motivacion\": \"asdasdasd\", \"confirmacion\": \"si\"}');
+INSERT INTO `inscripcion_f` (`id_inscripcion_final`, `id_usuario`, `id_mesa`, `fecha_inscripcion`, `estado`) VALUES
+(31, 4, 1, '2025-09-26 19:52:24', 'cancelado'),
+(32, 4, 1, '2025-09-26 19:52:59', 'inscripto');
 
 -- --------------------------------------------------------
 
@@ -211,7 +219,8 @@ INSERT INTO `instituto_usuario` (`id_instituto_usuario`, `id_instituto`, `id_usu
 (15, 1, 27),
 (17, 1, 4),
 (18, 1, 5),
-(19, 1, 6);
+(19, 1, 6),
+(20, 1, 28);
 
 -- --------------------------------------------------------
 
@@ -234,7 +243,9 @@ INSERT INTO `intentos_materia` (`id_intento`, `id_usuario`, `id_materia`, `inten
 (1, 1, 1, 3),
 (2, 26, 1, 3),
 (3, 4, 3, 4),
-(5, 4, 4, 4);
+(5, 4, 4, 3),
+(28, 28, 4, 4),
+(34, 4, 7, 3);
 
 -- --------------------------------------------------------
 
@@ -12360,19 +12371,37 @@ INSERT INTO `localidades` (`id_localidad`, `nombre`, `id_provincia`) VALUES
 CREATE TABLE `materias` (
   `id_materia` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL,
-  `id_carrera` int(11) NOT NULL,
-  `id_profesor` int(11) NOT NULL
+  `id_carrera` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Volcado de datos para la tabla `materias`
 --
 
-INSERT INTO `materias` (`id_materia`, `nombre`, `id_carrera`, `id_profesor`) VALUES
-(1, 'Historia Argentina', 7, 1),
-(2, 'Historia Universal', 7, 1),
-(3, 'Química Básica', 1, 1),
-(4, 'Programación I', 1, 1);
+INSERT INTO `materias` (`id_materia`, `nombre`, `id_carrera`) VALUES
+(1, 'Arquitectura de las Computadoras', 1),
+(2, 'Ciencia Tecnologia y Sociedad', 1),
+(3, 'Algoritmos y Estructuras de datos 1', 1),
+(4, 'Inglés 1', 1),
+(5, 'Análisis Matemático 1', 1),
+(6, 'Prácticas Profesionalizantes 1', 1),
+(7, 'Algebra', 1),
+(8, 'Sistemas y Organizaciones', 1),
+(9, 'Análisis Matemático 2', 1),
+(10, 'Estadística', 1),
+(11, 'Prácticas Profesionalizantes 2', 1),
+(12, 'Sistemas Operativos', 1),
+(13, 'Inglés 2', 1),
+(14, 'Base de Datos', 1),
+(15, 'Algoritmos y Estructuras de datos 2', 1),
+(16, 'Ingeniería de Software 1', 1),
+(17, 'Prácticas Profesionalizantes 3', 1),
+(18, 'Algoritmos y Estructuras de datos 3', 1),
+(19, 'Ingeniería de Software 2', 1),
+(20, 'Aspectos Legales', 1),
+(21, 'Redes y Telecomunicaciones', 1),
+(22, 'Seminario', 1),
+(23, 'Inglés 3', 1);
 
 -- --------------------------------------------------------
 
@@ -12396,6 +12425,33 @@ INSERT INTO `mensajes` (`id_mensaje`, `mensaje`, `id_usuario`, `dia`) VALUES
 (2, 'Trinitario ausente Mañana (5/11)', 2, '2024-11-02 14:33:08'),
 (3, 'Hola ', 2, '2024-11-04 18:38:12'),
 (4, 'Merequetengue', 1, '2025-09-07 14:34:26');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `mesas_f`
+--
+
+CREATE TABLE `mesas_f` (
+  `id_mesa` int(11) NOT NULL,
+  `id_materia` int(11) NOT NULL,
+  `fecha_examen` datetime NOT NULL,
+  `fecha_apertura` datetime NOT NULL,
+  `fecha_cierre` datetime NOT NULL,
+  `dni_profesor` int(12) NOT NULL,
+  `dni_suplente` int(12) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Volcado de datos para la tabla `mesas_f`
+--
+
+INSERT INTO `mesas_f` (`id_mesa`, `id_materia`, `fecha_examen`, `fecha_apertura`, `fecha_cierre`, `dni_profesor`, `dni_suplente`) VALUES
+(1, 7, '2025-11-30 19:50:00', '2025-09-26 19:51:00', '2025-10-30 19:51:00', 3000001, 3000002),
+(3, 15, '2025-11-30 19:56:00', '2025-09-26 19:56:00', '2025-10-30 19:56:00', 3000001, 3000002),
+(8, 3, '2025-11-30 19:58:00', '2025-09-26 19:58:00', '2025-10-30 19:58:00', 3000001, NULL),
+(50, 13, '2025-11-27 19:58:00', '2025-09-26 19:58:00', '2025-10-29 19:58:00', 3000001, 3000002),
+(51, 14, '2026-02-26 20:53:00', '2025-09-26 20:53:00', '2025-10-22 20:53:00', 3000001, 3000002);
 
 -- --------------------------------------------------------
 
@@ -12702,7 +12758,8 @@ INSERT INTO `perfiles_usuarios` (`id_perfiles_usuarios`, `id_perfil`, `id_usuari
 (28, 4, 27),
 (29, 4, 4),
 (30, 1, 5),
-(31, 2, 6);
+(31, 2, 6),
+(32, 4, 28);
 
 -- --------------------------------------------------------
 
@@ -12881,6 +12938,30 @@ CREATE TABLE `pre_inscripciones` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `profesores`
+--
+
+CREATE TABLE `profesores` (
+  `id_profesor` int(11) NOT NULL,
+  `dni_profesor` int(12) NOT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `apellido` varchar(100) NOT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `telefono` varchar(50) DEFAULT NULL,
+  `activo` tinyint(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Volcado de datos para la tabla `profesores`
+--
+
+INSERT INTO `profesores` (`id_profesor`, `dni_profesor`, `nombre`, `apellido`, `email`, `telefono`, `activo`) VALUES
+(1, 3000001, 'Profesor', 'Test', 'profesor@ejemplo.com', '123456789', 1),
+(2, 3000002, 'Suplente', 'Test', NULL, NULL, 1);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `provincias`
 --
 
@@ -13019,7 +13100,8 @@ INSERT INTO `usuarios` (`id_usuario`, `dni`, `nombre`, `apellido`, `id_sexo`, `f
 (5, 2000001, 'Directivo', 'Test', 1, '1970-01-01', 'Buenos Aires', 1, 0, 0, 'Calle Falsa 101', NULL, 1, 1, 1, '1000', 111222333, NULL, NULL, 'directivo@ejemplo.com', 'Licenciatura', 1995, 1, NULL, NULL, 'sí', 'Directivo', '09:00-17:00', NULL, '12345678', 1),
 (6, 2000002, 'Secretaria', 'Test', 1, '1980-01-01', 'Buenos Aires', 1, 0, 0, 'Calle Falsa 102', NULL, 1, 1, 1, '1000', 444555666, NULL, NULL, 'secretaria@ejemplo.com', 'Administración', 2000, 1, NULL, NULL, 'sí', 'Secretaría', '08:00-16:00', NULL, '12345678', 1),
 (26, 42538479, 'ricardo', 'perotenuto', 1, '2000-03-13', 'Pehuajó', 1, 20, 2, 'Independencia del perú 1005', NULL, 1553, 1, 2, '6450', 2396580006, 22568744558, 'mama', 'agustinvaquero3000@gmail.com', 'Bachiller en ciencias sociales', 2019, 1, '', NULL, 'no', NULL, NULL, NULL, '12345678', 1),
-(27, 11111111, 'ricardo', 'perotenuto', 1, '2000-03-13', 'Pehuajó', 1, 0, 0, 'Independencia del perú 1005', NULL, 81, 1, 2, '6450', 23965555555, 2256874455555, 'mama', 'agustin@gmail.com', 'prueba', 2000, 1, '', NULL, 'no', NULL, NULL, NULL, '12345678', 1);
+(27, 11111111, 'ricardo', 'perotenuto', 1, '2000-03-13', 'Pehuajó', 1, 0, 0, 'Independencia del perú 1005', NULL, 81, 1, 2, '6450', 23965555555, 2256874455555, 'mama', 'agustin@gmail.com', 'prueba', 2000, 1, '', NULL, 'no', NULL, NULL, NULL, '12345678', 1),
+(28, 35033250, 'anahi', 'Cano', 2, '1989-02-01', 'Pehuajó', 2, 10, 0, 'maciel 917', '123312', 1553, 1, 2, '6450', 123123123, 123124124, '3123123', 'anahi_c@gotmail.com', 'informatica', 2009, 1, '', NULL, 'no', NULL, NULL, NULL, '12345678', 1);
 
 --
 -- Índices para tablas volcadas
@@ -13040,31 +13122,32 @@ ALTER TABLE `correlativa`
   ADD PRIMARY KEY (`id_correlativa`);
 
 --
+-- Indices de la tabla `correlativas`
+--
+ALTER TABLE `correlativas`
+  ADD PRIMARY KEY (`id_materia`,`id_materia_correlativa`),
+  ADD KEY `id_materia_correlativa` (`id_materia_correlativa`);
+
+--
 -- Indices de la tabla `estado_civil`
 --
 ALTER TABLE `estado_civil`
   ADD PRIMARY KEY (`id_estado_civil`);
 
 --
--- Indices de la tabla `finales`
---
-ALTER TABLE `finales`
-  ADD PRIMARY KEY (`id_final`),
-  ADD KEY `id_materia` (`id_materia`);
-
---
 -- Indices de la tabla `inscripciones_carreras`
 --
 ALTER TABLE `inscripciones_carreras`
-  ADD PRIMARY KEY (`id_inscripcion`);
+  ADD PRIMARY KEY (`id_inscripcion`),
+  ADD KEY `id_turno` (`id_turno`);
 
 --
--- Indices de la tabla `inscripciones_finales`
+-- Indices de la tabla `inscripcion_f`
 --
-ALTER TABLE `inscripciones_finales`
+ALTER TABLE `inscripcion_f`
   ADD PRIMARY KEY (`id_inscripcion_final`),
   ADD KEY `id_usuario` (`id_usuario`),
-  ADD KEY `id_final` (`id_final`);
+  ADD KEY `id_final` (`id_mesa`);
 
 --
 -- Indices de la tabla `institutos`
@@ -13105,6 +13188,15 @@ ALTER TABLE `mensajes`
   ADD PRIMARY KEY (`id_mensaje`);
 
 --
+-- Indices de la tabla `mesas_f`
+--
+ALTER TABLE `mesas_f`
+  ADD PRIMARY KEY (`id_mesa`),
+  ADD KEY `id_materia` (`id_materia`),
+  ADD KEY `dni_profesor` (`dni_profesor`),
+  ADD KEY `dni_suplente` (`dni_suplente`);
+
+--
 -- Indices de la tabla `paises`
 --
 ALTER TABLE `paises`
@@ -13141,6 +13233,14 @@ ALTER TABLE `pre_inscripciones`
   ADD PRIMARY KEY (`id_usuario`);
 
 --
+-- Indices de la tabla `profesores`
+--
+ALTER TABLE `profesores`
+  ADD PRIMARY KEY (`id_profesor`),
+  ADD UNIQUE KEY `dni` (`dni_profesor`),
+  ADD UNIQUE KEY `dni_profesor` (`dni_profesor`);
+
+--
 -- Indices de la tabla `provincias`
 --
 ALTER TABLE `provincias`
@@ -13172,7 +13272,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `aprobaciones`
 --
 ALTER TABLE `aprobaciones`
-  MODIFY `id_aprobacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_aprobacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `correlativa`
@@ -13187,22 +13287,16 @@ ALTER TABLE `estado_civil`
   MODIFY `id_estado_civil` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT de la tabla `finales`
---
-ALTER TABLE `finales`
-  MODIFY `id_final` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
-
---
 -- AUTO_INCREMENT de la tabla `inscripciones_carreras`
 --
 ALTER TABLE `inscripciones_carreras`
-  MODIFY `id_inscripcion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `id_inscripcion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 --
--- AUTO_INCREMENT de la tabla `inscripciones_finales`
+-- AUTO_INCREMENT de la tabla `inscripcion_f`
 --
-ALTER TABLE `inscripciones_finales`
-  MODIFY `id_inscripcion_final` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+ALTER TABLE `inscripcion_f`
+  MODIFY `id_inscripcion_final` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT de la tabla `institutos`
@@ -13214,13 +13308,13 @@ ALTER TABLE `institutos`
 -- AUTO_INCREMENT de la tabla `instituto_usuario`
 --
 ALTER TABLE `instituto_usuario`
-  MODIFY `id_instituto_usuario` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id_instituto_usuario` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `intentos_materia`
 --
 ALTER TABLE `intentos_materia`
-  MODIFY `id_intento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_intento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT de la tabla `lista_carreras`
@@ -13233,6 +13327,12 @@ ALTER TABLE `lista_carreras`
 --
 ALTER TABLE `mensajes`
   MODIFY `id_mensaje` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de la tabla `mesas_f`
+--
+ALTER TABLE `mesas_f`
+  MODIFY `id_mesa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT de la tabla `paises`
@@ -13250,7 +13350,7 @@ ALTER TABLE `perfiles`
 -- AUTO_INCREMENT de la tabla `perfiles_usuarios`
 --
 ALTER TABLE `perfiles_usuarios`
-  MODIFY `id_perfiles_usuarios` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id_perfiles_usuarios` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT de la tabla `permisos`
@@ -13268,7 +13368,13 @@ ALTER TABLE `permisos_perfiles`
 -- AUTO_INCREMENT de la tabla `pre_inscripciones`
 --
 ALTER TABLE `pre_inscripciones`
-  MODIFY `id_usuario` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_usuario` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `profesores`
+--
+ALTER TABLE `profesores`
+  MODIFY `id_profesor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `provincias`
@@ -13292,7 +13398,7 @@ ALTER TABLE `turno_carrera`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id_usuario` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- Restricciones para tablas volcadas
@@ -13306,17 +13412,25 @@ ALTER TABLE `aprobaciones`
   ADD CONSTRAINT `aprobaciones_ibfk_2` FOREIGN KEY (`id_materia`) REFERENCES `materias` (`id_materia`);
 
 --
--- Filtros para la tabla `finales`
+-- Filtros para la tabla `correlativas`
 --
-ALTER TABLE `finales`
-  ADD CONSTRAINT `finales_ibfk_1` FOREIGN KEY (`id_materia`) REFERENCES `materias` (`id_materia`);
+ALTER TABLE `correlativas`
+  ADD CONSTRAINT `correlativas_ibfk_1` FOREIGN KEY (`id_materia`) REFERENCES `materias` (`id_materia`) ON DELETE CASCADE,
+  ADD CONSTRAINT `correlativas_ibfk_2` FOREIGN KEY (`id_materia_correlativa`) REFERENCES `materias` (`id_materia`) ON DELETE CASCADE;
 
 --
--- Filtros para la tabla `inscripciones_finales`
+-- Filtros para la tabla `inscripciones_carreras`
 --
-ALTER TABLE `inscripciones_finales`
-  ADD CONSTRAINT `inscripciones_finales_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `inscripciones_finales_ibfk_2` FOREIGN KEY (`id_final`) REFERENCES `finales` (`id_final`);
+ALTER TABLE `inscripciones_carreras`
+  ADD CONSTRAINT `inscripciones_carreras_ibfk_1` FOREIGN KEY (`id_turno`) REFERENCES `turno_carrera` (`id_turno`);
+
+--
+-- Filtros para la tabla `inscripcion_f`
+--
+ALTER TABLE `inscripcion_f`
+  ADD CONSTRAINT `inscripcion_f_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`),
+  ADD CONSTRAINT `inscripcion_f_ibfk_3` FOREIGN KEY (`id_mesa`) REFERENCES `mesas_f` (`id_mesa`),
+  ADD CONSTRAINT `inscripcion_f_ibfk_4` FOREIGN KEY (`id_mesa`) REFERENCES `mesas_f` (`id_mesa`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `intentos_materia`
@@ -13324,6 +13438,14 @@ ALTER TABLE `inscripciones_finales`
 ALTER TABLE `intentos_materia`
   ADD CONSTRAINT `intentos_materia_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`),
   ADD CONSTRAINT `intentos_materia_ibfk_2` FOREIGN KEY (`id_materia`) REFERENCES `materias` (`id_materia`);
+
+--
+-- Filtros para la tabla `mesas_f`
+--
+ALTER TABLE `mesas_f`
+  ADD CONSTRAINT `mesas_f_ibfk_1` FOREIGN KEY (`id_materia`) REFERENCES `materias` (`id_materia`),
+  ADD CONSTRAINT `mesas_f_ibfk_2` FOREIGN KEY (`dni_profesor`) REFERENCES `profesores` (`dni_profesor`),
+  ADD CONSTRAINT `mesas_f_ibfk_3` FOREIGN KEY (`dni_suplente`) REFERENCES `profesores` (`dni_profesor`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

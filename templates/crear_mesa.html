@@ -14,7 +14,7 @@
 <body style="padding-left:250px">
     {% include 'navbar.html' %}
     <div class="container">
-        <h2>Crear Mesa</h2>
+        <h2>Crear Mesa de Examen</h2>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -24,43 +24,50 @@
         {% endwith %}
         <form method="POST" action="{{ url_for('crear_mesa') }}">
             <div class="form-group">
-                <label for="id_materia">Materia:</label>
+                <label for="id_materia">Materia</label>
                 <select class="form-control" id="id_materia" name="id_materia" required>
-                    <option value="">Seleccione una materia</option>
+                    <option value="">Selecciona una materia</option>
                     {% for materia in materias %}
                         <option value="{{ materia[0] }}">{{ materia[1] }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="form-group">
-                <label for="dni_profesor">Profesor (DNI):</label>
+                <label for="fecha_examen">Fecha de Examen</label>
+                <input type="datetime-local" class="form-control" id="fecha_examen" name="fecha_examen" required>
+            </div>
+            <div class="form-group">
+                <label for="fecha_apertura">Fecha de Apertura</label>
+                <input type="datetime-local" class="form-control" id="fecha_apertura" name="fecha_apertura" required>
+            </div>
+            <div class="form-group">
+                <label for="fecha_cierre">Fecha de Cierre</label>
+                <input type="datetime-local" class="form-control" id="fecha_cierre" name="fecha_cierre" required>
+            </div>
+            <div class="form-group">
+                <label for="dni_profesor">Profesor Titular</label>
                 <select class="form-control" id="dni_profesor" name="dni_profesor" required>
-                    <option value="">Seleccione un profesor</option>
+                    <option value="">Selecciona un profesor</option>
                     {% for profesor in profesores %}
                         <option value="{{ profesor[0] }}">{{ profesor[1] }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="form-group">
-                <label for="fecha_examen">Fecha del Examen:</label>
-                <input type="datetime-local" class="form-control" id="fecha_examen" name="fecha_examen" required>
+                <label for="dni_suplente">Profesor Suplente (Opcional)</label>
+                <select class="form-control" id="dni_suplente" name="dni_suplente">
+                    <option value="">Ninguno</option>
+                    {% for profesor in profesores %}
+                        <option value="{{ profesor[0] }}">{{ profesor[1] }}</option>
+                    {% endfor %}
+                </select>
             </div>
-            <div class="form-group">
-                <label for="fecha_apertura">Fecha de Apertura:</label>
-                <input type="datetime-local" class="form-control" id="fecha_apertura" name="fecha_apertura" required>
-            </div>
-            <div class="form-group">
-                <label for="fecha_cierre">Fecha de Cierre:</label>
-                <input type="datetime-local" class="form-control" id="fecha_cierre" name="fecha_cierre" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-sm">Crear Mesa</button>
-            <a href="{{ url_for('listar_mesas') }}" class="btn btn-info btn-sm">Ver Mesas Creadas</a>
-            <a href="{{ url_for('home') }}" class="btn btn-secondary btn-sm">Volver</a>
+            <button type="submit" class="btn btn-primary">Crear Mesa</button>
+            <a href="{{ url_for('listar_mesas') }}" class="btn btn-secondary">Volver</a>
         </form>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
-
 </html>

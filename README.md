@@ -5,6 +5,5 @@ pip install Flask
 pip install Flask-Session
 pip install python-dotenv
 pip install mysql-connector-python
+pip install openpyxl
 no recibir ayuda de pezolano
-
-Booleano

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Notas - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Gestor de Notas</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('gestor_notas') }}">
+            <div class="form-group">
+                <label for="dni_alumno">DNI del Alumno</label>
+                <input type="text" class="form-control" id="dni_alumno" name="dni_alumno" value="{{ dni_alumno|default('') }}" required>
+                <input type="hidden" name="action" value="buscar">
+            </div>
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+
+        {% if alumno_info %}
+            <h4 class="mt-4">Alumno: {{ alumno_info.nombre }} {{ alumno_info.apellido }} (Carrera: {{ alumno_info.carrera }})</h4>
+            <form method="POST" action="{{ url_for('gestor_notas') }}">
+                <div class="form-group">
+                    <label for="id_materia">Materia</label>
+                    <select class="form-control" id="id_materia" name="id_materia" required>
+                        <option value="">Selecciona una materia</option>
+                        {% for materia in materias %}
+                            <option value="{{ materia[0] }}">{{ materia[1] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dni_profesor">Profesor que dio la nota</label>
+                    <select class="form-control" id="dni_profesor" name="dni_profesor" required>
+                        <option value="">Selecciona un profesor</option>
+                        {% for profesor in profesores %}
+                            <option value="{{ profesor[0] }}">{{ profesor[1] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="nota">Nota</label>
+                    <input type="number" step="0.01" min="1" max="10" class="form-control" id="nota" name="nota" required>
+                </div>
+                <input type="hidden" name="id_alumno" value="{{ alumno_info.id }}">
+                <input type="hidden" name="action" value="aprobar">
+                <button type="submit" class="btn btn-success">Aprobar</button>
+                <a href="{{ url_for('home') }}" class="btn btn-secondary">Volver</a>
+            </form>
+        {% endif %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
