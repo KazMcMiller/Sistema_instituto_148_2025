@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profesores - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .selected-row {
+            background-color: #e0f7fa !important;
+        }
+    </style>
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Profesores</h2>
+        <p>Instituto Superior de Formación Docente y/o Técnica</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="mb-4">
+            <a href="{{ url_for('alta_profesores') }}" class="btn btn-primary">Legajo del Docente</a>
+            <a href="{{ url_for('cesar_profesor') }}" class="btn btn-primary">Cese</a>
+            <a href="{{ url_for('agregar_inasistencia') }}" class="btn btn-primary">Inasistencias</a>
+            <a href="{{ url_for('agregar_toma_posesion') }}" class="btn btn-primary">Toma de Posesión</a>
+            <a href="{{ url_for('agregar_licencia') }}" class="btn btn-primary">Licencias</a>
+            <a href="{{ url_for('ver_suplencias') }}" class="btn btn-primary">Suplencias</a>
+            <a href="{{ url_for('acta_carga_horaria') }}" class="btn btn-success">Carga Horaria</a>
+            <button id="editarProfesorBtn" class="btn btn-warning" disabled>Editar</button>
+            <a href="{{ url_for('home') }}" class="btn btn-secondary">Volver</a>
+        </div>
+
+        <h4>Listado de Profesores</h4>
+        <form method="GET" class="form-inline mb-3">
+            <div class="form-group mr-2">
+                <label for="search" class="sr-only">Buscar</label>
+                <input type="text" class="form-control" id="search" name="search" placeholder="Buscar por DNI, Nombre o Apellido" value="{{ search or '' }}">
+            </div>
+            <div class="form-group mr-2">
+                <label for="estado" class="sr-only">Estado</label>
+                <select class="form-control" id="estado" name="estado">
+                    <option value="todos" {% if estado == 'todos' %}selected{% endif %}>Todos</option>
+                    <option value="activo" {% if estado == 'activo' %}selected{% endif %}>Activo</option>
+                    <option value="cesado" {% if estado == 'cesado' %}selected{% endif %}>Cesado</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>DNI</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Teléfono</th>
+                        <th>Estado</th>
+                        <th>Licencia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for profesor in profesores %}
+                    <tr data-dni="{{ profesor[0] }}">
+                        <td>{{ profesor[0] }}</td>
+                        <td>{{ profesor[1] }}</td>
+                        <td>{{ profesor[2] or 'No especificado' }}</td>
+                        <td>{{ profesor[3] or 'No especificado' }}</td>
+                        <td>{{ 'Activo' if profesor[4] else 'Cesado' }}</td>
+                        <td>{{ profesor[5] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if total_paginas %}
+        <nav aria-label="Paginación Profesores">
+            <ul class="pagination">
+                {% for p in range(1, total_paginas + 1) %}
+                <li class="page-item {% if p == pagina_actual %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('profesores', page=p, search=search, estado=estado) }}">{{ p }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            let selectedDni = null;
+            $('tr[data-dni]').click(function() {
+                $('tr').removeClass('selected-row');
+                $(this).addClass('selected-row');
+                selectedDni = $(this).data('dni');
+                $('#editarProfesorBtn').prop('disabled', false).attr('onclick', `window.location.href='/profesores/editar_profesor/${selectedDni}'`);
+            });
+        });
+    </script>
+</body>
+</html>

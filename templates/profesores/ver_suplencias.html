@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Suplencias - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container {
+            margin-top: 20px;
+        }
+        .table-responsive {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Suplencias</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>DNI Suplente</th>
+                        <th>Profesor</th>
+                        <th>Mesa</th>
+                        <th>Materia</th>
+                        <th>Fecha Examen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for suplencia in suplencias %}
+                    <tr>
+                        <td>{{ suplencia[1] }}</td>
+                        <td>{{ suplencia[2] }} {{ suplencia[3] }}</td>
+                        <td>{{ suplencia[0] }}</td>
+                        <td>{{ suplencia[4] }}</td>
+                        <td>{{ suplencia[5] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <a href="{{ url_for('profesores') }}" class="btn btn-secondary">Volver</a>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mesas Inscriptas - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Mesas Inscriptas</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% if inscriptos %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Materia</th>
+                    <th>Fecha Examen</th>
+                    <th>Estado</th>
+                    <th>Intentos Restantes</th>
+                    <th>Profesor</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inscripcion in inscriptos %}
+                <tr>
+                    <td>{{ inscripcion[0] }}</td>
+                    <td>{{ inscripcion[1] }}</td>
+                    <td>{{ inscripcion[2] }}</td>
+                    <td>{{ inscripcion[3] }}</td>
+                    <td>{{ inscripcion[4] }}</td>
+                    <td>{{ inscripcion[6] }} {{ inscripcion[7] }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('cancelar_mesa', id_inscripcion_final=inscripcion[5]) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de cancelar esta inscripción?');">Cancelar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No estás inscripto en ninguna mesa.</p>
+        {% endif %}
+        <a href="{{ url_for('mesas_disponibles') }}" class="btn btn-info btn-sm">Ver Mesas Disponibles</a>
+        <a href="{{ url_for('home') }}" class="btn btn-secondary btn-sm">Volver</a>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

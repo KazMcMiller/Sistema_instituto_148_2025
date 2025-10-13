@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alta de Profesores - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Alta de Profesores</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('alta_profesores') }}" id="altaForm">
+            <h4>Datos Personales</h4>
+            <div class="form-group">
+                <label for="nombre">Nombres</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" required>
+            </div>
+            <div class="form-group">
+                <label for="apellido">Apellidos</label>
+                <input type="text" class="form-control" id="apellido" name="apellido" required>
+            </div>
+            <div class="form-group">
+                <label for="dni_profesor">DNI</label>
+                <input type="number" class="form-control" id="dni_profesor" name="dni_profesor" required min="1000000" max="99999999">
+            </div>
+            <div class="form-group">
+                <label for="sexo">Sexo</label>
+                <select class="form-control" id="sexo" name="sexo">
+                    <option value="">Seleccione</option>
+                    <option value="Femenino">Femenino</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Otros">Otros</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="domicilio">Domicilio</label>
+                <input type="text" class="form-control" id="domicilio" name="domicilio">
+            </div>
+            <div class="form-group">
+                <label for="piso">Piso</label>
+                <input type="number" class="form-control" id="piso" name="piso" min="0">
+            </div>
+            <div class="form-group">
+                <label for="dpto">Dpto</label>
+                <input type="text" class="form-control" id="dpto" name="dpto">
+            </div>
+            <div class="form-group">
+                <label for="codigo_postal">Código Postal</label>
+                <input type="number" class="form-control" id="codigo_postal" name="codigo_postal" min="0">
+            </div>
+            <div class="form-group">
+                <label for="localidad">Localidad</label>
+                <input type="text" class="form-control" id="localidad" name="localidad">
+            </div>
+            <div class="form-group">
+                <label for="partido">Partido</label>
+                <input type="text" class="form-control" id="partido" name="partido">
+            </div>
+            <div class="form-group">
+                <label for="telefono">Teléfono</label>
+                <input type="text" class="form-control" id="telefono" name="telefono">
+            </div>
+            <div class="form-group">
+                <label for="celular">Celular</label>
+                <input type="text" class="form-control" id="celular" name="celular">
+            </div>
+            <div class="form-group">
+                <label for="email">Correo Electrónico</label>
+                <input type="email" class="form-control" id="email" name="email">
+            </div>
+            <div class="form-group">
+                <label for="fecha_nacimiento">Fecha de Nacimiento</label>
+                <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
+            </div>
+            <div class="form-group">
+                <label for="lugar_nacimiento">Lugar de Nacimiento</label>
+                <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento">
+            </div>
+            <div class="form-group">
+                <label for="pais">País</label>
+                <select class="form-control" id="pais" name="pais">
+                    <option value="">Seleccione un país</option>
+                    {% for pais in paises %}
+                    <option value="{{ pais[1] }}">{{ pais[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="foja">Foja</label>
+                <input type="text" class="form-control" id="foja" name="foja">
+            </div>
+            <div class="form-group">
+                <label for="n_registro">N° Registro</label>
+                <input type="text" class="form-control" id="n_registro" name="n_registro">
+            </div>
+            <div class="form-group">
+                <label for="certificado_aptitud_fisica">Certificado de Aptitud Física</label>
+                <input type="checkbox" id="certificado_aptitud_fisica" name="certificado_aptitud_fisica" value="1">
+            </div>
+
+            <h4>Datos Académicos</h4>
+            <div class="card border-primary mb-3">
+                <div class="card-body">
+                    <div id="titulos">
+                        <div class="titulo-group mb-3">
+                            <div class="form-group">
+                                <label for="titulo_1">Título</label>
+                                <input type="text" class="form-control" id="titulo_1" name="titulo[]">
+                            </div>
+                            <div class="form-group">
+                                <label for="expedido_por_1">Expedido Por</label>
+                                <input type="text" class="form-control" id="expedido_por_1" name="expedido_por[]">
+                            </div>
+                            <div class="form-group">
+                                <label for="duracion_1">Duración</label>
+                                <input type="number" class="form-control" id="duracion_1" name="duracion[]" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="finalizo_1">Finalizó</label>
+                                <input type="checkbox" id="finalizo_1" name="finalizo[]" value="1">
+                            </div>
+                            <div class="form-group">
+                                <label for="fecha_egreso_1">Fecha de Egreso</label>
+                                <input type="date" class="form-control" id="fecha_egreso_1" name="fecha_egreso[]">
+                            </div>
+                            <div class="form-group">
+                                <label for="porcentaje_carrera_1">Porcentaje de la Carrera</label>
+                                <input type="number" class="form-control" id="porcentaje_carrera_1" name="porcentaje_carrera[]" min="0" max="100">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-secondary mb-3" id="agregarTitulo">Agregar Otro Título</button>
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <a href="{{ url_for('profesores') }}" class="btn btn-secondary">Atrás</a>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Validación de edad mínima (18 años)
+        document.getElementById('fecha_nacimiento').addEventListener('change', function() {
+            const fechaNacimiento = new Date(this.value);
+            const hoy = new Date('2025-10-07');
+            let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+            const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+            if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+                edad--;
+            }
+            if (edad < 18) {
+                alert('El profesor debe tener al menos 18 años.');
+                this.value = '';
+            }
+        });
+
+        // Agregar otro título dinámicamente
+        let tituloCount = 1;
+        document.getElementById('agregarTitulo').addEventListener('click', function() {
+            tituloCount++;
+            const div = document.createElement('div');
+            div.className = 'titulo-group mb-3';
+            div.innerHTML = `
+                <div class="form-group">
+                    <label for="titulo_${tituloCount}">Título</label>
+                    <input type="text" class="form-control" id="titulo_${tituloCount}" name="titulo[]">
+                </div>
+                <div class="form-group">
+                    <label for="expedido_por_${tituloCount}">Expedido Por</label>
+                    <input type="text" class="form-control" id="expedido_por_${tituloCount}" name="expedido_por[]">
+                </div>
+                <div class="form-group">
+                    <label for="duracion_${tituloCount}">Duración</label>
+                    <input type="number" class="form-control" id="duracion_${tituloCount}" name="duracion[]" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="finalizo_${tituloCount}">Finalizó</label>
+                    <input type="checkbox" id="finalizo_${tituloCount}" name="finalizo[]" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="fecha_egreso_${tituloCount}">Fecha de Egreso</label>
+                    <input type="date" class="form-control" id="fecha_egreso_${tituloCount}" name="fecha_egreso[]">
+                </div>
+                <div class="form-group">
+                    <label for="porcentaje_carrera_${tituloCount}">Porcentaje de la Carrera</label>
+                    <input type="number" class="form-control" id="porcentaje_carrera_${tituloCount}" name="porcentaje_carrera[]" min="0" max="100">
+                </div>
+                <button type="button" class="btn btn-danger btn-sm quitarTitulo">Quitar Título</button>
+            `;
+            document.getElementById('titulos').appendChild(div);
+        });
+
+        // Quitar título dinámicamente
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('quitarTitulo')) {
+                e.target.closest('.titulo-group').remove();
+            }
+        });
+    </script>
+</body>
+</html>

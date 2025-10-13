@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acta de Cese - Instituto Superior de Formación Docente y/o Técnica</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Acta de Cese</h2>
+        <p>Instituto Superior de Formación Docente y/o Técnica</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="POST" action="{{ url_for('cesar_profesor') }}">
+            <div class="form-group">
+                <label for="dni_profesor">Seleccionar Profesor</label>
+                <select class="form-control" id="dni_profesor" name="dni_profesor" required>
+                    <option value="">Selecciona un profesor</option>
+                    {% for profesor in profesores %}
+                    <option value="{{ profesor[0] }}">{{ profesor[1] }} {{ profesor[2] }} (DNI: {{ profesor[0] }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fecha">Fecha</label>
+                <input type="date" class="form-control" id="fecha" name="fecha" required>
+            </div>
+            <div class="form-group">
+                <label for="motivo">Motivo</label>
+                <select class="form-control" id="motivo" name="motivo" required>
+                    <option value="">Seleccione una opción</option>
+                    <option value="Fallecimiento">Fallecimiento</option>
+                    <option value="Jubilación">Jubilación</option>
+                    <option value="Renuncia">Renuncia</option>
+                    <option value="Otros">Otros</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="carrera">Carrera</label>
+                <select class="form-control" id="carrera" name="carrera">
+                    <option value="">Seleccione una carrera</option>
+                    {% for carrera in carreras %}
+                    <option value="{{ carrera[0] }}">{{ carrera[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="anio">Año</label>
+                <input type="number" class="form-control" id="anio" name="anio">
+            </div>
+            <div class="form-group">
+                <label for="hs_modulos">Módulos (Horas)</label>
+                <input type="text" class="form-control" id="hs_modulos" name="hs_modulos">
+            </div>
+            <div class="form-group">
+                <label for="situacion_revista">Situación de Revista</label>
+                <select class="form-control" id="situacion_revista" name="situacion_revista">
+                    <option value="">Seleccione una opción</option>
+                    <option value="Titular">Titular</option>
+                    <option value="Suplente">Suplente</option>
+                    <option value="Otros">Otros</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="observacion">Observación</label>
+                <textarea class="form-control" id="observacion" name="observacion" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de cesar a este profesor? Esto lo marcará como inactivo.');">Cesar Profesor</button>
+            <a href="{{ url_for('profesores') }}" class="btn btn-secondary">Volver</a>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

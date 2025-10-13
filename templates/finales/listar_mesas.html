@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listar Mesas - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Listar Mesas</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% if mesas %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Materia</th>
+                    <th>Fecha Examen</th>
+                    <th>Fecha Apertura</th>
+                    <th>Fecha Cierre</th>
+                    <th>Profesor</th>
+                    <th>Suplente</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mesa in mesas %}
+                <tr>
+                    <td>{{ mesa[0] }}</td>
+                    <td>{{ mesa[1] }}</td>
+                    <td>{{ mesa[2] }}</td>
+                    <td>{{ mesa[3] }}</td>
+                    <td>{{ mesa[4] }}</td>
+                    <td>{{ mesa[5] }} {{ mesa[6] }} ({{ mesa[7] }})</td>
+                    <td>{{ mesa[8] }} {{ mesa[9] }} ({{ mesa[10] if mesa[10] else 'Ninguno' }})</td>
+                    <td>
+                        <a href="{{ url_for('acta_volante', id_mesa=mesa[0]) }}" class="btn btn-success btn-sm">Acta Volante</a>
+                        <form method="POST" action="{{ url_for('eliminar_mesa', id_mesa=mesa[0]) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar esta mesa? Esto eliminará inscripciones ligadas y devolverá intentos a los alumnos.');">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No hay mesas creadas para esta carrera.</p>
+        {% endif %}
+        <a href="{{ url_for('crear_mesa') }}" class="btn btn-secondary btn-sm">Volver a Crear Mesa</a>
+        <a href="{{ url_for('home') }}" class="btn btn-secondary btn-sm">Volver</a>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

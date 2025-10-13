@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carga Horaria - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Carga Horaria</h2>
+        <p>Instituto Superior de Formación Docente y/o Técnica</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Formulario para cargar horas -->
+        <h4>Asignar Carga Horaria</h4>
+        <form method="POST" action="{{ url_for('acta_carga_horaria') }}">
+            <div class="form-group">
+                <label for="dni_profesor">Seleccionar Profesor</label>
+                <select class="form-control" id="dni_profesor" name="dni_profesor" required>
+                    <option value="">Selecciona un profesor</option>
+                    {% for profesor in profesores %}
+                    <option value="{{ profesor[0] }}">{{ profesor[1] }} {{ profesor[2] }} (DNI: {{ profesor[0] }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="id_carrera">Carrera</label>
+                <select class="form-control" id="id_carrera" name="id_carrera" required>
+                    <option value="">Seleccione una carrera</option>
+                    {% for carrera in carreras %}
+                    <option value="{{ carrera[0] }}">{{ carrera[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="hs_modulos">Módulos (Horas)</label>
+                <input type="text" class="form-control" id="hs_modulos" name="hs_modulos" required placeholder="Ej: 4 horas">
+            </div>
+            <div class="form-group">
+                <label for="fecha">Fecha</label>
+                <input type="date" class="form-control" id="fecha" name="fecha" required>
+            </div>
+            <div class="form-group">
+                <label for="observacion">Observación</label>
+                <textarea class="form-control" id="observacion" name="observacion" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-success">Asignar Carga</button>
+            <a href="{{ url_for('profesores') }}" class="btn btn-secondary">Volver</a>
+        </form>
+
+        <!-- Listado de Profesores -->
+        <h4 class="mt-5">Listado de Profesores</h4>
+        <form method="GET" class="form-inline mb-3">
+            <div class="form-group mr-2">
+                <label for="search_profesor" class="sr-only">Buscar</label>
+                <input type="text" class="form-control" id="search_profesor" name="search_profesor" placeholder="Buscar por nombre, apellido o DNI" value="{{ search_profesor or '' }}">
+            </div>
+            <div class="form-group mr-2">
+                <label for="estado" class="sr-only">Estado</label>
+                <select class="form-control" id="estado" name="estado">
+                    <option value="" {% if not estado %}selected{% endif %}>Todos</option>
+                    <option value="activo" {% if estado == 'activo' %}selected{% endif %}>Alta</option>
+                    <option value="inactivo" {% if estado == 'inactivo' %}selected{% endif %}>Cese</option>
+                    <option value="suplente" {% if estado == 'suplente' %}selected{% endif %}>Suplente</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>DNI</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Ciudad</th>
+                        <th>Teléfono</th>
+                        <th>Sexo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for profesor in profesores %}
+                    <tr>
+                        <td>{{ profesor[0] }}</td>
+                        <td>{{ profesor[1] }}</td>
+                        <td>{{ profesor[2] or 'No especificado' }}</td>
+                        <td>{{ profesor[11] or 'No especificado' }}</td>
+                        <td>{{ profesor[4] or 'No especificado' }}</td>
+                        <td>{{ profesor[15] or 'No especificado' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if total_paginas_profesores %}
+        <nav aria-label="Paginación Profesores">
+            <ul class="pagination">
+                {% for p in range(1, total_paginas_profesores + 1) %}
+                <li class="page-item {% if p == pagina_actual_profesores %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('acta_carga_horaria', page_profesores=p, search_profesor=search_profesor, estado=estado) }}">{{ p }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
+        {% endif %}
+
+        <!-- Listado de Pre-Inscripciones -->
+        <h4 class="mt-5">Listado de Pre-Inscripciones</h4>
+        {% if pre_inscripciones %}
+        <form method="GET" class="form-inline mb-3">
+            <div class="form-group mr-2">
+                <label for="search_pre_inscripcion" class="sr-only">Buscar</label>
+                <input type="text" class="form-control" id="search_pre_inscripcion" name="search_pre_inscripcion" placeholder="Buscar por nombre, apellido o DNI" value="{{ search_pre_inscripcion or '' }}">
+            </div>
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>DNI</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Ciudad</th>
+                        <th>Teléfono</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pre_inscripcion in pre_inscripciones %}
+                    <tr>
+                        <td>{{ pre_inscripcion[0] }}</td>
+                        <td>{{ pre_inscripcion[1] }}</td>
+                        <td>{{ pre_inscripcion[2] }}</td>
+                        <td>{{ pre_inscripcion[3] }}</td>
+                        <td>{{ pre_inscripcion[4] or 'No especificado' }}</td>
+                        <td>{{ pre_inscripcion[5] or 'No especificado' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if total_paginas_pre_inscripciones %}
+        <nav aria-label="Paginación Pre-Inscripciones">
+            <ul class="pagination">
+                {% for p in range(1, total_paginas_pre_inscripciones + 1) %}
+                <li class="page-item {% if p == pagina_actual_pre_inscripciones %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('acta_carga_horaria', page_pre_inscripciones=p, search_pre_inscripcion=search_pre_inscripcion) }}">{{ p }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
+        {% endif %}
+        {% else %}
+        <p class="text-warning">No hay datos de pre-inscripciones disponibles.</p>
+        {% endif %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
