@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acta Volante - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .acta-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .acta-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .acta-table {
+            margin-bottom: 20px;
+        }
+        .acta-footer {
+            margin-top: 20px;
+        }
+        .print-button {
+            margin-top: 20px;
+            text-align: center;
+        }
+        @media print {
+            .print-button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="acta-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <div class="acta-header">
+            <h2>ACTA VOLANTE DE EVALUACIONES</h2>
+            <h4>Evaluaciones de alumnos Regulares</h4>
+            <p><strong>CARRERA:</strong> {{ mesa.carrera }}</p>
+            <p><strong>FECHA:</strong> {{ mesa.fecha_examen }}</p>
+            <p><strong>ASIGNATURA:</strong> {{ mesa.materia }} <strong>AÑO:</strong> {{ mesa.ano }} <strong>TURNO:</strong> {{ mesa.turno if mesa.turno else 'No especificado' }}</p>
+        </div>
+        {% if alumnos %}
+        <table class="table table-bordered acta-table">
+            <thead>
+                <tr>
+                    <th>N° de Orden</th>
+                    <th>Documento de Identidad</th>
+                    <th>Apellido y Nombres</th>
+                    <th>Evaluaciones (En número)</th>
+                    <th>Evaluaciones (En letras)</th>
+                    <th>Observaciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for alumno in alumnos %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ alumno.dni }}</td>
+                    <td>{{ alumno.nombre|upper }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No hay alumnos inscriptos para esta mesa.</p>
+        {% endif %}
+        <div class="acta-footer">
+            <p><strong>PRESIDENTE:</strong> {{ mesa.profesor if mesa.profesor else '____________________________________________' }}</p>
+            <p><strong>VOCAL:</strong> {{ mesa.suplente if mesa.suplente else '____________________________________________' }}</p>
+            <p><strong>VOCAL:</strong> ____________________________________________</p>
+            <p><strong>TOTAL ALUMNOS:</strong> {{ alumnos|length }}</p>
+            <p><strong>APROBADOS:</strong> ____________________ <strong>APLAZADOS:</strong> ____________________ <strong>AUSENTES:</strong> ____________________</p>
+            <p>{{ mesa.fecha_formateada }}</p>
+        </div>
+        <div class="print-button">
+            <button class="btn btn-primary" onclick="window.print()">Imprimir</button>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

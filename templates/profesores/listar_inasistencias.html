@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Asistencias/Inasistencias - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Lista de Asistencia/Inasistencias</h2>
+        <p>Instituto Superior de Formación Docente y/o Técnica</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>DNI Profesor</th>
+                    <th>Nombre Profesor</th>
+                    <th>Fecha</th>
+                    <th>Motivo</th>
+                    <th>Carrera</th>
+                    <th>Materia</th>
+                    <th>Asistencia</th>
+                    <th>Observaciones</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inasistencia in inasistencias %}
+                    <tr>
+                        <td>{{ inasistencia.id_inasistencia }}</td>
+                        <td>{{ inasistencia.dni_profesor }}</td>
+                        <td>{{ inasistencia.nombre }} {{ inasistencia.apellido }}</td>
+                        <td>{{ inasistencia.fecha }}</td>
+                        <td>{{ inasistencia.motivo or '-' }}</td>
+                        <td>{{ inasistencia.nombre_carrera }}</td>
+                        <td>{{ inasistencia.nombre_materia }}</td>
+                        <td>{{ inasistencia.presente }}</td>
+                        <td>{{ inasistencia.observaciones or '-' }}</td>
+                        <td>
+                            <a href="{{ url_for('editar_inasistencia', id_inasistencia=inasistencia.id_inasistencia) }}" class="btn btn-primary btn-sm">Editar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{{ url_for('agregar_inasistencia') }}" class="btn btn-secondary">Volver</a>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

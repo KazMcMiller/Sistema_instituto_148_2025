@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Profesor - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Detalle del Profesor</h2>
+        <p>Instituto Superior de Formación Docente y/o Técnica</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">{{ profesor.nombre }} {{ profesor.apellido }}</h4>
+                <h6 class="card-subtitle mb-2 text-muted">DNI: {{ profesor.dni_profesor }}</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Email:</strong> {{ profesor.email or 'No especificado' }}</p>
+                        <p><strong>Fecha de Nacimiento:</strong> {{ profesor.fecha_nacimiento or 'No especificado' }}</p>
+                        <p><strong>Lugar de Nacimiento:</strong> {{ profesor.lugar_nacimiento or 'No especificado' }}</p>
+                        <p><strong>País:</strong> {{ profesor.pais or 'No especificado' }}</p>
+                        <p><strong>Foja:</strong> {{ profesor.foja or 'No especificado' }}</p>
+                        <p><strong>Número de Registro:</strong> {{ profesor.n_registro or 'No especificado' }}</p>
+                        <p><strong>Certificado de Aptitud Física:</strong> {{ 'Sí' if profesor.certificado_aptitud_fisica else 'No' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Teléfono:</strong> {{ profesor.telefono or 'No especificado' }}</p>
+                        <p><strong>Celular:</strong> {{ profesor.celular or 'No especificado' }}</p>
+                        <p><strong>Dirección:</strong>{% if profesor.domicilio %} {{ profesor.domicilio }}{% endif %} {% if profesor.piso %}, Piso {{ profesor.piso }}{% endif %}{% if profesor.dpto %}, Dpto {{ profesor.dpto }}{% endif %}</p>
+                        <p><strong>Localidad:</strong> {{ profesor.localidad or 'No especificado' }}</p>
+                        <p><strong>Partido:</strong> {{ profesor.partido or 'No especificado' }}</p>
+                        <p><strong>Código Postal:</strong> {{ profesor.codigo_postal or 'No especificado' }}</p>
+                        <p><strong>Sexo:</strong> {{ profesor.sexo or 'No especificado' }}</p>
+                        <p><strong>Estado:</strong> {{ 'Activo' if profesor.activo else 'Cesado' }}</p>
+                    </div>
+                </div>
+
+                <!-- Nueva sección para títulos -->
+                <h4 class="mt-4">Títulos Académicos</h4>
+                {% if titulos %}
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Expedido por</th>
+                            <th>Duración</th>
+                            <th>Finalizó</th>
+                            <th>Fecha de Egreso</th>
+                            <th>Porcentaje de Carrera</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for titulo in titulos %}
+                        <tr>
+                            <td>{{ titulo.titulo }}</td>
+                            <td>{{ titulo.expedido_por }}</td>
+                            <td>{{ titulo.duracion or 'No especificado' }}</td>
+                            <th>Finalizó</th>
+                            <td>{{ 'Sí' if titulo.finalizo else 'No' }}</td>
+                            <td>{{ titulo.fecha_egreso or 'No especificado' }}</td>
+                            <td>{{ titulo.porcentaje_carrera or 'No especificado' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No hay títulos registrados.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="mt-3">
+            <a href="{{ url_for('profesores') }}" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

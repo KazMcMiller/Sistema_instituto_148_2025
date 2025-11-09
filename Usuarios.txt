@@ -1,0 +1,7 @@
+1000000 = administrador
+1000003 = alumno test
+2000001 = directivo
+2000002 = secretaria
+42538479 = ricardo perotenuto
+11111111 = ricardo perotenuto 2
+35033250 = anahi

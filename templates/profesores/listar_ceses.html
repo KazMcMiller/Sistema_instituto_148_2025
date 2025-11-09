@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Ceses - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Lista de Ceses</h2>
+        <p>Instituto Superior de Formación Docente y/o Técnica</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if ceses %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID Cese</th>
+                        <th>DNI Profesor</th>
+                        <th>Nombre Profesor</th>
+                        <th>Carrera</th>
+                        <th>Materia</th>
+                        <th>Fecha</th>
+                        <th>Módulos</th>
+                        <th>Motivo</th>
+                        <th>Observaciones</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cese in ceses %}
+                        <tr>
+                            <td>{{ cese[0] }}</td>
+                            <td>{{ cese[1] }}</td>
+                            <td>{{ cese[2] }} {{ cese[3] }}</td>
+                            <td>{{ cese[4] }}</td>
+                            <td>{{ cese[5] }}</td>
+                            <td>{{ cese[6] }}</td>
+                            <td>{{ cese[7] }}</td>
+                            <td>{{ cese[8] }}</td>
+                            <td>{{ cese[9] or '' }}</td>
+                            <td>
+                                <a href="{{ url_for('editar_cese', id_cese=cese[0]) }}" class="btn btn-warning btn-sm">Editar</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No hay ceses registrados.</p>
+        {% endif %}
+        <a href="{{ url_for('cesar_profesor') }}" class="btn btn-secondary">Volver a Cesar Profesor</a>
+        <a href="{{ url_for('profesores') }}" class="btn btn-secondary">Volver a Profesores</a>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

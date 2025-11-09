@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Inasistencia - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Editar Asistencia/Inasistencia</h2>
+        <p>Instituto Superior de Formación Docente y/o Técnica</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('editar_inasistencia', id_inasistencia=inasistencia.id_inasistencia) }}">
+            <div class="form-group">
+                <label for="dni_profesor">Profesor</label>
+                <select class="form-control" id="dni_profesor" name="dni_profesor" required>
+                    <option value="">Seleccione un profesor</option>
+                    {% for profesor in profesores %}
+                        <option value="{{ profesor.dni_profesor }}" {% if profesor.dni_profesor == inasistencia.dni_profesor %}selected{% endif %}>
+                            {{ profesor.dni_profesor }} - {{ profesor.nombre }} {{ profesor.apellido }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="id_carrera">Carrera</label>
+                <select class="form-control" id="id_carrera" name="id_carrera" required>
+                    <option value="">Seleccione una carrera</option>
+                    {% for carrera in carreras %}
+                        <option value="{{ carrera.id_carrera }}" {% if carrera.id_carrera == inasistencia.id_carrera %}selected{% endif %}>
+                            {{ carrera.nombre_carrera }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="id_materia">Materia</label>
+                <select class="form-control" id="id_materia" name="id_materia" required>
+                    <option value="">Seleccione una materia</option>
+                    {% for materia in materias %}
+                        <option value="{{ materia.id_materia }}" data-carrera="{{ materia.id_carrera }}"
+                                {% if materia.id_materia == inasistencia.id_materia %}selected{% endif %}>
+                            {{ materia.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fecha">Fecha</label>
+                <input type="date" class="form-control" id="fecha" name="fecha" value="{{ inasistencia.fecha }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="presente">Presente</label>
+                <select class="form-control" id="presente" name="presente" required>
+                    <option value="Presente" {% if inasistencia.presente == 'Presente' %}selected{% endif %}>Presente</option>
+                    <option value="Ausente" {% if inasistencia.presente == 'Ausente' %}selected{% endif %}>Ausente</option>
+                </select>
+            </div>
+
+            <!-- CAMPO MOTIVO MODIFICADO -->
+            <div class="form-group">
+                <label for="motivo">Motivo</label>
+                <select class="form-control" id="motivo" name="motivo">
+                    <option value="">-</option>
+                    <option value="Justificado" {% if inasistencia.motivo == 'Justificado' %}selected{% endif %}>Justificado</option>
+                    <option value="Injustificado" {% if inasistencia.motivo == 'Injustificado' %}selected{% endif %}>Injustificado</option>
+                    <option value="Licencia Extendida" {% if inasistencia.motivo == 'Licencia Extendida' %}selected{% endif %}>Licencia Extendida</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="observaciones">Observaciones</label>
+                <textarea class="form-control" id="observaciones" name="observaciones" rows="4" placeholder="Ingrese observaciones">{{ inasistencia.observaciones or '' }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a href="{{ url_for('listar_inasistencias') }}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Filtrado de materias por carrera (NO TOCADO)
+            $('#id_carrera').change(function() {
+                var selectedCarrera = $(this).val();
+                $('#id_materia option').each(function() {
+                    if ($(this).data('carrera') == selectedCarrera || !selectedCarrera) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+                $('#id_materia').val('');
+            });
+
+            // NUEVA LÓGICA: Controlar motivo según presente
+            function updateMotivoField() {
+                var presente = $('#presente').val();
+                var $motivo = $('#motivo');
+
+                if (presente === 'Presente') {
+                    $motivo.val('-').prop('disabled', true);
+                    $motivo.find('option').not(':first').hide();
+                    $motivo.find('option:first').show().text('-');
+                } else {
+                    $motivo.prop('disabled', false);
+                    $motivo.find('option').show();
+                    $motivo.find('option:first').hide();
+                    // Si no hay valor válido, selecciona Justificado
+                    if (!$motivo.val() || $motivo.val() === '-') {
+                        $motivo.val('Justificado');
+                    }
+                }
+            }
+
+            // Ejecutar al cargar y al cambiar
+            updateMotivoField();
+            $('#presente').change(updateMotivoField);
+        });
+    </script>
+</body>
+</html>

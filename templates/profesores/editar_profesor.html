@@ -18,53 +18,246 @@
             {% endif %}
         {% endwith %}
 
-        <form method="POST" action="{{ url_for('editar_profesor', dni_profesor=profesor[0]) }}">
+        <form method="POST" action="/profesores/editar_profesor/{{ profesor.dni_profesor }}">
             <div class="form-group">
                 <label for="dni_profesor">DNI</label>
-                <input type="text" class="form-control" id="dni_profesor" name="dni_profesor" value="{{ profesor[0] }}" readonly>
+                <input type="text" class="form-control" id="dni_profesor" name="dni_profesor" value="{{ profesor.dni_profesor }}" readonly>
             </div>
             <div class="form-group">
                 <label for="nombre">Nombre</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" value="{{ profesor[1] }}" required>
+                <input type="text" class="form-control" id="nombre" name="nombre" value="{{ profesor.nombre }}" required>
             </div>
             <div class="form-group">
                 <label for="apellido">Apellido</label>
-                <input type="text" class="form-control" id="apellido" name="apellido" value="{{ profesor[2] or '' }}">
+                <input type="text" class="form-control" id="apellido" name="apellido" value="{{ profesor.apellido or '' }}">
             </div>
             <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" name="email" value="{{ profesor[3] or '' }}">
+                <label for="sexo">Sexo</label>
+                <select class="form-control" id="sexo" name="sexo" required>
+                    <option value="">Seleccione un sexo</option>
+                    {% for sexo_option in sexos %}
+                        <option value="{{ sexo_option }}" {% if sexo_option == profesor.sexo %}selected{% endif %}>
+                            {{ sexo_option }}
+                        </option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="form-group">
                 <label for="fecha_nacimiento">Fecha de Nacimiento</label>
-                <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ profesor[4].strftime('%Y-%m-%d') if profesor[4] else '' }}">
+                <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ profesor.fecha_nacimiento.strftime('%Y-%m-%d') if profesor.fecha_nacimiento else '' }}">
             </div>
             <div class="form-group">
-                <label for="telefono">Teléfono</label>
-                <input type="text" class="form-control" id="telefono" name="telefono" value="{{ profesor[5] or '' }}">
+                <label for="lugar_nacimiento">Lugar de Nacimiento</label>
+                <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento" value="{{ profesor.lugar_nacimiento or '' }}">
             </div>
             <div class="form-group">
-                <label for="celular">Celular</label>
-                <input type="text" class="form-control" id="celular" name="celular" value="{{ profesor[6] or '' }}">
+                <label for="pais">País</label>
+                <input type="text" class="form-control" id="pais" name="pais" value="{{ profesor.pais or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="domicilio">Domicilio</label>
+                <input type="text" class="form-control" id="domicilio" name="domicilio" value="{{ profesor.domicilio or '' }}">
             </div>
             <div class="form-group">
                 <label for="piso">Piso</label>
-                <input type="text" class="form-control" id="piso" name="piso" value="{{ profesor[7] or '' }}">
+                <input type="number" class="form-control" id="piso" name="piso" value="{{ profesor.piso if profesor.piso is not none else '' }}">
             </div>
             <div class="form-group">
-                <label for="dpto">Departamento</label>
-                <input type="text" class="form-control" id="dpto" name="dpto" value="{{ profesor[8] or '' }}">
+                <label for="dpto">Dpto</label>
+                <input type="text" class="form-control" id="dpto" name="dpto" value="{{ profesor.dpto or '' }}">
             </div>
-            <div class="form-group form-check">
-                <input type="checkbox" class="form-check-input" id="activo" name="activo" {% if profesor[9] %}checked{% endif %}>
-                <label class="form-check-label" for="activo">Activo</label>
+            <div class="form-group">
+                <label for="localidad">Localidad</label>
+                <input type="text" class="form-control" id="localidad" name="localidad" value="{{ profesor.localidad or '' }}">
             </div>
-            <button type="submit" class="btn btn-primary">Guardar</button>
+            <div class="form-group">
+                <label for="partido">Partido</label>
+                <input type="text" class="form-control" id="partido" name="partido" value="{{ profesor.partido or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="codigo_postal">Código Postal</label>
+                <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" value="{{ profesor.codigo_postal if profesor.codigo_postal is not none else '' }}">
+            </div>
+            <div class="form-group">
+                <label for="telefono">Teléfono</label>
+                <input type="text" class="form-control" id="telefono" name="telefono" value="{{ profesor.telefono or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="celular">Celular</label>
+                <input type="text" class="form-control" id="celular" name="celular" value="{{ profesor.celular or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ profesor.email or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="foja">Foja</label>
+                <input type="text" class="form-control" id="foja" name="foja" value="{{ profesor.foja or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="n_registro">N° Registro</label>
+                <input type="text" class="form-control" id="n_registro" name="n_registro" value="{{ profesor.n_registro or '' }}">
+            </div>
+
+            <!-- TÍTULOS -->
+            <div class="form-group">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label>Datos Académicos</label>
+                    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalTitulo">
+                        + Agregar Título
+                    </button>
+                </div>
+
+                {% if titulos %}
+                <table class="table table-bordered table-sm">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Expedido por</th>
+                            <th>Duración</th>
+                            <th>Finalizó</th>
+                            <th>Fecha Egreso</th>
+                            <th>% Carrera</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for titulo in titulos %}
+                        <tr>
+                            <td>{{ titulo.titulo }}</td>
+                            <td>{{ titulo.expedido_por }}</td>
+                            <td>{{ titulo.duracion or '' }}</td>
+                            <td>{{ 'Sí' if titulo.finalizo else 'No' }}</td>
+                            <td>{{ titulo.fecha_egreso.strftime('%Y-%m-%d') if titulo.fecha_egreso else '' }}</td>
+                            <td>{{ titulo.porcentaje_carrera if titulo.porcentaje_carrera else '' }}</td>
+                            <td>
+                                <button type="button" class="btn btn-warning btn-xs" 
+                                        onclick="editarTitulo({{ titulo.id_titulo }}, &quot;{{ titulo.titulo|escape }}&quot;, &quot;{{ titulo.expedido_por|escape }}&quot;, &quot;{{ titulo.duracion|escape }}&quot;, {{ titulo.finalizo }}, &quot;{{ titulo.fecha_egreso.strftime('%Y-%m-%d') if titulo.fecha_egreso else '' }}&quot;, {{ titulo.porcentaje_carrera if titulo.porcentaje_carrera else 'null' }})">
+                                    Editar
+                                </button>
+                                <button type="button" class="btn btn-danger btn-xs" 
+                                        onclick="eliminarTitulo({{ titulo.id_titulo }})">
+                                    Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted">No hay títulos registrados.</p>
+                {% endif %}
+            </div>
+
+            <!-- BOTONES DEL FORMULARIO PRINCIPAL -->
+            <button type="submit" class="btn btn-primary">
+                Guardar Datos Personales
+            </button>
             <a href="{{ url_for('profesores') }}" class="btn btn-secondary">Cancelar</a>
         </form>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+    <!-- MODAL: AGREGAR / EDITAR TÍTULO -->
+    <div class="modal fade" id="modalTitulo" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" id="formTitulo" action="{{ url_for('agregar_titulo') }}">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTituloLabel">Agregar Título</h5>
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="id_titulo" id="id_titulo">
+                        <input type="hidden" name="dni_profesor" value="{{ profesor.dni_profesor }}">
+
+                        <div class="form-group">
+                            <label for="titulo">Título</label>
+                            <input type="text" class="form-control" id="titulo" name="titulo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="expedido_por">Expedido por</label>
+                            <input type="text" class="form-control" id="expedido_por" name="expedido_por" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="duracion">Duración</label>
+                            <input type="text" class="form-control" id="duracion" name="duracion" placeholder="Ej: 5 años">
+                        </div>
+                        <div class="form-group form-check">
+                            <input type="checkbox" class="form-check-input" id="finalizo" name="finalizo" value="1">
+                            <label class="form-check-label" for="finalizo">Finalizó</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="fecha_egreso">Fecha de Egreso</label>
+                            <input type="date" class="form-control" id="fecha_egreso" name="fecha_egreso">
+                        </div>
+                        <div class="form-group">
+                            <label for="porcentaje_carrera">Porcentaje de Carrera</label>
+                            <input type="number" step="0.01" min="0" max="100" class="form-control" id="porcentaje_carrera" name="porcentaje_carrera">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Título</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFIRMAR ELIMINACIÓN -->
+    <div class="modal fade" id="modalEliminar" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirmar Eliminación</h5>
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas <strong>eliminar este título</strong>?</p>
+                    <p class="text-danger">Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <form method="POST" action="{{ url_for('eliminar_titulo') }}" id="formEliminar" style="display:inline;">
+                        <input type="hidden" name="id_titulo" id="delete_id_titulo">
+                        <input type="hidden" name="dni_profesor" value="{{ profesor.dni_profesor }}">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        function editarTitulo(id, titulo, expedido, duracion, finalizo, fecha, porcentaje) {
+            $('#modalTituloLabel').text('Editar Título');
+            $('#id_titulo').val(id);
+            $('#titulo').val(titulo);
+            $('#expedido_por').val(expedido);
+            $('#duracion').val(duracion);
+            $('#finalizo').prop('checked', finalizo == 1);
+            $('#fecha_egreso').val(fecha);
+            $('#porcentaje_carrera').val(porcentaje);
+            $('#formTitulo').attr('action', '{{ url_for("editar_titulo") }}');
+            $('#modalTitulo').modal('show');
+        }
+
+        function eliminarTitulo(id) {
+            $('#delete_id_titulo').val(id);
+            $('#modalEliminar').modal('show');
+        }
+
+        $('#modalTitulo').on('hidden.bs.modal', function () {
+            $('#modalTituloLabel').text('Agregar Título');
+            $('#formTitulo').attr('action', '{{ url_for("agregar_titulo") }}');
+            $('#formTitulo')[0].reset();
+            $('#id_titulo').val('');
+        });
+    </script>
 </body>
 </html>

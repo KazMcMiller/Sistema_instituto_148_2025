@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Cese - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Editar Cese</h2>
+        <p>Instituto Superior de Formación Docente y/o Técnica</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('editar_cese', id_cese=cese[0]) }}">
+            <div class="form-group">
+                <label for="dni_profesor">Profesor</label>
+                <input type="text" class="form-control" id="dni_profesor" value="{{ cese[1] }} - {{ cese[2] }} {{ cese[3] }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="id_carrera">Carrera</label>
+                <input type="text" class="form-control" id="id_carrera" value="{{ cese[4] }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="id_materia">Materia</label>
+                <input type="text" class="form-control" id="id_materia" value="{{ cese[5] }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="fecha">Fecha</label>
+                <input type="date" class="form-control" id="fecha" name="fecha" value="{{ cese[6] }}" required>
+            </div>
+            <div class="form-group">
+                <label for="anio">Año</label>
+                <select class="form-control" id="anio" name="anio">
+                    <option value="" {% if not cese[10] %}selected{% endif %}>Seleccione un año</option>
+                    <option value="1°" {% if cese[10] == '1°' %}selected{% endif %}>1°</option>
+                    <option value="2°" {% if cese[10] == '2°' %}selected{% endif %}>2°</option>
+                    <option value="3°" {% if cese[10] == '3°' %}selected{% endif %}>3°</option>
+                    <option value="4°" {% if cese[10] == '4°' %}selected{% endif %}>4°</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="hs_modulos">Módulos</label>
+                <input type="number" class="form-control" id="hs_modulos" name="hs_modulos" min="0" value="{{ cese[7] }}" required>
+            </div>
+            <div class="form-group">
+                <label for="motivo">Motivo</label>
+                <select class="form-control" id="motivo" name="motivo" required>
+                    <option value="Jubilación" {% if cese[8] == 'Jubilación' %}selected{% endif %}>Jubilación</option>
+                    <option value="Renuncia" {% if cese[8] == 'Renuncia' %}selected{% endif %}>Renuncia</option>
+                    <option value="Fallecimiento" {% if cese[8] == 'Fallecimiento' %}selected{% endif %}>Fallecimiento</option>
+                    <option value="Otros" {% if cese[8] == 'Otros' %}selected{% endif %}>Otros</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="observaciones">Observaciones</label>
+                <textarea class="form-control" id="observaciones" name="observaciones" rows="4" placeholder="Ingrese observaciones">{{ cese[9] or '' }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            <a href="{{ url_for('listar_ceses') }}" class="btn btn-secondary">Volver a Lista de Ceses</a>
+            <a href="{{ url_for('profesores') }}" class="btn btn-secondary">Volver a Profesores</a>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Licencia - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Editar Licencia</h2>
+        <p>Instituto Superior de Formación Docente y/o Técnica</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('editar_licencia', id_licencia=licencia.id_licencia) }}">
+            <div class="form-group">
+                <label for="dni_profesor">Profesor</label>
+                <select class="form-control" id="dni_profesor" name="dni_profesor" required>
+                    <option value="">Seleccione un profesor</option>
+                    {% for profesor in profesores %}
+                        <option value="{{ profesor[0] }}" {% if licencia.dni_profesor == profesor[0] %}selected{% endif %}>
+                            {{ profesor[0] }} - {{ profesor[1] }} {{ profesor[2] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="id_carrera">Carrera</label>
+                <select class="form-control" id="id_carrera" name="id_carrera" required>
+                    <option value="">Seleccione una carrera</option>
+                    {% for carrera in carreras %}
+                        <option value="{{ carrera[0] }}" {% if licencia.id_carrera == carrera[0] %}selected{% endif %}>
+                            {{ carrera[3] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="id_materia">Materia</label>
+                <select class="form-control" id="id_materia" name="id_materia" required>
+                    <option value="">Seleccione una materia</option>
+                    {% for materia in materias %}
+                        <option value="{{ materia[0] }}" data-carrera="{{ materia[2] }}"
+                                {% if licencia.id_materia == materia[0] %}selected{% endif %}>
+                            {{ materia[1] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="desde">Desde</label>
+                <input type="date" class="form-control" id="desde" name="desde" value="{{ licencia.desde }}" required>
+            </div>
+            <div class="form-group">
+                <label for="hasta">Hasta</label>
+                <input type="date" class="form-control" id="hasta" name="hasta" value="{{ licencia.hasta or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="licencia">Tipo de Licencia</label>
+                <select class="form-control" id="licencia" name="licencia" required>
+                    <option value="">Seleccione un tipo</option>
+                    <option value="Licencia administrativa" {% if licencia.licencia == 'Licencia administrativa' %}selected{% endif %}>Licencia administrativa</option>
+                    <option value="Licencia médica" {% if licencia.licencia == 'Licencia médica' %}selected{% endif %}>Licencia médica</option>
+                    <option value="Ausente" {% if licencia.licencia == 'Ausente' %}selected{% endif %}>Ausente</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tiempo_estimado">Tiempo Estimado</label>
+                <select class="form-control" id="tiempo_estimado" name="tiempo_estimado" required>
+                    <option value="">Seleccione una opción</option>
+                    <option value="Menos de 30 días" {% if licencia.tiempo_estimado == 'Menos de 30 días' %}selected{% endif %}>Menos de 30 días</option>
+                    <option value="Menor a 4 meses" {% if licencia.tiempo_estimado == 'Menor a 4 meses' %}selected{% endif %}>Menor a 4 meses</option>
+                    <option value="Mayor a 4 meses" {% if licencia.tiempo_estimado == 'Mayor a 4 meses' %}selected{% endif %}>Mayor a 4 meses</option>
+                    <option value="Difícil cobertura" {% if licencia.tiempo_estimado == 'Difícil cobertura' %}selected{% endif %}>Difícil cobertura</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="observaciones">Observaciones</label>
+                <textarea class="form-control" id="observaciones" name="observaciones" rows="4"
+                          placeholder="Ingrese observaciones">{{ licencia.observaciones or '' }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Actualizar Licencia</button>
+            <a href="{{ url_for('listar_licencias') }}" class="btn btn-secondary">Volver</a>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Filter materia by carrera
+            $('#id_carrera').change(function() {
+                var selectedCarrera = $(this).val();
+                var selectedMateria = $('#id_materia').val(); // Preserve selected materia
+                $('#id_materia option').each(function() {
+                    if ($(this).data('carrera') == selectedCarrera || !selectedCarrera) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+                // Only reset materia if no valid selection or carrera doesn't match materia's carrera
+                if (selectedMateria) {
+                    var materiaCarrera = $('#id_materia option[value="' + selectedMateria + '"]').data('carrera');
+                    if (materiaCarrera != selectedCarrera) {
+                        $('#id_materia').val('');
+                    } else {
+                        $('#id_materia').val(selectedMateria);
+                    }
+                }
+            });
+
+            // Trigger change to filter materias
+            $('#id_carrera').trigger('change');
+        });
+    </script>
+</body>
+</html>

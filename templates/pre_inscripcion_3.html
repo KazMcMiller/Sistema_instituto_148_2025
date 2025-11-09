@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,81 +11,67 @@
     <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
-
 <style>
-    html{
+    html {
         margin-left: 15%;
     }
-    html, body{
+    html, body {
         height: 100%;
         display: flex;
-        justify-content: center; /* Centra horizontalmente */
-        align-content: center; /* Centra verticalmente */
+        justify-content: center;
+        align-content: center;
     }
-                
 </style>
-
 <body>
     <div class="container mt-3">
         <div class="container rounded-sm" id="cont-insc">
-        {% include 'navbar.html' %}
-        
+            {% include 'navbar.html' %}
             <div class="form-container">
                 <h4 class="text-primary text-center mt-3">Confirmar Pre-Inscripción</h4>
                 <hr>
                 <h4 class="text-primary">Datos Personales</h4>
                 <div class="form-row">
-                    <p class="col col col-md-4"><strong class="text-gris">Nombres:</strong> {{ nombre}}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Apellido:</strong> {{ apellido}}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Sexo:</strong> {{ id_sexo }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">DNI:</strong> {{ dni }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Fecha de Nacimiento:</strong> {{ fecha_nacimiento }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Lugar de Nacimiento:</strong> {{ lugar_nacimiento }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Estado Civil:</strong> {{ id_estado_civil }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Cantidad de Hijos:</strong> {{ cantidad_hijos }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Familiares a Cargo:</strong> {{ familiares_a_cargo }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Domicilio:</strong> {{ domicilio }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Piso:</strong> {{ piso }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Localidad:</strong> {{ id_localidad }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Pais:</strong> {{ id_pais }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Provincia:</strong> {{ id_provincia }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Código Postal:</strong> {{ codigo_postal }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Teléfono:</strong> {{ telefono }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Teléfono Alternativo:</strong> {{ telefono_alt }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">A quién pertenece ese teléfono:</strong> {{ telefono_alt_propietario }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Email:</strong> {{ email }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Carrera:</strong> {{ carrera }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Turno:</strong> {{ turno }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Nombres:</strong> {{ nombre }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Apellido:</strong> {{ apellido }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Sexo:</strong> {{ id_sexo }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">DNI:</strong> {{ dni }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Fecha de Nacimiento:</strong> {{ fecha_nacimiento }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Lugar de Nacimiento:</strong> {{ lugar_nacimiento }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Estado Civil:</strong> {{ id_estado_civil }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Cantidad de Hijos:</strong> {{ cantidad_hijos }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Familiares a Cargo:</strong> {{ familiares_a_cargo }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Domicilio:</strong> {{ domicilio }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Piso:</strong> {{ piso }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Localidad:</strong> {{ localidad }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Provincia:</strong> {{ id_provincia }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">País:</strong> {{ id_pais }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Código Postal:</strong> {{ codigo_postal }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Teléfono:</strong> {{ telefono }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Teléfono Alternativo:</strong> {{ telefono_alt }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Propietario Teléfono Alt.:</strong> {{ telefono_alt_propietario }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Email:</strong> {{ email }}</p>
                 </div>
-
-            <div class="form-container">
-                <hr>
-                <h4 class="text-primary">Estudios Cursados</h4>
+                <h4 class="text-primary">Datos Académicos</h4>
                 <div class="form-row">
-                    <p class="col col col-md-4"><strong class="text-gris">Título Base:</strong> {{ titulo_base }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Año de Egreso:</strong> {{ anio_egreso }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Provincia:</strong> {{ id_provincia }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Institución:</strong> {{ id_institucion }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Otros Estudios:</strong> {{ otros_estudios }}</p>
-                    <p class="col col col-md-4"><strong class="text-gris">Año de Egreso de Otros Estudios:</strong> {{ anio_egreso_otros }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Institución:</strong> {{ id_institucion }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Carrera:</strong> {{ carrera }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Turno:</strong> {{ turno }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Título Base:</strong> {{ titulo_base }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Año de Egreso:</strong> {{ anio_egreso }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Otros Estudios:</strong> {{ otros_estudios }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Año de Egreso Otros:</strong> {{ anio_egreso_otros }}</p>
                 </div>
-            </div>
-
-                <div class="form-container">
-                    <hr>
-                    <h4 class="text-primary">Datos Laborales</h4>
-                    <div class="form-row">
-                        <p class="col col col-md-4"><strong class="text-gris">Trabaja:</strong> {{ trabaja }}</p>
-                        <p class="col col col-md-4"><strong class="text-gris">Actividad:</strong> {{ actividad }}</p>
-                        <p class="col col col-md-4"><strong class="text-gris">Horario Habitual:</strong> {{ horario_habitual }}</p>
-                        <p class="col col col-md-4"><strong class="text-gris">Obra Social:</strong> {{ obra_social }}</p>
-                    </div>
+                <h4 class="text-primary">Datos Laborales</h4>
+                <div class="form-row">
+                    <p class="col col-md-4"><strong class="text-gris">Trabaja:</strong> {{ trabaja }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Actividad:</strong> {{ actividad }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Horario Habitual:</strong> {{ horario_habitual }}</p>
+                    <p class="col col-md-4"><strong class="text-gris">Obra Social:</strong> {{ obra_social }}</p>
                 </div>
-
-                <form method="POST" action="/guardar_pre_inscripcion">
-                    <!-- Pasar los datos como inputs ocultos para ser enviados al servidor -->
-                    <input type="hidden" name="nombre_apellido" value="{{ nombre }}">
-                    <input type="hidden" name="nombre_apellido" value="{{ apellido }}">
+                <form method="POST" action="{{ url_for('confirmar_pre_inscripcion') }}">
+                    <!-- Hidden inputs for form submission -->
+                    <input type="hidden" name="nombre" value="{{ nombre }}">
+                    <input type="hidden" name="apellido" value="{{ apellido }}">
                     <input type="hidden" name="id_sexo" value="{{ id_sexo }}">
                     <input type="hidden" name="dni" value="{{ dni }}">
                     <input type="hidden" name="fecha_nacimiento" value="{{ fecha_nacimiento }}">
@@ -96,9 +81,9 @@
                     <input type="hidden" name="familiares_a_cargo" value="{{ familiares_a_cargo }}">
                     <input type="hidden" name="domicilio" value="{{ domicilio }}">
                     <input type="hidden" name="piso" value="{{ piso }}">
-                    <input type="hidden" name="id_localidad" value="{{ id_localidad }}">
-                    <input type="hidden" name="id_pais" value="{{ id_pais }}">
+                    <input type="hidden" name="localidad" value="{{ localidad }}">
                     <input type="hidden" name="id_provincia" value="{{ id_provincia }}">
+                    <input type="hidden" name="id_pais" value="{{ id_pais }}">
                     <input type="hidden" name="codigo_postal" value="{{ codigo_postal }}">
                     <input type="hidden" name="telefono" value="{{ telefono }}">
                     <input type="hidden" name="telefono_alt" value="{{ telefono_alt }}">
@@ -106,21 +91,15 @@
                     <input type="hidden" name="email" value="{{ email }}">
                     <input type="hidden" name="carrera" value="{{ carrera }}">
                     <input type="hidden" name="turno" value="{{ turno }}">
-
-                    <!-- Datos de estudios cursados -->
                     <input type="hidden" name="titulo_base" value="{{ titulo_base }}">
                     <input type="hidden" name="anio_egreso" value="{{ anio_egreso }}">
-                    <input type="hidden" name="provincia" value="{{ provincia }}">
                     <input type="hidden" name="id_institucion" value="{{ id_institucion }}">
                     <input type="hidden" name="otros_estudios" value="{{ otros_estudios }}">
                     <input type="hidden" name="anio_egreso_otros" value="{{ anio_egreso_otros }}">
-
-                    <!-- Datos laborales -->
                     <input type="hidden" name="trabaja" value="{{ trabaja }}">
                     <input type="hidden" name="actividad" value="{{ actividad }}">
                     <input type="hidden" name="horario_habitual" value="{{ horario_habitual }}">
                     <input type="hidden" name="obra_social" value="{{ obra_social }}">
-
                     <div class="actions" id="boton-confirmar">
                         <button type="submit" class="float-right mb-3">Guardar</button>
                     </div>

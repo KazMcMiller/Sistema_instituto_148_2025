@@ -5,16 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cesar Profesor - Instituto 148</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        .container {
-            margin-top: 20px;
-        }
-    </style>
 </head>
-<body>
+<body style="padding-left:250px">
     {% include 'navbar.html' %}
     <div class="container">
         <h2>Cesar Profesor</h2>
+        <p>Instituto Superior de Formación Docente y/o Técnica</p>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -22,22 +18,95 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
+
         <form method="POST" action="{{ url_for('cesar_profesor') }}">
+            <a href="{{ url_for('listar_ceses') }}" class="btn btn-info">Ver Ceses</a>
             <div class="form-group">
                 <label for="dni_profesor">Profesor</label>
                 <select class="form-control" id="dni_profesor" name="dni_profesor" required>
-                    <option value="">Selecciona un profesor</option>
+                    <option value="">Seleccione un profesor</option>
                     {% for profesor in profesores %}
-                    <option value="{{ profesor[0] }}">{{ profesor[1] }} {{ profesor[2] }} (DNI: {{ profesor[0] }})</option>
+                        <option value="{{ profesor[0] }}">{{ profesor[0] }} - {{ profesor[1] }} {{ profesor[2] }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de cesar a este profesor?');">Cesar</button>
+            <div class="form-group">
+                <label for="fecha">Fecha</label>
+                <input type="date" class="form-control" id="fecha" name="fecha" required>
+            </div>
+            <div class="form-group">
+                <label for="id_carrera">Carrera</label>
+                <select class="form-control" id="id_carrera" name="id_carrera" required>
+                    <option value="">Seleccione una carrera</option>
+                    {% for carrera in carreras %}
+                        <option value="{{ carrera[0] }}">{{ carrera[3] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="id_materia">Materia</label>
+                <select class="form-control" id="id_materia" name="id_materia" required>
+                    <option value="">Seleccione una materia</option>
+                    {% for materia in materias %}
+                        <option value="{{ materia[0] }}" data-carrera="{{ materia[2] }}">{{ materia[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="anio">Año</label>
+                <select class="form-control" id="anio" name="anio">
+                    <option value="">Seleccione un año (opcional)</option>
+                    <option value="1°">1°</option>
+                    <option value="2°">2°</option>
+                    <option value="3°">3°</option>
+                    <option value="4°">4°</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="hs_modulos">Módulos</label>
+                <input type="number" class="form-control" id="hs_modulos" name="hs_modulos" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="motivo">Motivo</label>
+                <select class="form-control" id="motivo" name="motivo" required>
+                    <option value="">Seleccione un motivo</option>
+                    <option value="Jubilación">Jubilación</option>
+                    <option value="Renuncia">Renuncia</option>
+                    <option value="Fallecimiento">Fallecimiento</option>
+                    <option value="Otros">Otros</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="observaciones">Observaciones</label>
+                <textarea class="form-control" id="observaciones" name="observaciones" rows="4" placeholder="Ingrese observaciones"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Cesar Profesor</button>
             <a href="{{ url_for('profesores') }}" class="btn btn-secondary">Volver</a>
         </form>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#dni_profesor, #id_carrera').change(function() {
+                var selectedProfesor = $('#dni_profesor').val();
+                var selectedCarrera = $('#id_carrera').val();
+                var assignedMaterias = {{ assigned | tojson }};
+                $('#id_materia option').each(function() {
+                    var materiaId = $(this).val();
+                    var materiaCarrera = $(this).data('carrera');
+                    if (materiaId && (materiaCarrera == selectedCarrera || !selectedCarrera) &&
+                        (selectedProfesor in assignedMaterias && selectedCarrera in assignedMaterias[selectedProfesor] &&
+                         assignedMaterias[selectedProfesor][selectedCarrera].includes(parseInt(materiaId)))) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+                $('#id_materia').val('');
+            });
+        });
+    </script>
 </body>
 </html>

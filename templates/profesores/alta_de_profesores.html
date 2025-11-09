@@ -30,15 +30,19 @@
             </div>
             <div class="form-group">
                 <label for="dni_profesor">DNI</label>
-                <input type="number" class="form-control" id="dni_profesor" name="dni_profesor" required min="1000000" max="99999999">
+                <div class="input-group">
+                    <input type="number" class="form-control" id="dni_profesor" name="dni_profesor" required min="1000000" max="99999999" minlength="7" maxlength="8">
+                    <button type="button" class="btn btn-primary btn-sm ml-2" id="checkDniBtn">Comprobar DNI</button>
+                </div>
+                <div id="dniMessage" style="margin-top: 5px;"></div>
             </div>
             <div class="form-group">
                 <label for="sexo">Sexo</label>
-                <select class="form-control" id="sexo" name="sexo">
+                <select class="form-control" id="sexo" name="sexo" required>
                     <option value="">Seleccione</option>
-                    <option value="Femenino">Femenino</option>
-                    <option value="Masculino">Masculino</option>
-                    <option value="Otros">Otros</option>
+                    {% for sexo in sexos %}
+                        <option value="{{ sexo.descripcion }}">{{ sexo.descripcion }}</option>
+                    {% endfor %}
                 </select>
             </div>
             <div class="form-group">
@@ -50,12 +54,8 @@
                 <input type="number" class="form-control" id="piso" name="piso" min="0">
             </div>
             <div class="form-group">
-                <label for="dpto">Dpto</label>
+                <label for="dpto">Departamento</label>
                 <input type="text" class="form-control" id="dpto" name="dpto">
-            </div>
-            <div class="form-group">
-                <label for="codigo_postal">Código Postal</label>
-                <input type="number" class="form-control" id="codigo_postal" name="codigo_postal" min="0">
             </div>
             <div class="form-group">
                 <label for="localidad">Localidad</label>
@@ -66,112 +66,200 @@
                 <input type="text" class="form-control" id="partido" name="partido">
             </div>
             <div class="form-group">
+                <label for="codigo_postal">Código Postal</label>
+                <input type="number" class="form-control" id="codigo_postal" name="codigo_postal">
+            </div>
+            <div class="form-group">
+                <label for="pais">País</label>
+                <select class="form-control" id="pais" name="pais" required>
+                    <option value="">Seleccione un país</option>
+                    {% for p in paises %}
+                        <option value="{{ p.nombre }}">{{ p.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
                 <label for="telefono">Teléfono</label>
-                <input type="text" class="form-control" id="telefono" name="telefono">
+                <input type="text" class="form-control" id="telefono" name="telefono" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
             </div>
             <div class="form-group">
                 <label for="celular">Celular</label>
-                <input type="text" class="form-control" id="celular" name="celular">
+                <input type="text" class="form-control" id="celular" name="celular" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
             </div>
             <div class="form-group">
-                <label for="email">Correo Electrónico</label>
+                <label for="email">Email</label>
                 <input type="email" class="form-control" id="email" name="email">
             </div>
             <div class="form-group">
                 <label for="fecha_nacimiento">Fecha de Nacimiento</label>
-                <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento">
             </div>
             <div class="form-group">
                 <label for="lugar_nacimiento">Lugar de Nacimiento</label>
                 <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento">
             </div>
-            <div class="form-group">
-                <label for="pais">País</label>
-                <select class="form-control" id="pais" name="pais">
-                    <option value="">Seleccione un país</option>
-                    {% for pais in paises %}
-                    <option value="{{ pais[1] }}">{{ pais[1] }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+
+            <h4>Documentación</h4>
             <div class="form-group">
                 <label for="foja">Foja</label>
-                <input type="text" class="form-control" id="foja" name="foja">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="foja" name="foja">
+                    <button type="button" class="btn btn-primary btn-sm ml-2" id="checkFojaBtn">Comprobar Foja</button>
+                </div>
+                <div id="fojaMessage" style="margin-top: 5px;"></div>
             </div>
             <div class="form-group">
-                <label for="n_registro">N° Registro</label>
-                <input type="text" class="form-control" id="n_registro" name="n_registro">
+                <label for="n_registro">N° de Registro</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="n_registro" name="n_registro">
+                    <button type="button" class="btn btn-primary btn-sm ml-2" id="checkRegistroBtn">Comprobar Registro</button>
+                </div>
+                <div id="registroMessage" style="margin-top: 5px;"></div>
             </div>
             <div class="form-group">
                 <label for="certificado_aptitud_fisica">Certificado de Aptitud Física</label>
                 <input type="checkbox" id="certificado_aptitud_fisica" name="certificado_aptitud_fisica" value="1">
             </div>
 
-            <h4>Datos Académicos</h4>
-            <div class="card border-primary mb-3">
-                <div class="card-body">
-                    <div id="titulos">
-                        <div class="titulo-group mb-3">
-                            <div class="form-group">
-                                <label for="titulo_1">Título</label>
-                                <input type="text" class="form-control" id="titulo_1" name="titulo[]">
-                            </div>
-                            <div class="form-group">
-                                <label for="expedido_por_1">Expedido Por</label>
-                                <input type="text" class="form-control" id="expedido_por_1" name="expedido_por[]">
-                            </div>
-                            <div class="form-group">
-                                <label for="duracion_1">Duración</label>
-                                <input type="number" class="form-control" id="duracion_1" name="duracion[]" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="finalizo_1">Finalizó</label>
-                                <input type="checkbox" id="finalizo_1" name="finalizo[]" value="1">
-                            </div>
-                            <div class="form-group">
-                                <label for="fecha_egreso_1">Fecha de Egreso</label>
-                                <input type="date" class="form-control" id="fecha_egreso_1" name="fecha_egreso[]">
-                            </div>
-                            <div class="form-group">
-                                <label for="porcentaje_carrera_1">Porcentaje de la Carrera</label>
-                                <input type="number" class="form-control" id="porcentaje_carrera_1" name="porcentaje_carrera[]" min="0" max="100">
-                            </div>
-                        </div>
+            <h4>Títulos</h4>
+            <div id="titulos">
+                <div class="titulo-group">
+                    <div class="form-group">
+                        <label for="titulo_1">Título</label>
+                        <input type="text" class="form-control" id="titulo_1" name="titulo[]">
+                    </div>
+                    <div class="form-group">
+                        <label for="expedido_por_1">Expedido Por</label>
+                        <input type="text" class="form-control" id="expedido_por_1" name="expedido_por[]">
+                    </div>
+                    <div class="form-group">
+                        <label for="duracion_1">Duración</label>
+                        <input type="number" class="form-control" id="duracion_1" name="duracion[]" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="finalizo_1">Finalizó</label>
+                        <input type="checkbox" id="finalizo_1" name="finalizo[]" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="fecha_egreso_1">Fecha de Egreso</label>
+                        <input type="date" class="form-control" id="fecha_egreso_1" name="fecha_egreso[]">
+                    </div>
+                    <div class="form-group">
+                        <label for="porcentaje_carrera_1">Porcentaje de la Carrera</label>
+                        <input type="number" class="form-control" id="porcentaje_carrera_1" name="porcentaje_carrera[]" min="0" max="100">
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-secondary mb-3" id="agregarTitulo">Agregar Otro Título</button>
-            <button type="submit" class="btn btn-success">Guardar</button>
-            <a href="{{ url_for('profesores') }}" class="btn btn-secondary">Atrás</a>
+            <button type="button" class="btn btn-primary" id="agregarTitulo">Agregar Título</button>
+            <button type="submit" class="btn btn-info" id="submitBtn">Registrar</button>
+            <a href="{{ url_for('profesores') }}" class="btn btn-secondary">Volver</a>
         </form>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        // Validación de edad mínima (18 años)
-        document.getElementById('fecha_nacimiento').addEventListener('change', function() {
-            const fechaNacimiento = new Date(this.value);
-            const hoy = new Date('2025-10-07');
-            let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
-            const mes = hoy.getMonth() - fechaNacimiento.getMonth();
-            if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
-                edad--;
+        // Set max date for fecha_nacimiento (21 years ago from today)
+        function setMaxBirthDate() {
+            const today = new Date();
+            const maxDate = new Date(today.getFullYear() - 21, today.getMonth(), today.getDate());
+            const maxDateString = maxDate.toISOString().split('T')[0];
+            document.getElementById('fecha_nacimiento').setAttribute('max', maxDateString);
+        }
+        setMaxBirthDate();
+
+        // Check DNI
+        function checkDNI(dni, messageDiv) {
+            messageDiv.style.display = 'none';
+            messageDiv.textContent = '';
+            messageDiv.style.color = '';
+
+            if (dni) {
+                fetch('{{ url_for("check_dni") }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `dni_profesor=${encodeURIComponent(dni)}`
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok: ' + response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    messageDiv.style.display = 'block';
+                    if (data.exists) {
+                        messageDiv.textContent = 'Este DNI ya existe en el sistema';
+                        messageDiv.style.color = 'red';
+                    } else {
+                        messageDiv.textContent = 'DNI disponible';
+                        messageDiv.style.color = 'green';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking DNI:', error);
+                    messageDiv.style.display = 'block';
+                    messageDiv.textContent = 'Error al verificar DNI';
+                    messageDiv.style.color = 'red';
+                });
+            } else {
+                messageDiv.style.display = 'block';
+                messageDiv.textContent = 'Por favor, ingrese un DNI';
+                messageDiv.style.color = 'red';
             }
-            if (edad < 18) {
-                alert('El profesor debe tener al menos 18 años.');
-                this.value = '';
+        }
+
+        // Validate DNI on button click
+        document.getElementById('checkDniBtn').addEventListener('click', function() {
+            const dni = document.getElementById('dni_profesor').value || '';
+            const messageDiv = document.getElementById('dniMessage');
+            checkDNI(dni, messageDiv);
+        });
+
+        // Prevent submission if DNI exists
+        document.getElementById('altaForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent form submission until validation
+            const dni = document.getElementById('dni_profesor').value || '';
+            const messageDiv = document.getElementById('dniMessage');
+
+            if (dni) {
+                fetch('{{ url_for("check_dni") }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `dni_profesor=${encodeURIComponent(dni)}`
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok: ' + response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    messageDiv.style.display = 'block';
+                    if (data.exists) {
+                        messageDiv.textContent = 'Este DNI ya existe en el sistema';
+                        messageDiv.style.color = 'red';
+                    } else {
+                        messageDiv.textContent = 'DNI disponible';
+                        messageDiv.style.color = 'green';
+                        this.submit(); // Proceed with form submission
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking DNI:', error);
+                    messageDiv.style.display = 'block';
+                    messageDiv.textContent = 'Error al verificar DNI';
+                    messageDiv.style.color = 'red';
+                });
+            } else {
+                messageDiv.style.display = 'block';
+                messageDiv.textContent = 'Por favor, ingrese un DNI';
+                messageDiv.style.color = 'red';
             }
         });
 
-        // Agregar otro título dinámicamente
+        // Agregar título dinámicamente con separador
         let tituloCount = 1;
         document.getElementById('agregarTitulo').addEventListener('click', function() {
             tituloCount++;
             const div = document.createElement('div');
-            div.className = 'titulo-group mb-3';
+            div.className = 'titulo-group';
             div.innerHTML = `
+                <hr>
                 <div class="form-group">
                     <label for="titulo_${tituloCount}">Título</label>
                     <input type="text" class="form-control" id="titulo_${tituloCount}" name="titulo[]">
@@ -206,6 +294,51 @@
             if (e.target.classList.contains('quitarTitulo')) {
                 e.target.closest('.titulo-group').remove();
             }
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // === COMPROBAR FOJA (solo foja) ===
+            $('#checkFojaBtn').click(function() {
+                const foja = $('#foja').val().trim();
+                if (!foja) {
+                    $('#fojaMessage').html('<small class="text-danger">Ingrese una Foja</small>');
+                    return;
+                }
+                $.post("{{ url_for('check_foja') }}", { foja: foja })
+                    .done(function(res) {
+                        if (res.exists) {
+                            $('#fojaMessage').html('<small class="text-danger">Foja ya existe en otro profesor</small>');
+                        } else {
+                            $('#fojaMessage').html('<small class="text-success">Foja disponible</small>');
+                        }
+                    })
+                    .fail(function() {
+                        $('#fojaMessage').html('<small class="text-danger">Error de conexión</small>');
+                    });
+            });
+
+            // === COMPROBAR N° REGISTRO (solo registro) ===
+            $('#checkRegistroBtn').click(function() {
+                const registro = $('#n_registro').val().trim();
+                if (!registro) {
+                    $('#registroMessage').html('<small class="text-danger">Ingrese un N° de Registro</small>');
+                    return;
+                }
+                $.post("{{ url_for('check_registro') }}", { n_registro: registro })
+                    .done(function(res) {
+                        if (res.exists) {
+                            $('#registroMessage').html('<small class="text-danger">N° Registro ya existe en otro profesor</small>');
+                        } else {
+                            $('#registroMessage').html('<small class="text-success">N° Registro disponible</small>');
+                        }
+                    })
+                    .fail(function() {
+                        $('#registroMessage').html('<small class="text-danger">Error de conexión</small>');
+                    });
+            });
         });
     </script>
 </body>

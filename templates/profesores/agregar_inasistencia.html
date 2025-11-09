@@ -3,18 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agregar Inasistencia - Instituto 148</title>
+    <title>Agregar Asistencia/Inasistencia - Instituto 148</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        .container {
-            margin-top: 20px;
-        }
-    </style>
 </head>
 <body style="padding-left:250px">
     {% include 'navbar.html' %}
     <div class="container">
-        <h2>Agregar Inasistencia</h2>
+        <h2>Agregar Asistencia/Inasistencia</h2>
+        <p>Instituto Superior de Formación Docente y/o Técnica</p>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -22,30 +18,112 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
+
         <form method="POST" action="{{ url_for('agregar_inasistencia') }}">
+            <a href="{{ url_for('listar_inasistencias') }}" class="btn btn-info">Ver Asistencias/Inasistencias</a>
+            <a href="{{ url_for('listar_profesores_inasistencias') }}" class="btn btn-warning">Ver por Profesor</a>
             <div class="form-group">
                 <label for="dni_profesor">Profesor</label>
                 <select class="form-control" id="dni_profesor" name="dni_profesor" required>
-                    <option value="">Selecciona un profesor</option>
+                    <option value="">Seleccione un profesor</option>
                     {% for profesor in profesores %}
-                    <option value="{{ profesor[0] }}">{{ profesor[1] }} {{ profesor[2] }} (DNI: {{ profesor[0] }})</option>
+                        <option value="{{ profesor[0] }}">{{ profesor[0] }} - {{ profesor[1] }} {{ profesor[2] }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="form-group">
-                <label for="fecha_inasistencia">Fecha</label>
-                <input type="date" class="form-control" id="fecha_inasistencia" name="fecha_inasistencia" required>
+                <label for="id_carrera">Carrera</label>
+                <select class="form-control" id="id_carrera" name="id_carrera" required>
+                    <option value="">Seleccione una carrera</option>
+                    {% for carrera in carreras %}
+                        <option value="{{ carrera[0] }}">{{ carrera[3] }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="form-group">
-                <label for="motivo">Motivo</label>
-                <input type="text" class="form-control" id="motivo" name="motivo">
+                <label for="id_materia">Materia</label>
+                <select class="form-control" id="id_materia" name="id_materia" required>
+                    <option value="">Seleccione una materia</option>
+                    {% for materia in materias %}
+                        <option value="{{ materia[0] }}" data-carrera="{{ materia[2] }}">
+                            {{ materia[1] }}
+                        </option>
+                    {% endfor %}
+                </select>
             </div>
-            <button type="submit" class="btn btn-primary">Registrar Inasistencia</button>
-            <a href="{{ url_for('profesores') }}" class="btn btn-secondary">Volver</a>
+            <div class="form-group">
+                <label for="fecha">Fecha de Asistencia/Inasistencia</label>
+                <input type="date" class="form-control" id="fecha" name="fecha" required>
+            </div>
+
+            <div class="form-group">
+                <label for="presente">Presente</label>
+                <select class="form-control" id="presente" name="presente" required>
+                    <option value="Presente">Presente</option>
+                    <option value="Ausente">Ausente</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="motivo">Motivo</label>
+                <select class="form-control" id="motivo" name="motivo">
+                    <option value="">-</option>
+                    <option value="Justificado">Justificado</option>
+                    <option value="Injustificado">Injustificado</option>
+                    <option value="Licencia Extendida">Licencia Extendida</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="observaciones">Observaciones</label>
+                <textarea class="form-control" id="observaciones" name="observaciones" rows="4" placeholder="Ingrese observaciones"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a href="{{ url_for('profesores') }}" class="btn btn-secondary">Cancelar</a>
         </form>
     </div>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Filtrado de materias por carrera (NO TOCADO)
+            $('#id_carrera').change(function() {
+                var selectedCarrera = $(this).val();
+                $('#id_materia option').each(function() {
+                    if ($(this).data('carrera') == selectedCarrera || !selectedCarrera) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+                $('#id_materia').val('');
+            });
+
+            // NUEVA LÓGICA: Controlar motivo según presente
+            function updateMotivoField() {
+                var presente = $('#presente').val();
+                var $motivo = $('#motivo');
+
+                if (presente === 'Presente') {
+                    $motivo.val('-').prop('disabled', true);
+                    $motivo.find('option').not(':first').hide();
+                    $motivo.find('option:first').show().text('-');
+                } else {
+                    $motivo.prop('disabled', false);
+                    $motivo.find('option').show();
+                    $motivo.find('option:first').hide();
+                    if (!$motivo.val() || $motivo.val() === '-') {
+                        $motivo.val('Justificado');
+                    }
+                }
+            }
+
+            // Ejecutar al cargar y al cambiar
+            updateMotivoField();
+            $('#presente').change(updateMotivoField);
+        });
+    </script>
 </body>
 </html>

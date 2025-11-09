@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Suplencias - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Listado de Suplencias</h2>
+        <p>Instituto Superior de Formación Docente y/o Técnica</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if suplencias %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Profesor</th>
+                    <th>Fecha</th>
+                    <th>Carrera</th>
+                    <th>Materia</th>
+                    <th>Módulos</th>
+                    <th>Desde</th>
+                    <th>Hasta</th>
+                    <th>Observaciones</th>
+                    <th>Suplente</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for suplencia in suplencias %}
+                <tr>
+                    <td>{{ suplencia.id_suplencia }}</td>
+                    <td>{{ suplencia.dni_profesor }} - {{ suplencia.nombre }} {{ suplencia.apellido }}</td>
+                    <td>{{ suplencia.fecha }}</td>
+                    <td>{{ suplencia.carrera_nombre }}</td>
+                    <td>{{ suplencia.materia_nombre }}</td>
+                    <td>{{ suplencia.modulos }}</td>
+                    <td>{{ suplencia.fecha_desde }}</td>
+                    <td>{{ suplencia.fecha_hasta }}</td>
+                    <td>{{ suplencia.observaciones or '' }}</td>
+                    <td>
+                        {% if suplencia.dni_suplente and suplencia.suplente_nombre %}
+                            {{ suplencia.dni_suplente }} - {{ suplencia.suplente_nombre }} {{ suplencia.suplente_apellido }}
+                        {% else %}
+                            <em>Sin suplente</em>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('editar_suplencia', id_suplencia=suplencia.id_suplencia) }}" class="btn btn-warning btn-sm">Editar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No hay suplencias registradas.</p>
+        {% endif %}
+        <a href="{{ url_for('agregar_suplencia') }}" class="btn btn-secondary">Volver</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

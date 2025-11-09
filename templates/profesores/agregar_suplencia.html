@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Suplencia - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Agregar Suplencia</h2>
+        <p>Instituto Superior de Formación Docente y/o Técnica</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('agregar_suplencia') }}">
+            <a href="{{ url_for('listado_suplencias') }}" class="btn btn-info">Ver listado</a>
+            <!-- PROFESOR -->
+            <div class="form-group">
+                <label for="dni_profesor">Profesor</label>
+                <select class="form-control" id="dni_profesor" name="dni_profesor" required>
+                    <option value="">Seleccione un profesor</option>
+                    {% for profesor in profesores %}
+                        <option value="{{ profesor[0] }}" 
+                            {% if form_data and form_data.dni_profesor == profesor[0] %}selected{% endif %}>
+                            {{ profesor[0] }} - {{ profesor[1] }} {{ profesor[2] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- SUPLENTE -->
+            <div class="form-group">
+                <label for="dni_suplente">Suplente <small class="text-muted"></small></label>
+                <select class="form-control" id="dni_suplente" name="dni_suplente">
+                    <option value="">Seleccione un suplente</option>
+                    {% for profesor in profesores %}
+                        <option value="{{ profesor[0] }}" 
+                            {% if form_data and form_data.dni_suplente == profesor[0] %}selected{% endif %}>
+                            {{ profesor[0] }} - {{ profesor[1] }} {{ profesor[2] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- FECHA SOLICITUD -->
+            <div class="form-group">
+                <label for="fecha">Fecha de Solicitud</label>
+                <input type="date" class="form-control" id="fecha" name="fecha" 
+                       value="{{ form_data.fecha if form_data else '' }}" required>
+            </div>
+
+            <!-- CARRERA -->
+            <div class="form-group">
+                <label for="id_carrera">Carrera</label>
+                <select class="form-control" id="id_carrera" name="id_carrera" required>
+                    <option value="">Seleccione una carrera</option>
+                    {% for carrera in carreras %}
+                        <option value="{{ carrera[0] }}" 
+                            {% if form_data and form_data.id_carrera == carrera[0] %}selected{% endif %}>
+                            {{ carrera[1] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- MATERIA -->
+            <div class="form-group">
+                <label for="id_materia">Materia</label>
+                <select class="form-control" id="id_materia" name="id_materia" required>
+                    <option value="">Seleccione una materia</option>
+                    {% for materia in materias %}
+                        <option value="{{ materia[0] }}" data-carrera="{{ materia[2] }}"
+                            {% if form_data and form_data.id_materia == materia[0] %}selected{% endif %}>
+                            {{ materia[1] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- MÓDULOS -->
+            <div class="form-group">
+                <label for="modulos">Módulos</label>
+                <input type="number" class="form-control" id="modulos" name="modulos" min="1"
+                       value="{{ form_data.modulos if form_data else '' }}" required>
+            </div>
+
+            <!-- FECHA DESDE -->
+            <div class="form-group">
+                <label for="fecha_desde">Desde</label>
+                <input type="date" class="form-control" id="fecha_desde" name="fecha_desde"
+                       value="{{ form_data.fecha_desde if form_data else '' }}" required>
+            </div>
+
+            <!-- FECHA HASTA -->
+            <div class="form-group">
+                <label for="fecha_hasta">Hasta</label>
+                <input type="date" class="form-control" id="fecha_hasta" name="fecha_hasta"
+                       value="{{ form_data.fecha_hasta if form_data else '' }}" required>
+            </div>
+
+            <!-- OBSERVACIONES -->
+            <div class="form-group">
+                <label for="observaciones">Observaciones</label>
+                <textarea class="form-control" id="observaciones" name="observaciones" rows="4"
+                          placeholder="Ingrese observaciones (opcional)">{{ form_data.observaciones if form_data else '' }}</textarea>
+            </div>
+
+            <!-- BOTONES -->
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a href="{{ url_for('profesores') }}" class="btn btn-secondary">Volver</a>
+        </form>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            function filtrarMaterias() {
+                const selectedCarrera = $('#id_carrera').val();
+                const selectedMateria = $('#id_materia').val();
+
+                $('#id_materia option').each(function() {
+                    const carreraId = $(this).data('carrera');
+                    if (!selectedCarrera || carreraId == selectedCarrera) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+
+                // Si la materia seleccionada no pertenece a la carrera, limpiar
+                if (selectedMateria) {
+                    const materiaCarrera = $('#id_materia option[value="' + selectedMateria + '"]').data('carrera');
+                    if (selectedCarrera && materiaCarrera != selectedCarrera) {
+                        $('#id_materia').val('');
+                    }
+                }
+            }
+
+            $('#id_carrera').change(filtrarMaterias);
+            filtrarMaterias(); // Al cargar
+        });
+    </script>
+</body>
+</html>

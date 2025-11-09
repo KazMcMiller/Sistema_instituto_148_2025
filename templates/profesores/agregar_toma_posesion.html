@@ -5,16 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agregar Toma de Posesión - Instituto 148</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        .container {
-            margin-top: 20px;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" rel="stylesheet" />
 </head>
 <body style="padding-left:250px">
     {% include 'navbar.html' %}
     <div class="container">
         <h2>Agregar Toma de Posesión</h2>
+        <p>Instituto Superior de Formación Docente y/o Técnica</p>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -22,23 +20,56 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
+
         <form method="POST" action="{{ url_for('agregar_toma_posesion') }}">
+            <a href="{{ url_for('listar_toma_posesion') }}" class="btn btn-info">Ver Tomas de Posesión</a>
             <div class="form-group">
                 <label for="dni_profesor">Profesor</label>
-                <select class="form-control" id="dni_profesor" name="dni_profesor" required>
-                    <option value="">Selecciona un profesor</option>
+                <select class="form-control select2" id="dni_profesor" name="dni_profesor" required>
+                    <option value="">Seleccione un profesor</option>
                     {% for profesor in profesores %}
-                    <option value="{{ profesor[0] }}">{{ profesor[1] }} {{ profesor[2] }} (DNI: {{ profesor[0] }})</option>
+                        <option value="{{ profesor[0] }}">{{ profesor[0] }} - {{ profesor[1] }} {{ profesor[2] }} {% if profesor[3] == 0 %}(Cesado){% endif %}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="form-group">
-                <label for="fecha_toma">Fecha</label>
-                <input type="date" class="form-control" id="fecha_toma" name="fecha_toma" required>
+                <label for="fecha">Fecha</label>
+                <input type="date" class="form-control" id="fecha" name="fecha" required>
             </div>
             <div class="form-group">
-                <label for="cargo">Cargo</label>
-                <input type="text" class="form-control" id="cargo" name="cargo" required>
+                <label for="id_carrera">Carrera</label>
+                <select class="form-control" id="id_carrera" name="id_carrera" required>
+                    <option value="">Seleccione una carrera</option>
+                    {% for carrera in carreras %}
+                        <option value="{{ carrera[0] }}">{{ carrera[3] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="id_materia">Materia</label>
+                <select class="form-control" id="id_materia" name="id_materia" required>
+                    <option value="">Seleccione una materia</option>
+                    {% for materia in materias %}
+                        <option value="{{ materia[0] }}" data-carrera="{{ materia[2] }}">{{ materia[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="modulos">Módulos</label>
+                <input type="number" class="form-control" id="modulos" name="modulos" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="situacion_revista">Situación de Revista</label>
+                <select class="form-control" id="situacion_revista" name="situacion_revista" required>
+                    <option value="">Seleccione una opción</option>
+                    <option value="Titular">Titular</option>
+                    <option value="Suplente">Suplente</option>
+                    <option value="Provincial">Provicional</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="observaciones">Observaciones</label>
+                <textarea class="form-control" id="observaciones" name="observaciones" rows="4" placeholder="Ingrese observaciones"></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Registrar Toma de Posesión</button>
             <a href="{{ url_for('profesores') }}" class="btn btn-secondary">Volver</a>
@@ -47,5 +78,48 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialize Select2 for professor dropdown
+            $('#dni_profesor').select2({
+                theme: 'bootstrap',
+                placeholder: 'Seleccione un profesor',
+                allowClear: true,
+                width: '100%',
+                matcher: function(params, data) {
+                    if ($.trim(params.term) === '') {
+                        return data;
+                    }
+                    var term = params.term.toLowerCase();
+                    var text = $(data.element).text().toLowerCase();
+                    return text.indexOf(term) > -1 ? data : null;
+                }
+            });
+
+            // Ensure form validation works with Select2
+            $('#dni_profesor').on('change', function() {
+                $(this).valid();
+            });
+
+            // Carrera-to-materia filtering
+            $('#id_carrera').change(function() {
+                var selectedCarrera = $(this).val();
+                var assignedMaterias = {{ assigned | tojson }};
+                $('#id_materia option').each(function() {
+                    var materiaId = $(this).val();
+                    var materiaCarrera = $(this).data('carrera');
+                    // Show if matches selected carrera and is not actively assigned
+                    if (materiaId && (materiaCarrera == selectedCarrera || !selectedCarrera) &&
+                        !(selectedCarrera in assignedMaterias && assignedMaterias[selectedCarrera].includes(parseInt(materiaId)))) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+                $('#id_materia').val('');
+            });
+        });
+    </script>
 </body>
 </html>

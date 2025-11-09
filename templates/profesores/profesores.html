@@ -27,11 +27,10 @@
         <div class="mb-4">
             <a href="{{ url_for('alta_profesores') }}" class="btn btn-primary">Legajo del Docente</a>
             <a href="{{ url_for('cesar_profesor') }}" class="btn btn-primary">Cese</a>
-            <a href="{{ url_for('agregar_inasistencia') }}" class="btn btn-primary">Inasistencias</a>
+            <a href="{{ url_for('agregar_inasistencia') }}" class="btn btn-primary">Asistencias/Inasistencias</a>
             <a href="{{ url_for('agregar_toma_posesion') }}" class="btn btn-primary">Toma de Posesión</a>
             <a href="{{ url_for('agregar_licencia') }}" class="btn btn-primary">Licencias</a>
-            <a href="{{ url_for('ver_suplencias') }}" class="btn btn-primary">Suplencias</a>
-            <a href="{{ url_for('acta_carga_horaria') }}" class="btn btn-success">Carga Horaria</a>
+            <a href="{{ url_for('agregar_suplencia') }}" class="btn btn-primary">Suplencias</a>
             <button id="editarProfesorBtn" class="btn btn-warning" disabled>Editar</button>
             <a href="{{ url_for('home') }}" class="btn btn-secondary">Volver</a>
         </div>
@@ -50,16 +49,17 @@
                     <option value="cesado" {% if estado == 'cesado' %}selected{% endif %}>Cesado</option>
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary">Buscar</button>
+            <button type="submit" class="btn btn-primary">Filtrar</button>
         </form>
+
         <div class="table-responsive">
-            <table class="table table-striped">
+            <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
                         <th>DNI</th>
                         <th>Nombre</th>
                         <th>Apellido</th>
-                        <th>Teléfono</th>
+                        <th>Sexo</th>
                         <th>Estado</th>
                         <th>Licencia</th>
                     </tr>
@@ -101,6 +101,10 @@
                 $(this).addClass('selected-row');
                 selectedDni = $(this).data('dni');
                 $('#editarProfesorBtn').prop('disabled', false).attr('onclick', `window.location.href='/profesores/editar_profesor/${selectedDni}'`);
+            });
+            $('tr[data-dni]').dblclick(function() {
+                const dni = $(this).data('dni');
+                window.location.href = `/profesores/detalle/${dni}`;
             });
         });
     </script>

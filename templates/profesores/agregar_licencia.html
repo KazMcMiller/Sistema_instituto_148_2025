@@ -5,16 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agregar Licencia - Instituto 148</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        .container {
-            margin-top: 20px;
-        }
-    </style>
 </head>
 <body style="padding-left:250px">
     {% include 'navbar.html' %}
     <div class="container">
         <h2>Agregar Licencia</h2>
+        <p>Instituto Superior de Formación Docente y/o Técnica</p>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -22,27 +18,64 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
+
         <form method="POST" action="{{ url_for('agregar_licencia') }}">
+            <a href="{{ url_for('listar_licencias') }}" class="btn btn-info">Ver Licencias</a>
             <div class="form-group">
                 <label for="dni_profesor">Profesor</label>
                 <select class="form-control" id="dni_profesor" name="dni_profesor" required>
-                    <option value="">Selecciona un profesor</option>
+                    <option value="">Seleccione un profesor</option>
                     {% for profesor in profesores %}
-                    <option value="{{ profesor[0] }}">{{ profesor[1] }} {{ profesor[2] }} (DNI: {{ profesor[0] }})</option>
+                        <option value="{{ profesor[0] }}">{{ profesor[0] }} - {{ profesor[1] }} {{ profesor[2] }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="form-group">
-                <label for="fecha_inicio">Fecha de Inicio</label>
-                <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
+                <label for="id_carrera">Carrera</label>
+                <select class="form-control" id="id_carrera" name="id_carrera" required>
+                    <option value="">Seleccione una carrera</option>
+                    {% for carrera in carreras %}
+                        <option value="{{ carrera[0] }}">{{ carrera[3] }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="form-group">
-                <label for="fecha_fin">Fecha de Fin</label>
-                <input type="date" class="form-control" id="fecha_fin" name="fecha_fin">
+                <label for="id_materia">Materia</label>
+                <select class="form-control" id="id_materia" name="id_materia" required>
+                    <option value="">Seleccione una materia</option>
+                    {% for materia in materias %}
+                        <option value="{{ materia[0] }}" data-carrera="{{ materia[2] }}">{{ materia[1] }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="form-group">
-                <label for="motivo_licencia">Motivo</label>
-                <input type="text" class="form-control" id="motivo_licencia" name="motivo_licencia">
+                <label for="licencia">Licencia</label>
+                <select class="form-control" id="licencia" name="licencia" required>
+                    <option value="Licencia administrativa">Licencia administrativa</option>
+                    <option value="Licencia médica">Licencia médica</option>
+                    <option value="Ausente">Ausente</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tiempo_estimado">Tiempo Estimado</label>
+                <select class="form-control" id="tiempo_estimado" name="tiempo_estimado" required>
+                    <option value="Menos de 30 días">Menos de 30 días</option>
+                    <option value="Menor a 4 meses">Menor a 4 meses</option>
+                    <option value="Mayor a 4 meses">Mayor a 4 meses</option>
+                    <option value="Difícil cobertura">Difícil cobertura</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="desde">Desde</label>
+                <input type="date" class="form-control" id="desde" name="desde" required>
+            </div>
+            <div class="form-group">
+                <label for="hasta">Hasta</label>
+                <input type="date" class="form-control" id="hasta" name="hasta">
+            </div>
+            <div class="form-group">
+                <label for="observaciones">Observaciones</label>
+                <textarea class="form-control" id="observaciones" name="observaciones" rows="4" placeholder="Ingrese observaciones"></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Registrar Licencia</button>
             <a href="{{ url_for('profesores') }}" class="btn btn-secondary">Volver</a>
@@ -51,5 +84,31 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Filter materia by carrera
+            $('#id_carrera').change(function() {
+                var selectedCarrera = $(this).val();
+                $('#id_materia option').each(function() {
+                    if ($(this).data('carrera') == selectedCarrera || !selectedCarrera) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+                $('#id_materia').val('');
+            });
+
+            // Disable hasta when tiempo_estimado is Difícil cobertura
+            $('#tiempo_estimado').change(function() {
+                var tiempoEstimado = $(this).val();
+                if (tiempoEstimado === 'Difícil cobertura') {
+                    $('#hasta').prop('disabled', true).val('');
+                } else {
+                    $('#hasta').prop('disabled', false);
+                }
+            });
+        });
+    </script>
 </body>
 </html>

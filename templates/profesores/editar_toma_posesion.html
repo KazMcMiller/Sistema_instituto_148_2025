@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Toma de Posesión - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container mt-4">
+        <h2>Editar Toma de Posesión</h2>
+        <p class="text-muted">Instituto Superior de Formación Docente y/o Técnica</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert">×</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('editar_toma_posesion', id_toma=toma_posesion.id_toma) }}">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="dni_profesor">Profesor *</label>
+                        <select class="form-control" id="dni_profesor" name="dni_profesor" required>
+                            <option value="">Seleccione un profesor</option>
+                            {% for p in profesores %}
+                                <option value="{{ p[0] }}" {% if p[0] == toma_posesion.dni_profesor %}selected{% endif %}>
+                                    {{ p[0] }} - {{ p[1] }} {{ p[2] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="fecha">Fecha *</label>
+                        <input type="date" class="form-control" id="fecha" name="fecha" 
+                               value="{{ toma_posesion.fecha }}" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="id_carrera">Carrera *</label>
+                        <select class="form-control" id="id_carrera" name="id_carrera" required>
+                            <option value="">Seleccione carrera</option>
+                            {% for c in carreras %}
+                                <option value="{{ c[0] }}" {% if c[0] == toma_posesion.id_carrera %}selected{% endif %}>
+                                    {{ c[3] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="id_materia">Materia *</label>
+                        <select class="form-control" id="id_materia" name="id_materia" required>
+                            <option value="">Seleccione materia</option>
+                            {% for m in materias %}
+                                <option value="{{ m[0] }}" data-carrera="{{ m[2] }}"
+                                    {% if m[0] == toma_posesion.id_materia %}selected{% endif %}>
+                                    {{ m[1] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="modulos">Módulos *</label>
+                        <input type="number" class="form-control" id="modulos" name="modulos" min="1" 
+                               value="{{ toma_posesion.modulos }}" required>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="situacion_revista">Situación de Revista *</label>
+                        <select class="form-control" id="situacion_revista" name="situacion_revista" required>
+                            <option value="">Seleccione</option>
+                            <option value="Titular" {% if toma_posesion.situacion_revista == 'Titular' %}selected{% endif %}>Titular</option>
+                            <option value="Suplente" {% if toma_posesion.situacion_revista == 'Suplente' %}selected{% endif %}>Suplente</option>
+                            <option value="Provicional" {% if toma_posesion.situacion_revista == 'Provicional' %}selected{% endif %}>Provicional</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="observaciones">Observaciones</label>
+                        <textarea class="form-control" id="observaciones" name="observaciones" rows="3"
+                                  placeholder="Opcional">{{ toma_posesion.observaciones or '' }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-success btn-lg">Actualizar Toma de Posesión</button>
+                <a href="{{ url_for('listar_toma_posesion') }}" class="btn btn-secondary btn-lg ml-3">Volver al Listado</a>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Filtrar materias por carrera
+            function filtrarMaterias() {
+                const carreraId = $('#id_carrera').val();
+                const materiaActual = '{{ toma_posesion.id_materia }}';
+
+                $('#id_materia option').each(function() {
+                    const opcionCarrera = $(this).data('carrera');
+                    if (!carreraId || opcionCarrera == carreraId) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+
+                // Si la materia actual pertenece a la carrera seleccionada, mantenerla
+                if (carreraId) {
+                    const materiaValida = $(`#id_materia option[value="${materiaActual}"]`).data('carrera') == carreraId;
+                    if (!materiaValida) {
+                        $('#id_materia').val('');
+                    }
+                }
+            }
+
+            $('#id_carrera').on('change', filtrarMaterias);
+            filtrarMaterias(); // Ejecutar al cargar
+        });
+    </script>
+</body>
+</html>

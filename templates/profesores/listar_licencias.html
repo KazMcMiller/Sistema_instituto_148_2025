@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Licencias - Instituto 148</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body style="padding-left:250px">
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>Listado de Licencias</h2>
+        <p>Instituto Superior de Formación Docente y/o Técnica</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>DNI Profesor</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Desde</th>
+                    <th>Hasta</th>
+                    <th>Tipo de Licencia</th>
+                    <th>Tiempo Estimado</th>
+                    <th>Carrera</th>
+                    <th>Materia</th>
+                    <th>Observaciones</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for licencia in licencias %}
+                    <tr>
+                        <td>{{ licencia.id_licencia }}</td>
+                        <td>{{ licencia.dni_profesor }}</td>
+                        <td>{{ licencia.nombre }}</td>
+                        <td>{{ licencia.apellido }}</td>
+                        <td>{{ licencia.desde }}</td>
+                        <td>{{ licencia.hasta or '' }}</td>
+                        <td>{{ licencia.licencia }}</td>
+                        <td>{{ licencia.tiempo_estimado }}</td>
+                        <td>{{ licencia.nombre_carrera }}</td>
+                        <td>{{ licencia.nombre_materia }}</td>
+                        <td>{{ licencia.observaciones or '' }}</td>
+                        <td>
+                            <a href="{{ url_for('editar_licencia', id_licencia=licencia.id_licencia) }}"
+                               class="btn btn-primary btn-sm">Editar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{{ url_for('agregar_licencia') }}" class="btn btn-secondary">Volver</a>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
